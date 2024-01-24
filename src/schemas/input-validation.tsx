@@ -79,6 +79,9 @@ export const loginSchema = z.object({
 export const registerSchema = z.object({
   ...emailBaseSchema.shape,
   ...passwordBaseSchema.shape,
+  name: z.string({
+    required_error: "Name is required"
+  })
 });
 
 export const signupCodeVerificationSchema = z.object({

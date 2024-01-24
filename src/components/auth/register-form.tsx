@@ -17,6 +17,7 @@ import Link from "next/link";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { register } from "@/actions/register";
 
 const RegisterForm = () => {
   const [isPending, startTransition] = useTransition();
@@ -33,8 +34,30 @@ const RegisterForm = () => {
 
   const onSubmit = (values: z.infer<typeof registerSchema>) => {
     startTransition(async () => {
-        
-    })
+      try {
+        const data = await register(values);
+
+        if (data.error) {
+          toast({ title: "Login Error", description: data.error });
+        } else if (data.success) {
+          // try {
+          //   const docRef = await addDoc(collection(db, "users"), {
+          //     name: values.name,
+          //     email: values.email,
+          //     password: values.password,
+          //   });
+          //   console.log(docRef.id);
+          //   toast({ title: "Success", description: docRef.id });
+
+          //   form.reset();
+          // } catch (error: any) {
+          //   toast({ title: "failure", description: error });
+          //   console.error(error);
+          // }
+          toast({ title: "Login success", description: "successfully logged in"});
+        }
+      } catch (error) {}
+    });
   };
 
   return (

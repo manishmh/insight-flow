@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { loginSchema } from "@/schemas/input-validation";
 import Link from "next/link";
 import { useToast } from "@/components/ui/use-toast";
+import { login } from "@/actions/login";
 
 const LoginForm = () => {
   const [error, setError] =  useState("");
@@ -35,7 +36,16 @@ const LoginForm = () => {
   });
 
    const onSubmit = (values: z.infer<typeof loginSchema>) => {
-    startTransition(() => {})
+    startTransition(() => {
+      login(values)
+        .then((data) => {
+          if (data.error) {
+            toast({ title: "Login Error", description: data.error});
+          } else if (data.success) {
+            toast({ title: "Logged in Successfully", description: data.success});
+          }
+        })
+    })
    }
 
    return (

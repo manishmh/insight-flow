@@ -22,8 +22,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { login } from "@/actions/login";
 
 const LoginForm = () => {
-  const [error, setError] =  useState("");
-  const [success, setSuccess] =  useState("");
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast()
 
@@ -36,16 +34,21 @@ const LoginForm = () => {
   });
 
    const onSubmit = (values: z.infer<typeof loginSchema>) => {
-    startTransition(() => {
-      login(values)
-        .then((data) => {
-          if (data.error) {
-            toast({ title: "Login Error", description: data.error});
-          } else if (data.success) {
-            toast({ title: "Logged in Successfully", description: data.success});
-          }
-        })
-    })
+    startTransition(async () => {
+      try {
+        const data = await login(values);
+
+        if (data.error) {
+          toast({ title: "Error", description: data.error });
+          console.error(data.error)
+        } else if (data.success) {
+          toast({ title: "success", description: data.success });
+          form.reset()
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    });
    }
 
    return (

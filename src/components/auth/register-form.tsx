@@ -1,5 +1,6 @@
 "use client";
 
+import { register } from "@/actions/register";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -17,7 +18,6 @@ import Link from "next/link";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { register } from "@/actions/register";
 
 const RegisterForm = () => {
   const [isPending, startTransition] = useTransition();
@@ -35,28 +35,23 @@ const RegisterForm = () => {
   const onSubmit = (values: z.infer<typeof registerSchema>) => {
     startTransition(async () => {
       try {
-        const data = await register(values);
+        const res = await register(values)
+        const { success, message } =  res;
 
-        if (data.error) {
-          toast({ title: "Login Error", description: data.error });
-        } else if (data.success) {
-          // try {
-          //   const docRef = await addDoc(collection(db, "users"), {
-          //     name: values.name,
-          //     email: values.email,
-          //     password: values.password,
-          //   });
-          //   console.log(docRef.id);
-          //   toast({ title: "Success", description: docRef.id });
-
-          //   form.reset();
-          // } catch (error: any) {
-          //   toast({ title: "failure", description: error });
-          //   console.error(error);
-          // }
-          toast({ title: "Login success", description: "successfully logged in"});
+        if (!success) {
+          toast({ title: "Error", description: message});
+          console.error(message);
         }
-      } catch (error) {}
+
+        if (success) {
+          toast({ title: "success", description: message });
+          form.reset()
+        }
+
+        toast({ title: "Error", description: "Something went wrong! try again."});
+      } catch (error) {
+        console.error(error);
+      }
     });
   };
 

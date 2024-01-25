@@ -1,5 +1,6 @@
 'use client'
 
+import Link from "next/link";
 import { ModeToggle } from "@/components/toggle-mode";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -21,6 +22,9 @@ export default function Home() {
       >
         toast
       </Button>
+      <Link href="/auth/login">
+        <div className="h-full flex justify-center items-center">Login</div>
+      </Link>
     </main> 
   );
 }

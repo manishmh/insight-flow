@@ -72,7 +72,9 @@ export const passwordSchema = z.object({
 // Login Schema
 export const loginSchema = z.object({
   ...emailBaseSchema.shape,
-  ...passwordBaseSchema.shape,
+  password: z.string({
+    required_error: "Password is required"
+  })
 });
 
 // Signup Schema

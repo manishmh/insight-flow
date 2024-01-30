@@ -1,7 +1,5 @@
 "use client";
 
-import { login } from "@/actions/login";
-import Socials from "@/components/auth/socials";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -13,7 +11,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { loginSchema } from "@/schemas/input-validation";
+import { newPasswordSchema } from "@/schemas/input-validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -21,28 +19,26 @@ import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { FaExclamationTriangle } from "react-icons/fa";
 import * as z from "zod";
+import NewPassoword from "@/actions/new-password";
 
-const LoginForm = () => {
+const NewPasswordForm = () => {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   const searchParam = useSearchParams();
-  const urlError =
-    searchParam.get("error") === "OAuthAccountNotLinked"
-      ? "Email already in use with different provider"
-      : "";
+  const token = searchParam.get('token');
 
-  const form = useForm<z.infer<typeof loginSchema>>({
-    resolver: zodResolver(loginSchema),
+  const form = useForm<z.infer<typeof newPasswordSchema>>({
+    resolver: zodResolver(newPasswordSchema),
     defaultValues: {
-      email: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof loginSchema>) => {
+  const onSubmit = (values: z.infer<typeof newPasswordSchema>) => {
     startTransition(async () => {
       try {
-        const data = await login(values);
+        const data = await NewPassoword(values, token);
         const { success, message } = data;
 
         if (!success) {
@@ -81,28 +77,6 @@ const LoginForm = () => {
             <div className="space-y-3 w-full">
               <FormField
                 control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-semibold text-gray-300">
-                      Email
-                      <span className="text-red-500"> *</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        disabled={isPending}
-                        type="email"
-                        placeholder="manish@gmail.com"
-                        className="mt-1.5 rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 bg-primary-input border-none"
-                      />
-                    </FormControl>
-                    <FormMessage className="text-red-400 text-xs" />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
                 name="password"
                 render={({ field }) => (
                   <FormItem>
@@ -123,44 +97,49 @@ const LoginForm = () => {
                   </FormItem>
                 )}
               />
-              <Button
-                size={"sm"}
-                variant={"link"}
-                asChild
-                className="px-0 font-normal"
-              >
-                <Link href={"/auth/reset"}>Forgot password?</Link>
-              </Button>
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="font-semibold text-gray-300">
+                      Confirm password
+                      <span className="text-red-500"> *</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled={isPending}
+                        type="password"
+                        placeholder="********"
+                        className="mt-1.5 rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 bg-primary-input border-none"
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-400 text-xs" />
+                  </FormItem>
+                )}
+              />
               <Button
                 type="submit"
                 disabled={isPending}
                 className="bg-gray-200 w-full font-semibold text-black hover:bg-white transition-colors duration-300"
               >
-                Login
+                Reset password
               </Button>
             </div>
           </form>
         </Form>
-        <div className="w-full max-w-md">
-          <Socials disabled={isPending} />
-        </div>
         <Button className="max-w-md" disabled={isPending}>
           <Link
             href={"/auth/register"}
             className="text-blue-500 mt-3 font-medium text-sm flex gap-1 self-start"
           >
-            Need an account ?<span className="text-blue-500">Register</span>
+            Back to login page
           </Link>
         </Button>
-        {urlError && (
-          <div className="text-red-600 bg-red-200 mt-4 rounded-md py-3 px-4 flex gap-4 items-center text-sm">
-            <FaExclamationTriangle />
-            {urlError}
-          </div>
-        )}
       </div>
     </div>
   );
 };
 
-export default LoginForm;
+export default NewPasswordForm;

@@ -15,13 +15,21 @@ import { useToast } from "@/components/ui/use-toast";
 import { registerSchema } from "@/schemas/input-validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
+import { FaExclamationTriangle } from "react-icons/fa";
 import * as z from "zod";
+import Socials from "./socials";
 
 const RegisterForm = () => {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
+  const searchParam = useSearchParams();
+  const urlError =
+    searchParam.get("error") === "OAuthAccountNotLinked"
+      ? "Email already in use with different provider"
+      : "";
 
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -35,21 +43,23 @@ const RegisterForm = () => {
   const onSubmit = (values: z.infer<typeof registerSchema>) => {
     startTransition(async () => {
       try {
-        const res = await register(values)
-        const { success, message } =  res;
+        const res = await register(values);
+        const { success, message } = res;
 
         if (!success) {
-          toast({ title: "Error", description: message});
+          toast({ title: "Error", description: message });
           console.error(message);
         }
 
         if (success) {
           toast({ title: "success", description: message });
-          form.reset()
+          form.reset();
         }
-
-        toast({ title: "Error", description: "Something went wrong! try again."});
       } catch (error) {
+        toast({
+          title: "Error",
+          description: "Something went wrong! try again.",
+        });
         console.error(error);
       }
     });
@@ -57,7 +67,11 @@ const RegisterForm = () => {
 
   return (
     <div className="flex flex-col gap-3 items-center justify-center sm:h-screen sm:bg-[#5865F2]">
-      <div className="flex flex-col gap-3 items-center justify-center px-2 w-full sm:max-w-lg rounded-lg sm:bg-[#313338] py-12 sm:py-8">
+      <div
+        className={`flex flex-col gap-3 items-center justify-center px-2 w-full sm:max-w-lg rounded-lg sm:bg-[#313338] py-12 sm:py-8 ${
+          isPending ? "pointer-events-none opacity-80" : "pointer-events-auto"
+        } `}
+      >
         <h1 className="font-bold text-2xl">Create an account</h1>
         <Form {...form}>
           <form
@@ -133,19 +147,29 @@ const RegisterForm = () => {
               />
               <Button
                 type="submit"
+                disabled={isPending}
                 className="bg-gray-200 w-full font-semibold text-black"
               >
                 Register
               </Button>
-              <Link href={"/auth/login"}>
-                <div className="text-blue-500 mt-3 font-medium text-sm flex gap-1 self-start">
-                  Already have an account ?
-                  <span className="text-blue-500">Login</span>
-                </div>
-              </Link>
             </div>
           </form>
         </Form>
+        <div className="w-full sm:px-6">
+          <Socials disabled={isPending} />
+        </div>
+        <Link href={"/auth/login"}>
+          <div className="text-blue-500 mt-3 font-medium text-sm flex gap-1 self-start">
+            Already have an account ?
+            <span className="text-blue-500">Login</span>
+          </div>
+        </Link>
+        {urlError && (
+          <div className="text-red-600 bg-red-200 mt-4 rounded-md py-3 px-4 flex gap-4 items-center text-sm">
+            <FaExclamationTriangle />
+            {urlError}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -5,17 +5,35 @@ import { loginSchema } from '@/schemas/input-validation';
 import { signIn } from '@/server/auth';
 import { DEFAULT_LOGIN_REDIRECT_URL } from '@/server/routes';
 import { AuthError } from 'next-auth';
+import { generateVerificationToken } from '@/lib/token';
+import { findUserByEmail } from '@/data/user';
+import { sendVerificationEmail } from '@/lib/mail';
 
 export const login = async (values: z.infer<typeof loginSchema>) => {
-    const validatedFields = loginSchema.safeParse(values);
-
-    if (!validatedFields.success) {
-        return { statusCode: 400, error: "invalid Fields"}
-    }
-
-    const { email, password } = validatedFields.data;
-
     try {
+        const validatedFields = loginSchema.safeParse(values);
+    
+        if (!validatedFields.success) {
+            return { success: false, message: "invalid Fields"}
+        }
+    
+        const { email, password } = validatedFields.data;
+        const existingUser = await findUserByEmail(email);
+    
+        if (!existingUser || !existingUser.email || !existingUser.password) {
+            return { success: false, message: "Email is not registered"}
+        }
+    
+        if (!existingUser.emailVerified) {
+            const verificationToken = await generateVerificationToken(existingUser.email); 
+    
+            await sendVerificationEmail(
+                verificationToken.email,
+                verificationToken.token
+            );
+            
+            return { success: true, message: "Confirmation email sent! verify your email"}
+        }
         await signIn("credentials", {
             email,
             password,
@@ -25,14 +43,14 @@ export const login = async (values: z.infer<typeof loginSchema>) => {
         if (error instanceof AuthError) {
             switch (error.type) {
                 case "CredentialsSignin":
-                    return { statusCode: 400, error: "Invalid credentials"};
+                    return { success: false, message: "Invalid credentials"};
                 default: 
-                    return { statusCode: 400, error: "Something went wrong!"};
+                    return { success: false, message: "Server Error!. Something went wrong!"};
             }
         }
 
         throw error;
     }
 
-    return {success: "logged in successfully"}
+    return { success: true, message: "logged in successfully" }
 }

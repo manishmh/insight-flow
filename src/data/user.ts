@@ -10,7 +10,7 @@ export const findUserByEmail = (email: string) => {
     }
 }
 
-export const findUserById = (id: string) => {
+export const findUserById = (id: string | undefined) => {
     try{
         const user = db.user.findUnique({ where: { id } });
 

@@ -1,11 +1,13 @@
 /**
- * An arrya of routes that are accessible to the public 
+ * An array of routes that are accessible to the public 
  * These routes do not require authentication
  * @type {string[]}
  */
 
 export const publicRoutes = [
-    "/"
+    "/",
+    "/auth/new-verification",
+
 ];
 
 /**
@@ -17,6 +19,9 @@ export const publicRoutes = [
 export const authRoutes = [
     "/auth/login",
     "/auth/register",
+    "/auth/error",
+    "/auth/reset",
+    "/auth/new-password",
 ];
 
 /**

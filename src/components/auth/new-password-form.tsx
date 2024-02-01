@@ -1,6 +1,5 @@
 "use client";
 
-import { register } from "@/actions/register";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -11,114 +10,66 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { registerSchema } from "@/schemas/input-validation";
+import { newPasswordSchema } from "@/schemas/input-validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { FaExclamationTriangle } from "react-icons/fa";
 import * as z from "zod";
-import Socials from "./socials";
+import NewPassoword from "@/actions/new-password";
 import { toast } from "sonner";
 
-const RegisterForm = () => {
+const NewPasswordForm = () => {
   const [isPending, startTransition] = useTransition();
   const searchParam = useSearchParams();
-  const urlError =
-    searchParam.get("error") === "OAuthAccountNotLinked"
-      ? "Email already in use with different provider"
-      : "";
+  const token = searchParam.get('token');
 
-  const form = useForm<z.infer<typeof registerSchema>>({
-    resolver: zodResolver(registerSchema),
+  const form = useForm<z.infer<typeof newPasswordSchema>>({
+    resolver: zodResolver(newPasswordSchema),
     defaultValues: {
-      name: "",
-      email: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof registerSchema>) => {
+  const onSubmit = (values: z.infer<typeof newPasswordSchema>) => {
     startTransition(async () => {
       try {
-        const res = await register(values);
-        const { success, message } = res;
+        const data = await NewPassoword(values, token);
+        const { success, message } = data;
 
         if (!success) {
           toast.error(message)
           console.error(message);
-        }
-
-        if (success) {
+        } else if (success) {
           toast.success(message)
           form.reset();
         }
       } catch (error: any) {
-        toast.error(error)
         console.error(error);
+        toast.error(error)
       }
     });
   };
 
   return (
-    <div className="flex flex-col gap-3 items-center justify-center sm:h-screen sm:bg-[#5865F2]">
+    <div className="flex flex-col items-center justify-center sm:h-screen sm:bg-[#5865F2]">
       <div
         className={`flex flex-col gap-3 items-center justify-center px-2 w-full sm:max-w-lg rounded-lg sm:bg-[#313338] py-12 sm:py-8 ${
           isPending ? "pointer-events-none opacity-80" : "pointer-events-auto"
         } `}
       >
-        <h1 className="font-bold text-2xl">Create an account</h1>
+        <h1 className="font-bold text-2xl">Welcome back!</h1>
+        <h2 className="text-gray-400 font-medium">
+          We&apos; so excited to see you again!
+        </h2>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col w-full gap-3 items-center max-w-md"
+            className="flex flex-col w-full items-center max-w-md"
           >
             <div className="space-y-3 w-full">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-semibold text-gray-300">
-                      Name
-                      <span className="text-red-500"> *</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        disabled={isPending}
-                        type="text"
-                        placeholder="Your name"
-                        className="mt-1.5 rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 bg-primary-input border-none"
-                      />
-                    </FormControl>
-                    <FormMessage className="text-red-400 text-xs" />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-semibold text-gray-300">
-                      Email
-                      <span className="text-red-500"> *</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        disabled={isPending}
-                        type="email"
-                        placeholder="manish@gmail.com"
-                        className="mt-1.5 rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 bg-primary-input border-none"
-                      />
-                    </FormControl>
-                    <FormMessage className="text-red-400 text-xs" />
-                  </FormItem>
-                )}
-              />
               <FormField
                 control={form.control}
                 name="password"
@@ -141,34 +92,49 @@ const RegisterForm = () => {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="font-semibold text-gray-300">
+                      Confirm password
+                      <span className="text-red-500"> *</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled={isPending}
+                        type="password"
+                        placeholder="********"
+                        className="mt-1.5 rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 bg-primary-input border-none"
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-400 text-xs" />
+                  </FormItem>
+                )}
+              />
               <Button
                 type="submit"
                 disabled={isPending}
-                className="bg-gray-200 w-full font-semibold text-black"
+                className="bg-gray-200 w-full font-semibold text-black hover:bg-white transition-colors duration-300"
               >
-                Register
+                Reset password
               </Button>
             </div>
           </form>
         </Form>
-        <div className="w-full sm:px-6">
-          <Socials disabled={isPending} />
-        </div>
-        <Link href={"/auth/login"}>
-          <div className="text-blue-500 mt-3 font-medium text-sm flex gap-1 self-start">
-            Already have an account ?
-            <span className="text-blue-500">Login</span>
-          </div>
-        </Link>
-        {urlError && (
-          <div className="text-red-600 bg-red-200 mt-4 rounded-md py-3 px-4 flex gap-4 items-center text-sm">
-            <FaExclamationTriangle />
-            {urlError}
-          </div>
-        )}
+        <Button className="max-w-md" disabled={isPending}>
+          <Link
+            href={"/auth/register"}
+            className="text-blue-500 mt-3 font-medium text-sm flex gap-1 self-start"
+          >
+            Back to login page
+          </Link>
+        </Button>
       </div>
     </div>
   );
 };
 
-export default RegisterForm;
+export default NewPasswordForm;

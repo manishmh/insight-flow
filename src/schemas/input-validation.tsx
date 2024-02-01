@@ -72,41 +72,46 @@ export const passwordSchema = z.object({
 // Login Schema
 export const loginSchema = z.object({
   ...emailBaseSchema.shape,
-  ...passwordBaseSchema.shape,
+  password: z
+    .string({
+      required_error: "Password is required",
+    }),
+  code: z.optional(z.string())
 });
+
+export const settingsSchema  = z.object({
+  name: z.optional(z.string())
+})
 
 // Signup Schema
 export const registerSchema = z.object({
-  ...emailBaseSchema.shape,
-  ...passwordBaseSchema.shape,
   name: z.string({
     required_error: "Name is required"
+  }),
+  ...emailBaseSchema.shape,
+  ...passwordBaseSchema.shape,
+});
+
+// reset Password Schema
+export const resetSchema = z.object({
+  email: z.string().email({
+    message: "Email is required"
   })
 });
 
-export const signupCodeVerificationSchema = z.object({
-  otp: z
-    .string({
-      required_error: "OTP is required",
-    })
-    .min(6, "OTP should be 6 digits long")
-    .max(6, "OTP should be 6 digits long")
-    .refine((value) => /^\d+$/.test(value), "OTP should only contain numbers"),
-});
-
-export const forgotPasswordSchema = z
-  .object({
-    password: passwordSchema,
-    confirmPassword: z.string({
-      required_error: "Confirm password is required",
-    }),
-  })
-  .superRefine(({ confirmPassword, password }, ctx) => {
-    if (confirmPassword !== password.password) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "The passwords did not match",
-        path: ["confirmPassword"],
-      });
-    }
-  });
+// new password schema
+export const newPasswordSchema = z.object({
+  ...passwordBaseSchema.shape,
+  confirmPassword: z.string({
+    required_error: "Confirm password is required",
+  }),
+})
+.superRefine(({ confirmPassword, password }, ctx) => {
+  if (confirmPassword !== password) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "The passwords did not match",
+      path: ["confirmPassword"],
+    });
+  }
+})

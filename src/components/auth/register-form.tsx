@@ -11,7 +11,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
 import { registerSchema } from "@/schemas/input-validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -21,10 +20,10 @@ import { useForm } from "react-hook-form";
 import { FaExclamationTriangle } from "react-icons/fa";
 import * as z from "zod";
 import Socials from "./socials";
+import { toast } from "sonner";
 
 const RegisterForm = () => {
   const [isPending, startTransition] = useTransition();
-  const { toast } = useToast();
   const searchParam = useSearchParams();
   const urlError =
     searchParam.get("error") === "OAuthAccountNotLinked"
@@ -47,19 +46,16 @@ const RegisterForm = () => {
         const { success, message } = res;
 
         if (!success) {
-          toast({ title: "Error", description: message });
+          toast.error(message)
           console.error(message);
         }
 
         if (success) {
-          toast({ title: "success", description: message });
+          toast.success(message)
           form.reset();
         }
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "Something went wrong! try again.",
-        });
+      } catch (error: any) {
+        toast.error(error)
         console.error(error);
       }
     });

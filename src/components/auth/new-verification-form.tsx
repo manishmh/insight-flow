@@ -6,33 +6,32 @@ import { BeatLoader} from "react-spinners"
 import { useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import { newVerification } from "@/actions/new-verification"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 
 const NewVerificationForm = () => {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
-  const { toast } = useToast()
   const [loaderState, setLoaderState] = useState(true)
 
   const onSubmit = useCallback(() => {
     if (!token) {
-      toast({ title: "Error", description: "Missing token"})
+      toast.error("Missing token")
       return;
     }
 
     newVerification(token)
     .then((data) => {
       if (!data.success) {
-        toast({ title: "Error", description: data.message });
+        toast.error(data.message)
       } else {
-        toast({ title: "Success", description: data.message });
+        toast.success(data.message)
       }
       setLoaderState(false)
     })
     .catch(() => {
-      toast({title: "Error", description: "Something went wrong!"})
+      toast.error("Something went wrong")
     })
-  },[token, toast])
+  },[token])
 
   useEffect(() => {
     onSubmit();

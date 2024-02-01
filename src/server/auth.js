@@ -3,6 +3,7 @@ import authConfig from '@/server/auth.config';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import { db } from '@/lib/db';
 import { findUserById } from '@/data/user';
+import { getTwoFactorConfirmationByUserId } from '@/data/two-factor-confirmation';
 
 export const {
   handlers: { GET, POST },
@@ -33,10 +34,31 @@ export const {
       // prevent sign in without email verification
       if (!existingUser?.emailVerified) return false;
 
-      // TODOD: Add 2FA check
+      if (existingUser.isTwoFactorEnabled) {
+        const twoFactorconfirmation = await getTwoFactorConfirmationByUserId(existingUser.id);
+
+        if (!twoFactorconfirmation) return false
+
+        // delete two factor confirmation for next sign in.
+        await db.twoFactorConfirmation.delete({
+          where: { id: twoFactorconfirmation.id }
+        })
+      }
+
       return true;
     },
-    async session({ token, session }) {
+    async jwt({ token }) {
+      if (!token?.sub) return token;
+      
+      const existingUser = await findUserById(token.sub);
+      
+      if (!existingUser) return token;
+      token.role = existingUser.role;
+      token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;
+      
+      return token;
+    },
+    async session({ session, token }) {
       console.log({ sessionToken: token, session });
 
       if (token?.sub && session.user) {
@@ -47,17 +69,11 @@ export const {
         session.user.role = token.role;
       }
 
+      if (session.user) {
+        session.user.isTwoFactorEnabled = token.isTwoFactorEnabled;
+      }
+
       return session;
-    },
-    async jwt({ token }) {
-      if (!token?.sub) return token;
-
-      const existingUser = await findUserById(token.sub);
-
-      if (!existingUser) return token;
-      token.role = existingUser.role;
-
-      return token;
     },
   },
   adapter: PrismaAdapter(db),

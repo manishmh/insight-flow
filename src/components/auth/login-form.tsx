@@ -12,20 +12,22 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
 import { loginSchema } from "@/schemas/input-validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { FaExclamationTriangle } from "react-icons/fa";
+import { toast } from "sonner";
 import * as z from "zod";
+
 
 const LoginForm = () => {
   const [isPending, startTransition] = useTransition();
-  const { toast } = useToast();
+  const [showTwoFactor, setShowTwoFactor] = useState(false);
   const searchParam = useSearchParams();
+  const callbackUrl = searchParam.get('callbackUrl');
   const urlError =
     searchParam.get("error") === "OAuthAccountNotLinked"
       ? "Email already in use with different provider"
@@ -42,23 +44,22 @@ const LoginForm = () => {
   const onSubmit = (values: z.infer<typeof loginSchema>) => {
     startTransition(async () => {
       try {
-        const data = await login(values);
-        const { success, message } = data;
-
+        const data = await login(values, callbackUrl);
+        const { success, message, twoFactor } = data 
+        console.log('dataaa', data);
+        
         if (!success) {
-          toast({ title: "Failed", description: message });
-          console.error(message);
-        } else if (success) {
-          toast({ title: "success", description: message });
-          form.reset();
+          toast.error(message)
+        } else (
+          toast.success(message)
+        )
+
+        if (twoFactor) {
+          setShowTwoFactor(true)
         }
-      } catch (error) {
-        console.error(error);
-        toast({
-          title: "Error",
-          description: "Something went wrong! try again",
-        });
-      }
+      } catch (error: any) {
+          console.error(error);
+      } 
     });
   };
 
@@ -79,50 +80,77 @@ const LoginForm = () => {
             className="flex flex-col w-full items-center max-w-md"
           >
             <div className="space-y-3 w-full">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-semibold text-gray-300">
-                      Email
-                      <span className="text-red-500"> *</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        disabled={isPending}
-                        type="email"
-                        placeholder="manish@gmail.com"
-                        className="mt-1.5 rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 bg-primary-input border-none"
-                      />
-                    </FormControl>
-                    <FormMessage className="text-red-400 text-xs" />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-semibold text-gray-300">
-                      Password
-                      <span className="text-red-500"> *</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        disabled={isPending}
-                        type="password"
-                        placeholder="********"
-                        className="mt-1.5 rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 bg-primary-input border-none"
-                      />
-                    </FormControl>
-                    <FormMessage className="text-red-400 text-xs" />
-                  </FormItem>
-                )}
-              />
+              {!showTwoFactor && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-semibold text-gray-300">
+                          Email
+                          <span className="text-red-500"> *</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            disabled={isPending}
+                            type="email"
+                            placeholder="manish@gmail.com"
+                            className="mt-1.5 rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 bg-primary-input border-none"
+                          />
+                        </FormControl>
+                        <FormMessage className="text-red-400 text-xs" />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-semibold text-gray-300">
+                          Password
+                          <span className="text-red-500"> *</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            disabled={isPending}
+                            type="password"
+                            placeholder="********"
+                            className="mt-1.5 rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 bg-primary-input border-none"
+                          />
+                        </FormControl>
+                        <FormMessage className="text-red-400 text-xs" />
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )}
+              {showTwoFactor && (
+                <FormField
+                  control={form.control}
+                  name="code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-semibold text-gray-300">
+                        Tow Factor Code
+                        <span className="text-red-500"> *</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          disabled={isPending}
+                          placeholder="123456"
+                          className="mt-1.5 rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 bg-primary-input border-none"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-400 text-xs" />
+                    </FormItem>
+                  )}
+                />
+              )}
               <Button
                 size={"sm"}
                 variant={"link"}
@@ -136,7 +164,7 @@ const LoginForm = () => {
                 disabled={isPending}
                 className="bg-gray-200 w-full font-semibold text-black hover:bg-white transition-colors duration-300"
               >
-                Login
+                {showTwoFactor ? "Confirm": "Login"}
               </Button>
             </div>
           </form>

@@ -44,7 +44,7 @@ export const register = async (values: z.infer<typeof registerSchema> ) => {
 
   }
   catch (err: any) {    
-  console.log(err)
-  return { error: err.message}
+    console.log(err)
+    return { success: false, message: err.message}
   }
 }

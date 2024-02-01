@@ -11,17 +11,16 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
 import { resetSchema } from "@/schemas/input-validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { toast } from "sonner";
 
 const ResetForm = () => {
   const [isPending, startTransition] = useTransition();
-  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof resetSchema>>({
     resolver: zodResolver(resetSchema),
@@ -37,13 +36,14 @@ const ResetForm = () => {
         const { success, message } = data;
 
         if (!success) {
-          toast({ title: "Error", description: message });
+          toast.error(message);
           console.error(message);
         } else if (success) {
-          toast({ title: "success", description: message });
+          toast.success(message)
           form.reset();
         }
-      } catch (error) {
+      } catch (error: any) {
+          console.error(error);
         console.error(error);
       }
     });

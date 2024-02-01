@@ -1,11 +1,11 @@
-import NextAuth from "next-auth";
 import authConfig from "@/server/auth.config";
 import {
-  apiAuthPrefix, 
+  DEFAULT_LOGIN_REDIRECT_URL,
+  apiAuthPrefix,
   authRoutes,
   publicRoutes,
-  DEFAULT_LOGIN_REDIRECT_URL,
 } from "@/server/routes";
+import NextAuth from "next-auth";
 
 const { auth } = NextAuth(authConfig);
 
@@ -33,7 +33,17 @@ export default auth((req) => {
 
   // if user is not logged in and it is not public route (i.e. if user is trying to access private routes) it will redirec to "/auth/login" 
   if (!isLoggedIn && !isPublicRoutes) { 
-    return Response.redirect(new URL("/auth/login", nextUrl));
+    let callBackUrl = nextUrl.pathname;
+    if (nextUrl.search) {
+      callBackUrl += nextUrl.search;
+    }
+
+    const encodedCallbackUrl = encodeURIComponent(callBackUrl)
+
+    return Response.redirect(new URL(
+      `/auth/login?callbackUrl=${encodedCallbackUrl}`,
+      nextUrl
+    ));
   }
 
   return null;

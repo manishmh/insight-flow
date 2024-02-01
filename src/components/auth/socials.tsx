@@ -6,11 +6,15 @@ import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { signIn } from 'next-auth/react'
 import { DEFAULT_LOGIN_REDIRECT_URL } from "@/server/routes";
+import { useSearchParams } from "next/navigation";
 
 const Socials = ({ disabled }: { disabled: boolean }) => {
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get("callbackUrl");
+
   const onClick = (provider: "google" | "github") => {
     signIn(provider, {
-        callbackUrl: DEFAULT_LOGIN_REDIRECT_URL,
+        callbackUrl: callbackUrl || DEFAULT_LOGIN_REDIRECT_URL,
     });
   }
   return (

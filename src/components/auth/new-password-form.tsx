@@ -10,20 +10,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
 import { newPasswordSchema } from "@/schemas/input-validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { FaExclamationTriangle } from "react-icons/fa";
 import * as z from "zod";
 import NewPassoword from "@/actions/new-password";
+import { toast } from "sonner";
 
 const NewPasswordForm = () => {
   const [isPending, startTransition] = useTransition();
-  const { toast } = useToast();
   const searchParam = useSearchParams();
   const token = searchParam.get('token');
 
@@ -42,18 +40,15 @@ const NewPasswordForm = () => {
         const { success, message } = data;
 
         if (!success) {
-          toast({ title: "Failed", description: message });
+          toast.error(message)
           console.error(message);
         } else if (success) {
-          toast({ title: "success", description: message });
+          toast.success(message)
           form.reset();
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error(error);
-        toast({
-          title: "Error",
-          description: "Something went wrong! try again",
-        });
+        toast.error(error)
       }
     });
   };

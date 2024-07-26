@@ -58,7 +58,7 @@ export const {
       
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: any) {
       console.log({ sessionToken: token, session });
 
       if (token?.sub && session.user) {

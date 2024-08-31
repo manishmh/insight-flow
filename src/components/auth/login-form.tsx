@@ -64,9 +64,9 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center sm:h-screen sm:bg-[#5865F2]">
+    <div className="flex flex-col items-center justify-center sm:h-screen bg-transparent z-10 w-full">
       <div
-        className={`flex flex-col gap-3 items-center justify-center px-2 w-full sm:max-w-lg rounded-lg sm:bg-[#313338] py-12 sm:py-8 ${
+        className={`flex flex-col gap-3 items-center justify-center px-2 w-full sm:max-w-lg rounded-lg bg-white shadow-2xl dark:sm:bg-[#141517] py-12 sm:py-8 ${
           isPending ? "pointer-events-none opacity-80" : "pointer-events-auto"
         } `}
       >
@@ -87,7 +87,7 @@ const LoginForm = () => {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-semibold text-gray-300">
+                        <FormLabel className="font-semibold text-gray-600 dark:text-gray-300">
                           Email
                           <span className="text-red-500"> *</span>
                         </FormLabel>
@@ -109,7 +109,7 @@ const LoginForm = () => {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-semibold text-gray-300">
+                        <FormLabel className="font-semibold text-gray-600 dark:text-gray-300">
                           Password
                           <span className="text-red-500"> *</span>
                         </FormLabel>
@@ -162,7 +162,7 @@ const LoginForm = () => {
               <Button
                 type="submit"
                 disabled={isPending}
-                className="bg-gray-200 w-full font-semibold text-black hover:bg-white transition-colors duration-300"
+                className="bg-gray-500 dark:bg-gray-200 w-full font-semibold text-white dark:text-black dark:hover:bg-white transition-colors duration-300"
               >
                 {showTwoFactor ? "Confirm": "Login"}
               </Button>

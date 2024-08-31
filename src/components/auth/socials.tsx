@@ -14,14 +14,14 @@ const Socials = ({ disabled }: { disabled: boolean }) => {
 
   const onClick = (provider: "google" | "github") => {
     signIn(provider, {
-        callbackUrl: callbackUrl || DEFAULT_LOGIN_REDIRECT_URL,
+      callbackUrl: callbackUrl || DEFAULT_LOGIN_REDIRECT_URL,
     });
   }
   return (
     <div className="flex gap-x-2 w-full items-center">
       <Button 
         size="lg" 
-        className="w-full focus:bg-gray-300 " 
+        className="w-full focus:bg-gray-300 border border-gray-500 dark:border-white" 
         variant="outline" 
         disabled={disabled}
         onClick={() => {onClick("google")}}
@@ -30,7 +30,7 @@ const Socials = ({ disabled }: { disabled: boolean }) => {
       </Button>
       <Button 
         size="lg" 
-        className="w-full focus:bg-gray-600" 
+        className="w-full focus:bg-gray-600 border-gray-500 dark:border-white" 
         variant="outline" 
         disabled={disabled}
         onClick={() => {onClick("github")}}

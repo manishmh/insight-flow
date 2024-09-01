@@ -23,7 +23,7 @@ export default async function RootLayout({
   return (
     <SessionProvider session={session}>
       <html lang="en" suppressHydrationWarning>
-        <body className={cn(font.className, "bg-white dark:bg-[#313338]")}>
+        <body className={cn(font.className, "bg-[#e1e8ee] dark:bg-[#030014]")}>
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"

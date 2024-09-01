@@ -4,13 +4,15 @@ import Link from "next/link";
 import { ModeToggle } from "@/components/toggle-mode";
 import { Button } from "@/components/ui/button";
 import { toast } from 'sonner'
+import Navbar from "@/components/home/navbar";
 
 export default function Home() {
 
-
   return (
-    <main className="text-3xl font-bold text-violet-400">
-      <ModeToggle />
+    <main className="font-sans max-w-screen-3xl mx-auto">
+      <Navbar />
+      {/* <ModeToggle /> */}
+      <div className="h-[200vh]"></div>
     </main> 
   );
 }

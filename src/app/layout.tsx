@@ -26,7 +26,7 @@ export default async function RootLayout({
         <body className={cn(font.className, "bg-[#e1e8ee] dark:bg-[#030014]")}>
           <ThemeProvider
             attribute="class"
-            defaultTheme="dark"
+            defaultTheme="light"
             enableSystem={false}
             storageKey="discord-theme"
             disableTransitionOnChange

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -28,9 +29,12 @@ const Navbar = () => {
         ${isScrolled && "translate-y-4"}
     `}
     >
-      {isScrolled && (
-        <div className="lg:w-[80vw] xl:w-[65vw] 2xl:w-[60vw] max-w-6xl rounded-2xl h-14 bg-opacity-20 absolute bg-white shadow-lg left-1/2 -translate-x-1/2"></div>
-      )}
+      <div
+        className={`rounded-2xl h-14 bg-opacity-20 absolute left-1/2 -translate-x-1/2 transition-all duration-700
+    ${isScrolled ? "lg:w-[80vw] xl:w-[65vw] 2xl:w-[60vw] shadow-lg" : "w-full"}
+  `}
+      ></div>
+
       <div
         className={`transition-all duration-700 
         ${
@@ -39,7 +43,14 @@ const Navbar = () => {
         }
       `}
       >
-        LOGO
+        <Image
+          src="/logo2-nodesc.png"
+          alt="navbar-logo"
+          width={40}
+          height={50}
+          quality={100}
+          priority
+        />
       </div>
       <div className="items-center gap-6 hidden md:flex relative">
         <NavbarItems item="Features" link="" />

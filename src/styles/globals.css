@@ -76,3 +76,79 @@
 body {
   font-family: 'Open Sans', 'Helvetica Neue', sans-serif!important;
 }
+
+@keyframes lMovedots{
+    0% {
+      transform: translatex(0);
+      opacity: 1;
+    }
+    50% {
+      transform: translatex(calc(50%));
+      opacity: 1;
+    }
+    100% {
+      transform: translatex(calc(50vw - 10rem));
+      opacity: 0;
+    }
+  }
+
+@keyframes rMovedots{
+    0% {
+      transform: translatex(0);
+      opacity: 1;
+    }
+    50% {
+      transform: translatex(calc(-50%));
+      opacity: 1;
+    }
+    100% {
+      transform: translatex(calc(-50vw + 10rem));
+      opacity: 0;
+    }
+  }
+
+@keyframes bMovedots{
+    0% {
+      transform: translatey(0);
+      opacity: 1;
+    }
+    50% {
+      transform: translatey(calc(-50%));
+      opacity: 1;
+    }
+    100% {
+      transform: translatey(calc(-50vh + 10rem));
+      opacity: 0;
+    }
+  }
+
+@keyframes tMovedots{
+    0% {
+      transform: translatex(0);
+      opacity: 1;
+    }
+    50% {
+      transform: translatey(calc(50%));
+      opacity: 1;
+    }
+    100% {
+      transform: translatey(calc(50vh - 10rem));
+      opacity: 0;
+    }
+  }
+
+  .ldot {
+    animation: lMovedots 6s linear infinite;
+  }
+
+  .rdot {
+    animation: rMovedots 6s linear infinite;
+  }
+
+  .tdot {
+    animation: tMovedots 6s linear infinite;
+  }
+
+  .bdot {
+    animation: bMovedots 6s linear infinite;
+  }

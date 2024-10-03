@@ -3,12 +3,12 @@ import * as React from "react";
 
 const HomeBarChart = () => {
   const chartSettings = {
-    xAsix: [
+    xasix: [
       {
         label: "year",
       },
     ],
-    yAxis: [
+    yaxis: [
       {
         label: "Total orders (thousands)",
       },

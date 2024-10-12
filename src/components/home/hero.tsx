@@ -5,7 +5,7 @@ import FloatingDivs from "../global/floating-divs";
 
 const Hero = () => {
   return (
-    <div className="pt-[100px] px-8 overflow-hidden">
+    <div className="pt-[120px] px-8 overflow-hidden">
       <div className="flex justify-center items-center text-xs">
         <Link href="/login">
           <div className="border shadow border-gray-400 flex items-center gap-1 group px-4 rounded-full py-1 text-gray-700 cursor-pointer">
@@ -29,7 +29,7 @@ const Hero = () => {
           </button>
         </Link>
       </div>
-      <div className="relative mt-20 rounded-xl max-w-[1100px] mx-auto">
+      <div className="relative mt-6 rounded-xl max-w-[1100px] mx-auto">
         <div className="absolute inset-0 z-10">
           <FloatingDivs online={true} />
         </div>

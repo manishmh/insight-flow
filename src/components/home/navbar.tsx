@@ -24,60 +24,52 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav
-      className={`flex items-center max-w-screen-2xl mx-auto px-4 md:px-8 py-4 fixed w-full justify-between transition-all duration-700 z-50
-        ${isScrolled && "shadow-sm md:translate-y-4 bg-[#e1e8ee]"}
-    `}
-    >
+    <nav className="flex justify-center w-full">
       <div
-        className={`rounded-2xl h-14 bg-opacity-20 absolute left-1/2 -translate-x-1/2 transition-all duration-700 
-          ${isScrolled ? "lg:w-[80%] xl:w-[65%] 2xl:w-[60%] shadow-lg" : "w-full"}
-        `}
-      ></div>
-      <div
-        className={`transition-all duration-700 
+        className={`flex items-center max-w-screen-2xl w-full mx-auto px-4 gap-8 md:gap-2 lg:gap-8 md:px-2 lg:px-4 py-3 md:mt-4 fixed justify-between z-50
         ${
-          isScrolled &&
-          "lg:translate-x-[130px] xl:translate-x-[250px] 2xl:translate-x-[330px]"
+          isScrolled
+            ? "bg-[#e1e8ee] shadow-lg rounded-2xl md:max-w-[700px] lg:max-w-[800px] transition-[max-width] duration-700"
+            : "transition-[max-width] duration-700"
         }
-      `}
+    `}
       >
-        <Image
-          src="/logo2-nodesc.png"
-          alt="navbar-logo"
-          width={40}
-          height={50}
-          quality={100}
-          priority
-        />
-      </div>
-      <div className="items-center gap-6 hidden md:flex relative">
-        <NavbarItems item="Features" link="" />
-        <NavbarItems item="Docs" link="" />
-        <NavbarItems item="Pricings" link="" />
-        <NavbarItems item="Careers" link="" />
-        <NavbarItems item="Support" link="" />
-      </div>
-      <div
-        className={`duration-700 transition-all flex gap-4 ${
-          isScrolled &&
-          "lg:-translate-x-[130px] xl:-translate-x-[250px] 2xl:-translate-x-[330px]"
-        }`}
-      >
-        <button className="inline-flex py-1 animate-shimmer items-center justify-center rounded-md border dark:border-slate-800 dark:bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-4 fontmedium dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 text-blue-700 border-slate-300 hover:bg-slate-300 transition-all duration-300 dark:duration-1000">
-          Log in
-        </button>
-        {isScrolled && (
+        <div className={`transition-all duration-700 `}>
+          <Image
+            src="/logo2-nodesc.png"
+            alt="navbar-logo"
+            width={40}
+            height={50}
+            quality={100}
+            priority
+          />
+        </div>
+        <div className="items-center gap-6 hidden md:flex relative">
+          <NavbarItems item="Features" link="" />
+          <NavbarItems item="Docs" link="" />
+          <NavbarItems item="Pricings" link="" />
+          <NavbarItems item="Careers" link="" />
+          <NavbarItems item="Support" link="" />
+        </div>
+        <div
+          className={`duration-700 transition-all flex gap-4`}
+        >
           <button className="inline-flex py-1 animate-shimmer items-center justify-center rounded-md border dark:border-slate-800 dark:bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-4 fontmedium dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 text-blue-700 border-slate-300 hover:bg-slate-300 transition-all duration-300 dark:duration-1000">
-            Sign up
+            Log in
           </button>
-        )}
+          {isScrolled && (
+            <button className="inline-flex py-1 animate-shimmer items-center justify-center rounded-md border dark:border-slate-800 dark:bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-4 fontmedium dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 text-blue-700 border-slate-300 hover:bg-slate-300 transition-all duration-300 dark:duration-1000">
+              Sign up
+            </button>
+          )}
+        </div>
       </div>
     </nav>
   );
 };
 
 export default Navbar;
+
 
 function NavbarItems({ item, link }: { item: string; link: string }) {
   return (

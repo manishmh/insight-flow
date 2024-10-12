@@ -1,5 +1,6 @@
 "use client";
 
+import CollaborateRealtime from "@/components/home/collaborate-realtime/collaborate-realtime";
 import ConnectYourData from "@/components/home/connect-data/connect-your-data";
 import Hero from "@/components/home/hero";
 import Navbar from "@/components/home/navbar";
@@ -21,7 +22,8 @@ export default function Home() {
         <QueryDataSql />
         <VisualizeData />
         <PowerfulOutOfBox />
-        {/* <div className="h-[200vh]"></div> */}
+        {/* <CollaborateRealtime /> */}
+        <div className="h-[100vh]"></div>
       </div>
     </main>
   );

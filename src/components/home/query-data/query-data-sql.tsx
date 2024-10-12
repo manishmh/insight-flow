@@ -92,7 +92,7 @@ const QueryDataSql = () => {
         <div className="mx-auto border-b border-gray-300 pb-2 px-4">
           <div className="flex justify-between items-center gap-4">
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-gray-500">
+              <div className="items-center gap-2 text-gray-500 hidden sm:flex">
                 <VscPreview /> Preview
               </div>
               <div className="flex items-center gap-2 text-blue-700 font-medium">

@@ -33,11 +33,11 @@ const Hero = () => {
         <div className="absolute inset-0 z-10">
           <FloatingDivs online={true} />
         </div>
-        <div className="md:hidden flex justify-center border-b border-gray-300 rounded-xl max-w-[400px] mx-auto">
+        <div className="md:hidden flex justify-center border-b border-gray-300 rounded-xl max-w-[450px] mx-auto">
           <Image
             src="/home/hero-mobile.png"
             alt="hero-image-laptop-desktop"
-            width={400}
+            width={450}
             height={700}
             className="w-full"
           />

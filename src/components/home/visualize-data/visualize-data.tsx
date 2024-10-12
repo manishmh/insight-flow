@@ -44,7 +44,7 @@ const VisualizeData = () => {
         <div className="col-span-1 border border-gray-300 rounded-md shadow ">
           <BasicScatter />
         </div>
-        <div className="col-span-1 border border-gray-300 rounded-md shadow  flex flex-col h-[350px]">
+        <div className="col-span-1 border border-gray-300 rounded-md shadow flex flex-col h-[350px]">
           <div className="flex items-center gap-4 px-4 py-4">
             <span className="w-3 h-3 bg-cyan-500"></span>
             <span>Premium users</span>

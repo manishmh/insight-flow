@@ -167,7 +167,7 @@ const data = [
 
 export default function BasicScatter() {
   return (
-    <div className="max-w-[250px] ssm:max-w-[350px] overflow-hidden mx-auto py-6 md:py-0">
+    <div className="max-w-[250px] ssm:max-w-xs md:max-w-sm overflow-hidden mx-auto py-6 md:py-0 h-full">
       <ScatterChart
         width={550}
         height={300}

@@ -2,7 +2,7 @@ import { LineChart } from "@mui/x-charts/LineChart";
 
 const LineChartComp = () => {
   return (
-    <div className="max-w-[250px] ssm:max-w-sm overflow-hidden">
+    <div className="max-w-[250px] ssm:max-w-[350px] md:max-w-none mx-auto overflow-hidden">
       <div className="flex items-center justify-center gap-3 pt-2">
         <div className="w-3 h-3 bg-blue-900 bg-opacity-70"></div>
         <h1 className="text-gray-600">Premium users</h1>

@@ -32,7 +32,7 @@ const VisualizeData = () => {
           </h1>
           <LineChartComp />
         </div>
-        <div className="col-span-1 h-[350px]">
+        <div className="col-span-1 h-[350px] shadow border border-gray-300 flex justify-center">
           <HomeBarChart />
         </div>
         <div className="col-span-1 border border-gray-300 shadow px-4 pt-2 pb-10 rounded-md h-[350px]">
@@ -41,7 +41,7 @@ const VisualizeData = () => {
             <DoughnutChart />
           </div>
         </div>
-        <div className="col-span-1 border border-gray-300 rounded-md shadow max-w-[250px] ssm:max-w-sm overflow-hidden">
+        <div className="col-span-1 border border-gray-300 rounded-md shadow ">
           <BasicScatter />
         </div>
         <div className="col-span-1 border border-gray-300 rounded-md shadow  flex flex-col h-[350px]">

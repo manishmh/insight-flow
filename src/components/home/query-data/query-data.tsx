@@ -19,11 +19,11 @@ const QueryData = ({ customers }: { customers: any }) => {
       <div className="absolute bg-gradient-to-l from-[#e1e8ee] to-transparent h-full w-10 z-20 right-0"></div>
       <div className="w-full h-full">
         <div className="flex flex-col items-start w-full border border-gray-300 h-full overflow-scroll scrollbar-none">
-          <h1 className="border-b border-gray-300 w-full pl-2 py-2 text-gray-500">
+          <h1 className="border-b border-gray-300 w-full pl-2 py-2 text-gray-600">
             Top customers
           </h1>
           <table className="min-w-full table-auto border-collapse border border-gray-300">
-            <thead className="text-gray-500">
+            <thead className="text-gray-600">
               <tr>
                 <th className="font-normal px-2 text-left border border-gray-300 py-1">
                   id
@@ -48,7 +48,7 @@ const QueryData = ({ customers }: { customers: any }) => {
                 </th>
               </tr>
             </thead>
-            <tbody className="text text-gray-500">
+            <tbody className="text text-gray-600">
               {customers.map((customer: any, index: number) => (
                 <motion.tr
                   key={customer.id}

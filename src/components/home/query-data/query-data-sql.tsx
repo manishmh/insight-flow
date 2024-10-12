@@ -9,11 +9,23 @@ import CustomerSpending from "../customer-spending";
 import LineChartComp from "../line-graph";
 import QueryData from "./query-data";
 import RevenueByCity from "./revenue-by-city";
+import { motion } from 'framer-motion'
+
+  const rowAnimation = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: 0.2, // Stagger the animation for each row
+      },
+    }),
+  };
 
 const QueryDataSql = () => {
   const [activeQuery, setActiveQuery] = useState(0);
   const [runCode, setRunCode] = useState(true);
-  const [activeShowData, setActiveShowData] = useState(2);
+  const [activeShowData, setActiveShowData] = useState(0);
 
   const handleLoadQuery = () => {
     if (activeQuery >= 0 && activeQuery < 3) {
@@ -39,11 +51,11 @@ const QueryDataSql = () => {
   return (
     <div className="px-4 bg-slate100 ">
       <div className="flex flex-col gap-6 items-center">
-        <div className="flex items-center text-3xl xl:text-5xl font-medium text-gray-900 justify-center">
+        <div className="flex items-center text-3xl xl:text-5xl font-medium text-gray-900 justify-center flex-col gap-2 sm:flex-row md:gap-0 ">
           Query your data <span className="h-1 w-8 bg-gray-900 mx-4"></span>{" "}
           your way
         </div>
-        <div className="text-center text-gray-600">
+        <div className="text-center text-gray-600 text-lg">
           Streamline your data analysis with our seamless SQL and visual editor.{" "}
           <br /> Give everyone in your team the superpowers they need.
         </div>
@@ -51,7 +63,7 @@ const QueryDataSql = () => {
           <SiGooglebigquery /> SQL
         </div>
       </div>
-      <div className="w-full mt-4 max-w-4xl mx-auto h-[370px] bgslate-300 flex justify-center flex-col">
+      <div className="w-full mt-4 max-w-4xl mx-auto md:h-[370px] bgslate-300 flex justify-center flex-col">
         {activeShowData === 0 && <QueryData customers={customers} />}
         {activeShowData === 1 && <RevenueByCity />}
         {activeShowData === 2 && <CustomerSpending />}
@@ -109,10 +121,13 @@ const QueryDataSql = () => {
         </div>
         <div>
           <div className="px-2 py-4">
-            <div
-              className="text-gray-800 h-[200px]"
-              dangerouslySetInnerHTML={{ __html: queriesData[activeQuery] }}
-            />
+            <motion.div className="text-gray-800 h-[200px]" dangerouslySetInnerHTML={{ __html: queriesData[activeQuery]}}
+              key={activeQuery} 
+              initial="hidden"
+                  animate="visible"
+                  variants={rowAnimation}
+            >
+            </motion.div>
           </div>
         </div>
       </div>

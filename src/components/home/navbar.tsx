@@ -25,13 +25,13 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`flex items-center px-8 py-4 fixed w-full justify-between transition-all duration-700 max-w-screen-3xl z-50
-        ${isScrolled && "translate-y-4 bg-[#e1e8ee]"}
+      className={`flex items-center max-w-screen-2xl mx-auto px-4 md:px-8 py-4 fixed w-full justify-between transition-all duration-700 z-50
+        ${isScrolled && "shadow-sm md:translate-y-4 bg-[#e1e8ee]"}
     `}
     >
       <div
         className={`rounded-2xl h-14 bg-opacity-20 absolute left-1/2 -translate-x-1/2 transition-all duration-700 
-          ${isScrolled ? "lg:w-[80vw] xl:w-[65vw] 2xl:w-[60vw] shadow-lg" : "w-full"}
+          ${isScrolled ? "lg:w-[80%] xl:w-[65%] 2xl:w-[60%] shadow-lg" : "w-full"}
         `}
       ></div>
       <div

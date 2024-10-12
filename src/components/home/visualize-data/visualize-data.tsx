@@ -8,9 +8,9 @@ import BasicSparkLine from "./sparkline";
 
 const VisualizeData = () => {
   return (
-    <div className="space-y-20 px-4">
+    <div className="space-y-20 px-4 md:px-12">
       <div className="flex flex-col items-center gap-4">
-        <div className="flex items-center gap-2 self-center border border-gray-300 px-2 py-1">
+        <div className="flex items-center gap-2 self-center border border-gray-300 px-2 py-1 rounded-lg">
           <MdOutlineDataset className="" />
           Data in view
         </div>
@@ -18,33 +18,33 @@ const VisualizeData = () => {
           Visualize data
           <br /> with powerfull charts
         </h1>
-        <h2 className="text-center mx-auto pt-3 text-gray-500">
+        <h2 className="text-center mx-auto pt-3 text-gray-500 text-lg">
           Visualize your data in a variety of ways thanks to a robust set of
           visualizations.
           <br /> Whether it&apso;s as a table, a chart, or a single value —
           you&apos;re in control.
         </h2>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div className="col-span-1 border border-gray-300 rounded-md shadow py-2">
+      <div className="grid grid-cols-1 max-w-sm md:max-w-none mx-auto md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="col-span-1 border border-gray-300 rounded-md shadow py-2 h-[350px]">
           <h1 className="text-gray-500 border-b border-gray-300 px-4 pb-2">
             User Signups
           </h1>
           <LineChartComp />
         </div>
-        <div className="h-full col-span-1">
+        <div className="col-span-1 h-[350px]">
           <HomeBarChart />
         </div>
-        <div className="col-span-1 border border-gray-300 shadow px-4 pt-2 pb-10">
+        <div className="col-span-1 border border-gray-300 shadow px-4 pt-2 pb-10 rounded-md h-[350px]">
           <h1 className="text-gray-500">Revenue by city</h1>
-          <div className="flex justify-center h-full items-center">
+          <div className="flex justify-center items-center ">
             <DoughnutChart />
           </div>
         </div>
-        <div className="col-span-1 border border-gray-300 rounded-md shadow">
+        <div className="col-span-1 border border-gray-300 rounded-md shadow overflow-hidden">
           <BasicScatter />
         </div>
-        <div className="col-span-1 border border-gray-300 rounded-md shadow  flex flex-col h-[370px]">
+        <div className="col-span-1 border border-gray-300 rounded-md shadow  flex flex-col h-[350px]">
           <div className="flex items-center gap-4 px-4 py-4">
             <span className="w-3 h-3 bg-cyan-500"></span>
             <span>Premium users</span>
@@ -53,7 +53,7 @@ const VisualizeData = () => {
             <BasicSparkLine />
           </div>
         </div>
-        <div className="col-span-1 h-[370px]">
+        <div className="col-span-1 h-[350px]">
           <CustomerSpending />
         </div>
       </div>

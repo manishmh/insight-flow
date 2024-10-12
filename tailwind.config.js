@@ -14,7 +14,8 @@ module.exports = {
     },
     extend: {
       screens: {
-        sm: "480px",
+        "ssm": "300px",
+        "sm": "480px",
         "2xl": "1400px",
         "3xl" : "1600px",
         "4xl" : "1750px",
@@ -42,5 +43,5 @@ module.exports = {
       }, 
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate", '@tailwindcss/line-clamp')],
 }

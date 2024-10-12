@@ -26,54 +26,24 @@ export default function RevenueByCity() {
         sx={{ color: "#1f2a3e" }}
         className="flex flex-col items-center py-4 justify-center"
       >
-        <Box sx={{ textAlign: "center", marginBottom: 0 }} className="mt-2">
-          <Stack direction="row" justifyContent="center" spacing={4}>
-            <Box display="flex" alignItems="center">
-              <Box
-                sx={{
-                  width: 16,
-                  height: 16,
-                  backgroundColor: "#2a3a5e",
-                  marginRight: 1,
-                }}
-              />
-              <Typography variant="body1">New York</Typography>
-            </Box>
-            <Box display="flex" alignItems="center">
-              <Box
-                sx={{
-                  width: 16,
-                  height: 16,
-                  backgroundColor: "#1f2a3e",
-                  marginRight: 1,
-                }}
-              />
-              <Typography variant="body1">Los Angeles</Typography>
-            </Box>
-            <Box display="flex" alignItems="center">
-              <Box
-                sx={{
-                  width: 16,
-                  height: 16,
-                  backgroundColor: "#3f4e72",
-                  marginRight: 1,
-                }}
-              />
-              <Typography variant="body1">Chicago</Typography>
-            </Box>
-            <Box display="flex" alignItems="center">
-              <Box
-                sx={{
-                  width: 16,
-                  height: 16,
-                  backgroundColor: "#4a5d89",
-                  marginRight: 1,
-                }}
-              />
-              <Typography variant="body1">Houston</Typography>
-            </Box>
-          </Stack>
-        </Box>
+        <div className="hidden md:flex items-center px-2 flex-col md:flex-row gap-4">
+          <div className="flex items-center justify-center gap-3 pt-2">
+            <div className="w-3 h-3 bg-[#2a3a5e] bg-opacity-70"></div>
+            <h1 className="text-gray-600">New York</h1>
+          </div>
+          <div className="flex items-center justify-center gap-3 pt-2">
+            <div className="w-3 h-3 bg-[#1f2a3e] bg-opacity-70"></div>
+            <h1 className="text-gray-600">Los Angeles</h1>
+          </div>
+          <div className="flex items-center justify-center gap-3 pt-2">
+            <div className="w-3 h-3 bg-[#3f4e72] bg-opacity-70"></div>
+            <h1 className="text-gray-600">Chicago</h1>
+          </div>
+          <div className="flex items-center justify-center gap-3 pt-2">
+            <div className="w-3 h-3 bg-[#4a5d89] bg-opacity-70"></div>
+            <h1 className="text-gray-600">Houstan</h1>
+          </div>
+        </div>
 
         <Box sx={{ flexGrow: 1 }}>
           <Doughnut data={data} />

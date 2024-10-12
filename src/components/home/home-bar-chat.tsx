@@ -15,7 +15,7 @@ const HomeBarChart = () => {
     ],
   };
   return (
-    <div className="col-span-5 md:col-span-2 shadow border border-gray-300 h-full w-full rounded-lg ">
+    <div className="col-span-5 md:col-span-2 shadow border border-gray-300 h-full rounded-lg max-w-[250px] ssm:max-w-sm overflow-hidden">
       <h1 className="text-gray-500 p-4">Numbers of order by cities</h1>
       <BarChart
         xAxis={[

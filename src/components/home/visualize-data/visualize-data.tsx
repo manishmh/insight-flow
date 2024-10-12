@@ -41,7 +41,7 @@ const VisualizeData = () => {
             <DoughnutChart />
           </div>
         </div>
-        <div className="col-span-1 border border-gray-300 rounded-md shadow">
+        <div className="col-span-1 border border-gray-300 rounded-md shadow max-w-[250px] ssm:max-w-sm overflow-hidden">
           <BasicScatter />
         </div>
         <div className="col-span-1 border border-gray-300 rounded-md shadow  flex flex-col h-[350px]">

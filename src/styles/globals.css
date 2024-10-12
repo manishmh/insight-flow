@@ -152,3 +152,48 @@ body {
   .bdot {
     animation: bMovedots 6s linear infinite;
   }
+
+/* powerfull out of the box */
+@keyframes slideIn {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideUp {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-110%);
+  }
+}
+
+@layer utilities {
+  .animate-slideIn {
+    animation: slideIn 2s forwards;
+  }
+  
+  .animate-slideUp {
+    animation: slideUp 2s forwards;
+  }
+}
+
+/* Hide scrollbar for WebKit browsers (Chrome, Safari, etc.) */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for Firefox */
+.scrollbar-none {
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Ensure scrolling is still enabled */
+.scrollbar-none {
+  -ms-overflow-style: none;  /* IE and Edge */
+  overflow: auto; /* Makes sure scrolling is enabled */
+}

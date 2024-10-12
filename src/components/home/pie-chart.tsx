@@ -32,7 +32,8 @@ export default function DoughnutChart() {
       sx={{ color: "#1f2a3e" }}
     >
       <Box sx={{ flexGrow: 1 }}>
-        <Doughnut data={data} />
+        <Doughnut data={data}
+        />
       </Box>
     </Stack>
   );

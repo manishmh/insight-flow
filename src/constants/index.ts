@@ -19,10 +19,10 @@ export const sponsors = [
         name: "Microstrategy",
         img: "microstrategy.svg"
     },
-    // {
-    //     name: "Plotly",
-    //     img: "plotly.png"
-    // },
+    {
+        name: "Plotly",
+        img: "plotly.png"
+    },
     {
         name: "PowerBI",
         img: "Power-Bi.webp"
@@ -35,10 +35,10 @@ export const sponsors = [
         name: "Sisense",
         img: "sisense.png"
     },
-    {
-        name: "PowerBI",
-        img: "Power-Bi.webp"
-    },
+    // {
+    //     name: "PowerBI",
+    //     img: "Power-Bi.webp"
+    // },
     {
         name: "Tableu",
         img: "tableu.png"
@@ -146,3 +146,10 @@ export const queriesData = [
         <span class="pl-2 pr-4 text-gray-500">8</span> <span class="text-[#cb7832]">LIMIT</span> 2; <br />
     `
 ]
+
+export const rsdata = [
+  { id: 186352, city: "Vancouver", totalSpending: "$1521.20", totalOrders: 102 },
+  { id: 108231, city: "Toronto", totalSpending: "$1101.46", totalOrders: 84 },
+  { id: 87826, city: "Vancouver", totalSpending: "$846.65", totalOrders: 78 },
+  { id: 492012, city: "Vancouver", totalSpending: "$982.02", totalOrders: 77 }
+];

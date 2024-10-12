@@ -1,5 +1,4 @@
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
-import { SiGooglebigquery } from "react-icons/si";
 import { motion } from "framer-motion";
 
 const QueryData = ({ customers }: { customers: any }) => {
@@ -16,9 +15,10 @@ const QueryData = ({ customers }: { customers: any }) => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-6 shadow-md rounded-md h-full">
+    <div className="flex flex-col items-center gap-6 shadow-md rounded-lg overflow-hidden h-full relative">
+      <div className="absolute bg-gradient-to-l from-[#e1e8ee] to-transparent h-full w-10 z-20 right-0"></div>
       <div className="w-full h-full">
-        <div className="flex flex-col items-start w-full border border-gray-300 h-full">
+        <div className="flex flex-col items-start w-full border border-gray-300 h-full overflow-scroll scrollbar-none">
           <h1 className="border-b border-gray-300 w-full pl-2 py-2 text-gray-700">
             Top customers
           </h1>

@@ -154,3 +154,79 @@ export const rsdata = [
   { id: 492012, city: "Vancouver", totalSpending: "$982.02", totalOrders: 77 }
 ];
 
+export const FooterData = [
+  [
+    {
+      name: "Integrations",
+      link: "",
+    },
+    {
+      name: "Editor",
+      link: "",
+    },
+    {
+      name: "Visualizations",
+      link: "",
+    },
+    {
+      name: "Customization",
+      link: "",
+    },
+    {
+      name: "Speed",
+      link: "",
+    },
+    {
+      name: "Collaborations",
+      link: "",
+    },
+    {
+      name: "Theme",
+      link: "",
+    },
+  ],
+  [
+    {
+      name: "Pricing",
+      link: "",
+    },
+    {
+      name: "Changelog",
+      link: "",
+    },
+    {
+      name: "Careers",
+      link: "",
+    },
+    {
+      name: "Support",
+      link: "",
+    },
+    {
+      name: "Community",
+      link: "",
+    },
+    {
+      name: "Book demo",
+      link: "",
+    },
+  ],
+  [
+    {
+      name: "Privacy policy",
+      link: "",
+    },
+    {
+      name: "Terms of services",
+      link: "",
+    },
+    {
+      name: "Security",
+      link: "",
+    },
+    {
+      name: "Brand",
+      link: "",
+    },
+  ]
+];

@@ -63,7 +63,7 @@ const Footer = () => {
               <div className="text-[#FBFAF9] flex flex-col gap-4">
                 <div className="text-gray-400">Features</div>
                 {FooterData[0].map((features, index) => (
-                  <Link href={features.link}>
+                  <Link href={features.link} key={index}>
                     <div
                       className="hover:text-gray-300 transition-colors duration-300"
                       key={index}
@@ -76,7 +76,7 @@ const Footer = () => {
               <div className="text-[#FBFAF9] flex flex-col gap-4">
                 <div className="text-gray-400">Company</div>
                 {FooterData[1].map((features, index) => (
-                  <Link href={features.link}>
+                  <Link href={features.link} key={index}>
                     <div
                       className="hover:text-gray-300 transition-colors duration-300"
                       key={index}
@@ -89,7 +89,7 @@ const Footer = () => {
               <div className="text-[#FBFAF9] flex flex-col gap-4">
                 <div className="text-gray-400">Resources</div>
                 {FooterData[2].map((features, index) => (
-                  <Link href={features.link}>
+                  <Link href={features.link} key={index}>
                     <div
                       className="hover:text-gray-300 transition-colors duration-300"
                       key={index}

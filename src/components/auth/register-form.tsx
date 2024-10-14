@@ -62,9 +62,9 @@ const RegisterForm = () => {
   };
 
   return (
-    <div className="flex flex-col gap-3 items-center justify-center sm:h-screen ">
+    <div className="flex flex-col gap-3 items-center justify-center h-full">
       <div
-        className={`flex flex-col gap-3 items-center justify-center px-2 w-full sm:max-w-lg rounded-lg bg-white shadow-2xl dark:sm:bg-[#141517] py-12 sm:py-8 ${
+        className={`flex flex-col gap-3 items-center justify-center px-3 w-full sm:max-w-lg rounded-lg h-full sm:h-auto bg-white shadow-2xl dark:sm:bg-[#141517] py-12 sm:py-8 ${
           isPending ? "pointer-events-none opacity-80" : "pointer-events-auto"
         } `}
       >
@@ -90,7 +90,7 @@ const RegisterForm = () => {
                         disabled={isPending}
                         type="text"
                         placeholder="Your name"
-                        className="mt-1.5 rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 bg-primary-input border-none"
+                        className="mt-1.5 rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 bg-primary-input"
                       />
                     </FormControl>
                     <FormMessage className="text-red-400 text-xs" />
@@ -112,7 +112,7 @@ const RegisterForm = () => {
                         disabled={isPending}
                         type="email"
                         placeholder="manish@gmail.com"
-                        className="mt-1.5 rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 bg-primary-input border-none"
+                        className="mt-1.5 rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 bg-primary-input"
                       />
                     </FormControl>
                     <FormMessage className="text-red-400 text-xs" />
@@ -134,7 +134,7 @@ const RegisterForm = () => {
                         disabled={isPending}
                         type="password"
                         placeholder="********"
-                        className="mt-1.5 rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 bg-primary-input border-none"
+                        className="mt-1.5 rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 bg-primary-input "
                       />
                     </FormControl>
                     <FormMessage className="text-red-400 text-xs" />
@@ -144,7 +144,7 @@ const RegisterForm = () => {
               <Button
                 type="submit"
                 disabled={isPending}
-                className="bg-gray-500 dark:bg-gray-200 text-white dark:text-black dark:hover:bg-white w-full font-semibold "
+                className="bg-[#2a3a5e] hover:bg-[#344774] dark:bg-gray-200 text-white dark:text-black dark:hover:bg-white w-full font-semibold "
               >
                 Register
               </Button>

@@ -54,9 +54,9 @@ const NewPasswordForm = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center sm:h-screen sm:bg-[#5865F2]">
+    <div className="flex flex-col items-center justify-center sm:h-screen ">
       <div
-        className={`flex flex-col gap-3 items-center justify-center px-2 w-full sm:max-w-lg rounded-lg sm:bg-[#313338] py-12 sm:py-8 ${
+        className={`flex flex-col gap-3 items-center justify-center px-2 w-full sm:border border-gray-300 sm:shadow-md sm:max-w-lg rounded-lg  py-12 sm:py-8 ${
           isPending ? "pointer-events-none opacity-80" : "pointer-events-auto"
         } `}
       >
@@ -75,7 +75,7 @@ const NewPasswordForm = () => {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-semibold text-gray-300">
+                    <FormLabel className="font-semibold text-gray-400">
                       Password
                       <span className="text-red-500"> *</span>
                     </FormLabel>
@@ -85,7 +85,7 @@ const NewPasswordForm = () => {
                         disabled={isPending}
                         type="password"
                         placeholder="********"
-                        className="mt-1.5 rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 bg-primary-input border-none"
+                        className="mt-1.5 rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 bg-primary-input"
                       />
                     </FormControl>
                     <FormMessage className="text-red-400 text-xs" />
@@ -97,7 +97,7 @@ const NewPasswordForm = () => {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-semibold text-gray-300">
+                    <FormLabel className="font-semibold text-gray-400">
                       Confirm password
                       <span className="text-red-500"> *</span>
                     </FormLabel>
@@ -107,7 +107,7 @@ const NewPasswordForm = () => {
                         disabled={isPending}
                         type="password"
                         placeholder="********"
-                        className="mt-1.5 rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 bg-primary-input border-none"
+                        className="mt-1.5 rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 bg-primary-input"
                       />
                     </FormControl>
                     <FormMessage className="text-red-400 text-xs" />
@@ -126,7 +126,7 @@ const NewPasswordForm = () => {
         </Form>
         <Button className="max-w-md" disabled={isPending}>
           <Link
-            href={"/auth/register"}
+            href={"/auth/login"}
             className="text-blue-500 mt-3 font-medium text-sm flex gap-1 self-start"
           >
             Back to login page

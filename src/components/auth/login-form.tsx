@@ -45,7 +45,8 @@ const LoginForm = () => {
     startTransition(async () => {
       try {
         const data = await login(values, callbackUrl);
-        const { success, message, twoFactor } = data 
+        // const { success, message, twoFactor } = data 
+        const { success, message } = data 
         console.log('dataaa', data);
         
         if (!success) {
@@ -54,9 +55,9 @@ const LoginForm = () => {
           toast.success(message)
         )
 
-        if (twoFactor) {
-          setShowTwoFactor(true)
-        }
+        // if (twoFactor) {
+        //   setShowTwoFactor(true)
+        // }
       } catch (error: any) {
           console.error(error);
       } 
@@ -64,9 +65,9 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center sm:h-screen bg-transparent z-10 w-full">
+    <div className="flex flex-col items-center justify-center sm:h-screen bg-transparent z-10 w-full h-full">
       <div
-        className={`flex flex-col gap-3 items-center justify-center px-2 w-full sm:max-w-lg rounded-lg bg-white shadow-2xl dark:sm:bg-[#141517] py-12 sm:py-8 ${
+        className={`flex flex-col gap-3 items-center justify-center px-3 w-full sm:max-w-lg rounded-lg h-full sm:h-auto bg-white shadow-2xl dark:sm:bg-[#141517] py-12 sm:py-8 ${
           isPending ? "pointer-events-none opacity-80" : "pointer-events-auto"
         } `}
       >
@@ -96,8 +97,8 @@ const LoginForm = () => {
                             {...field}
                             disabled={isPending}
                             type="email"
-                            placeholder="manish@gmail.com"
-                            className="mt-1.5 rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 bg-primary-input border-none"
+                            placeholder="example@gmail.com"
+                            className="mt-1.5 rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 bg-primary-input"
                           />
                         </FormControl>
                         <FormMessage className="text-red-400 text-xs" />
@@ -119,7 +120,7 @@ const LoginForm = () => {
                             disabled={isPending}
                             type="password"
                             placeholder="********"
-                            className="mt-1.5 rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 bg-primary-input border-none"
+                            className="mt-1.5 rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 bg-primary-input "
                           />
                         </FormControl>
                         <FormMessage className="text-red-400 text-xs" />
@@ -162,7 +163,7 @@ const LoginForm = () => {
               <Button
                 type="submit"
                 disabled={isPending}
-                className="bg-gray-500 dark:bg-gray-200 w-full font-semibold text-white dark:text-black dark:hover:bg-white transition-colors duration-300"
+                className="bg-[#2a3a5e] hover:bg-[#344774] dark:bg-gray-200 w-full font-semibold text-white dark:text-black dark:hover:bg-white transition-colors duration-300"
               >
                 {showTwoFactor ? "Confirm": "Login"}
               </Button>

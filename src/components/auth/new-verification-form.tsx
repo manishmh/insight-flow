@@ -39,7 +39,7 @@ const NewVerificationForm = () => {
 
   return (
     <div className="h-screen flex justify-center items-center">
-      <div className="w-full max-w-sm px-8 py-12 rounded-xl shadow-md bg-gray-900 ">
+      <div className="w-full max-w-sm px-8 py-12 rounded-xl shadow-md bg-white">
         <h1 className="font-semibold text-xl mb-8 text-center">Confirming your verification</h1>
         <Link href="/auth/login">
           {loaderState && (

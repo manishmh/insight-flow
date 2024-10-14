@@ -29,21 +29,21 @@ export const {
       // allow oAuth withour email verification
       if (account?.provider !== "credentials") return true;
 
-      const existingUser = await findUserById(user.id);
+      // const existingUser = await findUserById(user.id);
 
       // prevent sign in without email verification
-      if (!existingUser?.emailVerified) return false;
+      // if (!existingUser?.emailVerified) return false;
 
-      if (existingUser.isTwoFactorEnabled) {
-        const twoFactorconfirmation = await getTwoFactorConfirmationByUserId(existingUser.id);
+      // if (existingUser.isTwoFactorEnabled) {
+      //   const twoFactorconfirmation = await getTwoFactorConfirmationByUserId(existingUser.id);
 
-        if (!twoFactorconfirmation) return false
+      //   if (!twoFactorconfirmation) return false
 
-        // delete two factor confirmation for next sign in.
-        await db.twoFactorConfirmation.delete({
-          where: { id: twoFactorconfirmation.id }
-        })
-      }
+      //   // delete two factor confirmation for next sign in.
+      //   await db.twoFactorConfirmation.delete({
+      //     where: { id: twoFactorconfirmation.id }
+      //   })
+      // }
 
       return true;
     },

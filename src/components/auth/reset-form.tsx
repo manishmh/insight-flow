@@ -65,7 +65,7 @@ const ResetForm = () => {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-semibold text-gray-300">
+                    <FormLabel className="font-semibold text-gray-500">
                       Email
                       <span className="text-red-500"> *</span>
                     </FormLabel>
@@ -75,7 +75,7 @@ const ResetForm = () => {
                         disabled={isPending}
                         type="email"
                         placeholder="manish@gmail.com"
-                        className="mt-1.5 rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 bg-primary-input border-none"
+                        className="mt-1.5 rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 bg-primary-input"
                       />
                     </FormControl>
                     <FormMessage className="text-red-400 text-xs" />
@@ -85,7 +85,7 @@ const ResetForm = () => {
               <Button
                 type="submit"
                 disabled={isPending}
-                className="bg-gray-200 w-full font-semibold text-black hover:bg-white transition-colors duration-300"
+                className="bg-[#2a3a5e] hover:bg-[#344774] w-full font-semibold text-white transition-colors duration-300"
               >
                 Send reset email
               </Button>

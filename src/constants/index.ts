@@ -153,3 +153,4 @@ export const rsdata = [
   { id: 87826, city: "Vancouver", totalSpending: "$846.65", totalOrders: 78 },
   { id: 492012, city: "Vancouver", totalSpending: "$982.02", totalOrders: 77 }
 ];
+

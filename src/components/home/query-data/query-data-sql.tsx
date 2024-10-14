@@ -55,7 +55,7 @@ const QueryDataSql = () => {
           Query your data <span className="h-1 w-8 bg-gray-900 mx-4"></span>{" "}
           your way
         </div>
-        <div className="text-center text-gray-600 text-lg">
+        <div className="text-center text-gray-600 md:text-lg">
           Streamline your data analysis with our seamless SQL and visual editor.{" "}
           <br /> Give everyone in your team the superpowers they need.
         </div>

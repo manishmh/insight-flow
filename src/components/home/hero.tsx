@@ -18,7 +18,7 @@ const Hero = () => {
         Data to <span className="text-blue-700">insights</span>
         <br /> in minutes
       </h1>
-      <h2 className="text-center max-w-md mx-auto pt-3 text-gray-500 text-sm md:text-lg">
+      <h2 className="text-center mx-auto md:max-w-md pt-3 text-gray-500 w-full md:text-lg">
         Designed to transform raw data into actionable
         <br /> insights for faster decisions
       </h2>

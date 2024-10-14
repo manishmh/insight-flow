@@ -8,9 +8,9 @@ const ConnectYourData = () => {
   return (
     <div className='px-2 md:px-8 max-w-screen-xl mx-auto'>
         <div className="flex items-center flex-col gap-4">
-            <div className='text-gray-700 text-center flex items-center gap-2 border border-gray-300 rounded-full px-4 self-center mx-auto'><FaDatabase /> Data harmony</div>
+            <div className='text-gray-700 text-center flex items-center gap-2 border border-gray-300 rounded-full px-4 self-center mx-auto shadow'><FaDatabase /> Data harmony</div>
             <div className="text-gray-800 text-3xl xl:text-5xl font-medium">Connect your data</div>
-            <h1 className="text-center text-gray-600 text-lg">Index connects to a growing number of <br /> databases and data warehouses.</h1>
+            <h1 className="text-center text-gray-600 md:text-lg">Index connects to a growing number of <br /> databases and data warehouses.</h1>
             <button className="bg-[#2f3f5d] text-white px-4 pr-8 group py-2 rounded-lg transition-colors duration-300 shadow-sm flex gap-2 items-center overflow-hidden relative">
                 <span className="-translate-x-[200px] group-hover:translate-x-0 transition-all duration-500 relative left-1/2"><GrConnect /></span>
                 <span className="group-hover:translate-x-[200px] transition-all duration-500">Get started now</span>

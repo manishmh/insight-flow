@@ -9,6 +9,7 @@ import QueryDataSql from "@/components/home/query-data/query-data-sql";
 import Sponsors from "@/components/home/sponsors/sponsors";
 import VisualizeData from "@/components/home/visualize-data/visualize-data";
 import { ModeToggle } from "@/components/toggle-mode";
+import EffortlessWorkspace from "@/components/home/efforless-workplace/efforless-workplace";
 
 export default function Home() {
   return (
@@ -22,8 +23,9 @@ export default function Home() {
         <QueryDataSql />
         <VisualizeData />
         <PowerfulOutOfBox />
+        <EffortlessWorkspace />
         {/* <CollaborateRealtime /> */}
-        <div className="h-[100vh]"></div>
+        {/* <div className="h-[100vh]"></div> */}
       </div>
     </main>
   );

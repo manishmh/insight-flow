@@ -10,14 +10,14 @@ const PowerfulOutOfBox = () => {
   return (
     <div className="px-4 space-y-28">
       <div className="flex flex-col items-center gap-4">
-        <div className="flex items-center gap-2 self-center border border-gray-300 px-2 py-1 rounded-lg text-gray-700">
+        <div className="flex items-center gap-2 self-center border border-gray-300 px-2 py-1 rounded-lg text-gray-700 shadow">
           <MdOutlineDataset className="" />
           Flexibility built-in 
         </div>
         <h1 className="text-3xl xl:text-5xl text-center font-medium text-gray-900">
             Powerful out of the box
         </h1>
-        <h2 className="text-center mx-auto pt-3 text-gray-500 text-lg">
+        <h2 className="text-center mx-auto pt3 text-gray-500 md:text-lg">
             Index is build from grouond up to be fast, powerful and delightful to use.
         </h2>
       </div>

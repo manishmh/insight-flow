@@ -4,7 +4,7 @@ import { sponsors } from "@/constants"
 const Sponsors = () => {
   return (
     <div className="px-2">
-        <h1 className="text-center text-[#59606d] text-lg">Supported by Industry-Leading Data Analytics Partners.</h1>
+        <h1 className="text-center text-[#59606d] md:text-lg">Supported by Industry-Leading Data Analytics Partners.</h1>
         <div className="grid grid-cols-1 ssm:grid-cols-2 md:grid-cols-3 md:w-10/12 px-4 lg:grid-cols-5 gap-10 lg:w-8/12 mx-auto flex-wrap mt-8 place-items-center md:place-items-start">
             {sponsors.map((sponsor, index) => (
                 <SingleSponsor 

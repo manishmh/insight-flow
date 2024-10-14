@@ -1,3 +1,4 @@
+import SlidingButton from "@/components/global/ui/sliding-window";
 import Image from "next/image";
 import { FaChevronLeft } from "react-icons/fa";
 import { FaChevronRight } from "react-icons/fa";
@@ -11,10 +12,7 @@ const ConnectYourData = () => {
             <div className='text-gray-700 text-center flex items-center gap-2 border border-gray-300 rounded-full px-4 self-center mx-auto shadow'><FaDatabase /> Data harmony</div>
             <div className="text-gray-800 text-3xl xl:text-5xl font-medium">Connect your data</div>
             <h1 className="text-center text-gray-600 md:text-lg">Index connects to a growing number of <br /> databases and data warehouses.</h1>
-            <button className="bg-[#2f3f5d] text-white px-4 pr-8 group py-2 rounded-lg transition-colors duration-300 shadow-sm flex gap-2 items-center overflow-hidden relative">
-                <span className="-translate-x-[200px] group-hover:translate-x-0 transition-all duration-500 relative left-1/2"><GrConnect /></span>
-                <span className="group-hover:translate-x-[200px] transition-all duration-500">Get started now</span>
-            </button>
+            <SlidingButton content="Get started now" bg="bg-[#2f3f5d] text-white" logo={<GrConnect />} link="/login" />
         </div>
         <div className="mt-20 relative flex flex-col md:flex-row items-center gap-12">
             <div className="md:h-1 bg-[#4a5d89] rounded-md absolute md:top-1/2 w-1 h-full md:w-full"></div>

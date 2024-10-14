@@ -70,7 +70,7 @@ const EffortlessWorkspace = () => {
       scrollRight -= scrollSpeed;
 
       // If scrolling reaches the end, reset to start
-      if (scrollRight >= secondContainer.scrollWidth / 2) {
+      if (scrollRight <= -secondContainer.scrollWidth / 2) {
         scrollRight = 0;
       }
 
@@ -83,7 +83,6 @@ const EffortlessWorkspace = () => {
     firstContainer.innerHTML += firstContainer.innerHTML;
 
     // Clone content for the second container and append as well
-    const cloned = secondContainer.innerHTML;
     secondContainer.innerHTML += secondContainer.innerHTML 
 
     // Start animations
@@ -119,7 +118,7 @@ const EffortlessWorkspace = () => {
       <div className="relative py-8 flex flex-col justify-center overflow-hidden max-w-screen-xl mx-auto">
         <ContainerGrad />
         <div
-          className="flex items-center gap-6 max-w-screen-xl mx-auto py-2 px-2"
+          className="flex items-center gap-4 max-w-screen-xl mx-auto py-2 px-2"
           ref={firstContainerRef}
         >
           {pillOneData.map((pill, index) => (
@@ -131,7 +130,7 @@ const EffortlessWorkspace = () => {
           ))}
         </div>
         <div
-          className="flex items-center gap-6 max-w-screen-xl mx-auto py-2 px-2"
+          className="flex items-center gap-4 max-w-screen-xl mx-auto py-2 px-2"
           ref={secondContainerRef}
         >
           {pillTwoData.map((pill, index) => (

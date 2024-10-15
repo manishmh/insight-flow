@@ -53,7 +53,7 @@ const Footer = () => {
                 built from scratch - Powered by data.{" "}
               </div>
               <div className="flex gap-2 items-center">
-                Credits |{" "}
+                Source |{" "}
                 <div className="text-gray-400">
                   <Link href={"https://index.app/beta"}>necarti</Link>
                 </div>

@@ -51,17 +51,19 @@ const Navbar = () => {
           <NavbarItems item="Careers" link="" />
           <NavbarItems item="Support" link="" />
         </div>
-        <div
-          className={`duration-700 transition-all flex gap-4`}
-        >
-          <button className="inline-flex py-1 animate-shimmer items-center justify-center rounded-md border dark:border-slate-800 dark:bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-4 fontmedium dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 text-blue-700 border-slate-300 hover:bg-slate-300 transition-all duration-300 dark:duration-1000">
-            Log in
-          </button>
-          {isScrolled && (
+        <div className={`duration-700 transition-all flex gap-4`}>
+          <Link href="/auth/login">
             <button className="inline-flex py-1 animate-shimmer items-center justify-center rounded-md border dark:border-slate-800 dark:bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-4 fontmedium dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 text-blue-700 border-slate-300 hover:bg-slate-300 transition-all duration-300 dark:duration-1000">
-              Sign up
+              Log in
             </button>
-          )}
+          </Link>
+          <Link href="/auth/register">
+            {isScrolled && (
+              <button className="inline-flex py-1 animate-shimmer items-center justify-center rounded-md border dark:border-slate-800 dark:bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-4 fontmedium dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 text-blue-700 border-slate-300 hover:bg-slate-300 transition-all duration-300 dark:duration-1000">
+                Sign up
+              </button>
+            )}
+          </Link>
         </div>
       </div>
     </nav>
@@ -70,11 +72,10 @@ const Navbar = () => {
 
 export default Navbar;
 
-
 function NavbarItems({ item, link }: { item: string; link: string }) {
   return (
     <div className="text-[#6e7378] hover:bg-slate-300 dark:hover:bg-slate-900 dark:hover:text-slate-100 px-2 py-1 rounded-md transition-all duration-300 cursor-pointer">
-      <Link href={link}>{item}</Link>
+      <Link href={link === "" ? "/dashboard" : link}>{item}</Link>
     </div>
   );
 }

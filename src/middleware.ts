@@ -32,7 +32,7 @@ export default auth((req) => {
   }
 
   // if user is not logged in and it is not public route (i.e. if user is trying to access private routes) it will redirec to "/auth/login" 
-  if (!isLoggedIn && !isPublicRoutes) { 
+  if (!isLoggedIn && !isPublicRoutes && nextUrl.pathname !== "/login") {  
     let callBackUrl = nextUrl.pathname;
     if (nextUrl.search) {
       callBackUrl += nextUrl.search;

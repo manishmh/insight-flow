@@ -1,9 +1,9 @@
-import NextAuth from 'next-auth';
+import { getTwoFactorConfirmationByUserId } from '@/data/two-factor-confirmation';
+import { findUserByEmail, findUserById } from '@/data/user';
+import { db } from '@/lib/db';
 import authConfig from '@/server/auth.config';
 import { PrismaAdapter } from '@auth/prisma-adapter';
-import { db } from '@/lib/db';
-import { findUserById } from '@/data/user';
-import { getTwoFactorConfirmationByUserId } from '@/data/two-factor-confirmation';
+import NextAuth from 'next-auth';
 
 export const {
   handlers: { GET, POST },
@@ -26,8 +26,10 @@ export const {
   },
   callbacks: {
     async signIn({ user, account }) {
-      // allow oAuth withour email verification
-      if (account?.provider !== "credentials") return true;
+      if (account?.provider !== "credentials") {
+        return true; // Proceed with OAuth login
+      }
+
 
       // const existingUser = await findUserById(user.id);
 

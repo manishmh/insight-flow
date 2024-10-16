@@ -65,9 +65,9 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center sm:h-screen bg-transparent z-10 w-full h-full">
+    <div className="flex flex-col items-center justify-center sm:h-screen z-10 w-full h-full ">
       <div
-        className={`flex flex-col gap-3 items-center justify-center px-3 w-full sm:max-w-lg rounded-lg h-full sm:h-auto bg-white shadow-2xl dark:sm:bg-[#141517] py-12 sm:py-8 ${
+        className={`flex flex-col gap-3 items-center justify-center px-3 w-full sm:max-w-lg rounded-lg h-full sm:h-auto bg-[#FBFAF9] shadow-2xl dark:sm:bg-[#141517] py-12 sm:py-8 ${
           isPending ? "pointer-events-none opacity-80" : "pointer-events-auto"
         } `}
       >

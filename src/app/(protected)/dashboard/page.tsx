@@ -21,9 +21,8 @@ const Dashboard = () => {
   };
 
   return (
-    <div>
-      <div className="text-black">{JSON.stringify(user)}</div>
-      <button onClick={signout}>Sign out</button>
+    <div className="flex justify-center h-[200vh]">
+      <div className="text-red-700 text-xl">Feature in progress..</div>
     </div>
   );
 }

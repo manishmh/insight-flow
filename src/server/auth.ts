@@ -28,6 +28,7 @@ export const {
     async signIn({ user, account }) {
       if (account?.provider !== "credentials") {
         return true; // Proceed with OAuth login
+        // TODO: allow user login even if account exists with other provider or with credentials.
       }
 
 

@@ -1,6 +1,7 @@
 'use client'
 
 import { logout } from "@/actions/logout"
+import MainContent from "@/components/dashboard/main-content/main-content";
 import { useCurrentUser } from "@/hooks/use-current-user"
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -21,8 +22,9 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="flex justify-center h-[200vh]">
-      <div className="text-red-700 text-xl">Feature in progress..</div>
+    <div className="h-full">
+      {/* <div className="text-red-700 text-xl">Feature in progress..</div> */}
+      <MainContent />
     </div>
   );
 }

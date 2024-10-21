@@ -23,7 +23,7 @@ export default async function RootLayout({
   return (
     <SessionProvider session={session}>
       <html lang="en" suppressHydrationWarning>
-        <body className={cn(font.className, "bg-[#e1e8ee] dark:bg-[#030014] scroll-smooth")}>
+        <body className={cn(font.className, "bg-[#e1e8ee] dark:bg-[#030014] scroll-smooth h-full")}>
           <ThemeProvider
             attribute="class"
             defaultTheme="light"

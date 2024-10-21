@@ -79,7 +79,7 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
       )}
 
       <div
-        className={`bg-[#e1e8ee] z-10 transition-all duration-300 max-h-screen fixed left-0 
+        className={`bg-[#e1e8ee] z-10 transition-all shadow-sm border-r border-gray-300 duration-300 max-h-screen fixed left-0 flex justify-between
         rounded-tr-md rounded-br-md ${
           sidebarHover ? "translate-x-0" : "-translate-x-full"
         } ${
@@ -95,26 +95,26 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
           handleSidebar={handleSidebar}
           handleSearchState={handleSearchState}
         />
-      </div>
-
-      <div
-        className={`relative z-0 transition-all duration-300 overflow-y-auto h-screen w-full flex ${
-          sidebarOpen ? "md:ml-0" : ""
-        }`}
-        style={{ marginLeft: sidebarOpen ? `${sidebarWidth}px` : "0px" }}
-      >
         {sidebarOpen && (
-          <div className="flex items-center h-full w-3 group ">
+          <div className="flex items-center h-screen w-2.5 group justify-end">
             <div
-              className={`w-[6px] bg-blue-900 h-20 hover:h-24 transition-all rounded-full hover:cursor-col-resize opacity-0 group-hover:opacity-100 duration-200 ${
+              className={`w-[6px] h-20 hover:h-24 transition-all rounded-full hover:cursor-col-resize opacity-0 bg-[#3f4e72] group-hover:opacity-100 duration-200 ${
                 isResizing ? "cursor-col-resize" : "cursor-default"
               }`}
               onMouseDown={handleMouseDown}
             ></div>
           </div>
         )}
-        <div className="w-full ">
-          <div className="cursor-pointer h-14 transition-all duration-300 ">
+      </div>
+
+      <div
+        className={`relative z-0 transition-all min-h-screen overflow-y-auto duration-300 w-full  ${
+          sidebarOpen ? "md:ml-0" : ""
+        }`}
+        style={{ marginLeft: sidebarOpen ? `${sidebarWidth}px` : "0px" }}
+      >
+        <div className="w-full h-full flex flex-col">
+          <div className="h-14 transition-all duration-300">
             <DashboardTopbar
               setSidebarHover={setSidebarHover}
               handleSidebar={handleSidebar}

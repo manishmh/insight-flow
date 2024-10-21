@@ -19,8 +19,8 @@ const Sidebar = ({
 }) => {
   const [dashboard, setDashboard] = useState(true);
   return (
-    <div className="h-full flex flex-col justify-between border-r border-gray-300 shadow-sm">
-      <div className="flex justify-between items-center px-2 gap-2 w-full pt-2">
+    <div className="h-full flex flex-col justify-between flex-1 pl-1 py-2 pt-3">
+      <div className="flex justify-between items-center gap-2 w-full pl-1">
         <div className="flex items-center gap-1 text-sm hover:bg-gray-300 py-1 rounded-md w-full transition-all duration-300 cursor-pointer">
           <div className="bg-blue-200 rounded-sm aspect-square w-6 grid place-items-center">
             T
@@ -38,7 +38,7 @@ const Sidebar = ({
         </div>
       </div>
       <div
-        className="flex items-center text-sm py-1 mx-2 justify-between px-2 border border-gray-300 rounded-md my-4 select-none cursor-pointer"
+        className="flex items-center text-sm py-1 ml-1 justify-between px-2 border border-gray-300 rounded-md my-4 select-none cursor-pointer"
         onClick={handleSearchState}
       >
         <div className="flex items-center gap-2">
@@ -55,7 +55,7 @@ const Sidebar = ({
         </div>
       </div>
       <div
-        className="flex flex-col gap-1 px-1 flex-1"
+        className="flex flex-col gap-1 flex-1"
         onClick={() => setDashboard(!dashboard)}
       >
         <SidebarItem logo={<FaPlus />} title="New" link="/dashboard/new" />
@@ -77,7 +77,7 @@ const Sidebar = ({
           link="/dashboard/studio"
         />
         <div
-          className={`mt-4 px-2 flex gap-2 items-center lg:text-sm 3xl:text-base text-gray-600 cursor-pointer`}
+          className={`mt-4 flex px-3 gap-2 items-center lg:text-sm 3xl:text-base text-gray-600 cursor-pointer`}
           onClick={() => setDashboard(!dashboard)}
         >
           <span
@@ -91,7 +91,7 @@ const Sidebar = ({
         </div>
       </div>
       {dashboard && (
-        <div className="h-full overflow-scroll px-1 py-2">
+        <div className="h-full overflow-scroll scrollbar-none py-2">
           <SidebarItem
             logo={<LuLayoutDashboard />}
             title="Sample Board"
@@ -124,7 +124,7 @@ const Sidebar = ({
           />
         </div>
       )}
-      <div className="px-1 py-1">
+      <div className=" py-1 border-t xl:border-none border-gray-300">
         <SidebarItem
           logo={<BsArchive />}
           title="Archive"
@@ -160,7 +160,7 @@ const SidebarItem = ({
 }) => {
   return (
     <Link href={link}>
-      <div className="flex justify-between items-center group hover:bg-gray-300 transition-all duration-300 pr-1 rounded-md">
+      <div className="flex justify-between items-center group hover:bg-gray-300 transition-all duration-300 pr-1 ml-1 rounded-md">
         <div className="flex gap-2 items-center text-gray-600 text  px-2 py-1 rounded-md lg:text-sm 3xl:text-base">
           {logo}
           {title}

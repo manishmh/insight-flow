@@ -1,6 +1,7 @@
 'use client'
 
 import { logout } from "@/actions/logout"
+import AddFirstBlock from "@/components/dashboard/main-content/add-first-block";
 import MainContent from "@/components/dashboard/main-content/main-content";
 import { useCurrentUser } from "@/hooks/use-current-user"
 import { useRouter } from "next/navigation";
@@ -23,7 +24,7 @@ const Dashboard = () => {
 
   return (
     <div className="h-full">
-      {/* <div className="text-red-700 text-xl">Feature in progress..</div> */}
+      {/* <AddFirstBlock /> */}
       <MainContent />
     </div>
   );

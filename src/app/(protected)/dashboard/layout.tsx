@@ -3,7 +3,7 @@ import Sidebar from "@/components/dashboard/sidebar";
 import DashboardTopbar from "@/components/dashboard/topbar";
 import { SidebarContext } from "@/contexts/sidebar-context";
 import { SidepaneContext } from "@/contexts/sidepane-context";
-import { ReactNode, useEffect, useState } from "react";
+import { useCallback, ReactNode, useEffect, useState } from "react";
 
 const DashboardLayout = ({ children }: { children: ReactNode }) => {
   const [screenSize, setScreenSize] = useState<number | null>(null);
@@ -41,18 +41,21 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
     setIsResizing(true);
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
-    if (isResizing) {
-      const newWidth = e.clientX;
-      if (newWidth > 200 && newWidth < 360) {
-        setSidebarWidth(newWidth);
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (isResizing) {
+        const newWidth = e.clientX;
+        if (newWidth > 200 && newWidth < 360) {
+          setSidebarWidth(newWidth);
+        }
       }
-    }
-  };
+    },
+    [isResizing]
+  );
 
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     setIsResizing(false);
-  };
+  }, []);
 
   useEffect(() => {
     if (isResizing) {
@@ -67,7 +70,7 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isResizing]);
+  }, [isResizing, handleMouseMove, handleMouseUp]);
 
   return (
     <SidebarContext.Provider
@@ -148,9 +151,7 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
             className={`w-[280px] right-0 fixed h-screen flex-shrink-0 border-l border-gray-300 bg-cyan-200 p-3 transition-transform duration-300 cursor-pointer ${
               sidepaneOpen ? "translate-x-0" : "translate-x-full"
             }`}
-          >
-            
-          </div>
+          ></div>
         </div>
       </SidepaneContext.Provider>
     </SidebarContext.Provider>

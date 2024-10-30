@@ -7,9 +7,9 @@ const RemarkableSearch = () => {
   const [inputValue, setInputValue] = useState("");
   const [startAnnimation, setStartAnnimation] = useState(false);
   const [rsdataCopy, setRsdataCopy] = useState(rsdata)
-  const filterData = ["Toronto", "Vancouver"];
-
+  
   useEffect(() => {
+    const filterData = ["Toronto", "Vancouver"];
     setStartAnnimation(!startAnnimation)
 
     let currentWord = 0;

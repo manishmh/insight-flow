@@ -1,4 +1,3 @@
-import { sampleTableData } from "@/constants/sampel-table-data";
 import { useState } from "react";
 import ActiveSidepaneTools from "./active-sidepane-tools";
 import ChartSection from "./charts-section";

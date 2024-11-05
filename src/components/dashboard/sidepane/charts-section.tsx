@@ -1,6 +1,6 @@
 const ChartSection = () => {
   return (
-    <div>ChartSection</div>
+    <div>Coming soon</div>
   )
 }
 

@@ -23,7 +23,7 @@ const Hero = () => {
         <br /> insights for faster decisions
       </h2>
       <div className="flex justify-center pt-4">
-        <Link href="/login">
+        <Link href="/auth/login">
           <button className="bg-[#2f3f5d] text-white px-6 hover:bg-[#3a5077] py-1 rounded-lg transition-colors duration-300">
             Get Started
           </button>

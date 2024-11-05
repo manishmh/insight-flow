@@ -1,5 +1,7 @@
-export const sampleTableData = [
-    {
+export const sampleTableData = {
+  label: "Customers",
+  data: [
+  {
     id: 4,
     first_name: "Stanford",
     last_name: "Coyne",
@@ -4491,3 +4493,4 @@ export const sampleTableData = [
   state: "Texas"
 },
 ]
+}

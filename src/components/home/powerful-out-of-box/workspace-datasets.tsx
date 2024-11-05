@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/components/global/loader";
+import LoadingSpinner from "@/components/global/svg/loader";
 import { useEffect, useState } from "react";
 import { CiTimer } from "react-icons/ci";
 import { FaCheck } from "react-icons/fa6";

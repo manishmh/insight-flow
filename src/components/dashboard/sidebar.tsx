@@ -19,9 +19,9 @@ const Sidebar = ({
 }) => {
   const [dashboard, setDashboard] = useState(true);
   return (
-    <div className="h-full flex flex-col justify-between flex-1 pl-1 py-2 pt-3">
+    <div className="h-full flex flex-col justify-between flex-1 pl-1 py-2 pt-3 ">
       <div className="flex justify-between items-center gap-2 w-full pl-1">
-        <div className="flex items-center gap-1 text-sm hover:bg-gray-300 py-1 rounded-md w-full transition-all duration-300 cursor-pointer">
+        <div className="flex items-center gap-1 hover:bg-[#d1d5dbac] px-1 py-1 rounded-sm w-full transition-all duration-300 cursor-pointer">
           <div className="bg-blue-200 rounded-sm aspect-square w-6 grid place-items-center">
             T
           </div>
@@ -38,7 +38,7 @@ const Sidebar = ({
         </div>
       </div>
       <div
-        className="flex items-center text-sm py-1 ml-1 justify-between px-2 border border-gray-300 rounded-md my-4 select-none cursor-pointer"
+        className="flex items-center py-1 ml-1 justify-between px-2 border border-gray-300 rounded-md my-4 select-none cursor-pointer"
         onClick={handleSearchState}
       >
         <div className="flex items-center gap-2">
@@ -77,7 +77,7 @@ const Sidebar = ({
           link="/dashboard/studio"
         />
         <div
-          className={`mt-4 flex px-3 gap-2 items-center lg:text-sm 3xl:text-base text-gray-600 cursor-pointer`}
+          className={`mt-4 flex px-3 gap-2 items-center text-gray-600 cursor-pointer`}
           onClick={() => setDashboard(!dashboard)}
         >
           <span
@@ -160,13 +160,13 @@ const SidebarItem = ({
 }) => {
   return (
     <Link href={link}>
-      <div className="flex justify-between items-center group hover:bg-gray-300 transition-all duration-300 pr-1 ml-1 rounded-md">
-        <div className="flex gap-2 items-center text-gray-600 text  px-2 py-1 rounded-md lg:text-sm 3xl:text-base">
+      <div className="flex justify-between items-center group hover:bg-[#d1d5dbac] transition-all duration-300 pr-1 ml-1 rounded-md">
+        <div className="flex gap-2 items-center text-gray-600 text  px-2 py-1 rounded-md ">
           {logo}
           {title}
         </div>
         {num && (
-          <div className="w-5 h-5 aspect-square border border-gray-300 group-hover:border-gray-400 grid place-items-center text-gray-500 text-sm ">
+          <div className="w-5 h-5 aspect-square border border-gray-300 group-hover:border-gray-400 grid place-items-center rounded-md text-gray-500 ">
             {num}
           </div>
         )}

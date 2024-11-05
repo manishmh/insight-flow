@@ -171,6 +171,7 @@ const PieChart = ({
         x="100"
         y="100" // Keep the value in the center
         textAnchor="middle"
+        fontSize={12}
         dominantBaseline="middle"
         className="transition-all duration-300 font-bold "
       >

@@ -31,7 +31,7 @@ const Footer = () => {
             content="Get started - for free"
             bg="bg-white"
             logo={<RiLoginCircleFill />}
-            link="/login"
+            link="/auth/login"
           />
         </div>
 

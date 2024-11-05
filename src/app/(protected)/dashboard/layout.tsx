@@ -86,7 +86,7 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
                 onClick={handleSearchState}
               ></div>
               <div className="absolute z-50 bg-white w-full max-w-[600px] h-[400px] rounded-lg top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2">
-                Searchbar
+                search bar upcoming.
               </div>
             </>
           )}

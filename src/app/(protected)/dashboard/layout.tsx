@@ -1,5 +1,6 @@
 "use client";
 import Sidebar from "@/components/dashboard/sidebar";
+import Sidepane from "@/components/dashboard/sidepane/sidepane";
 import DashboardTopbar from "@/components/dashboard/topbar";
 import { SidebarContext } from "@/contexts/sidebar-context";
 import { SidepaneContext } from "@/contexts/sidepane-context";
@@ -77,7 +78,7 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
       value={{ sidebarWidth, sidebarOpen, handleSidebar }}
     >
       <SidepaneContext.Provider value={{ sidepaneOpen, handleSidepane }}>
-        <div className="flex md:text-sm 3xl:text-base select-none overflow-hidden">
+        <div className="flex text-sm md:text-xs 3xl:text-sm select-none overflow-hidden">
           {searchState && (
             <>
               <div
@@ -148,10 +149,12 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
 
           {/* Side Pane */}
           <div
-            className={`w-[280px] right-0 fixed h-screen flex-shrink-0 border-l border-gray-300 bg-cyan-200 p-3 transition-transform duration-300 cursor-pointer ${
+            className={`w-[280px] right-0 fixed h-screen flex-shrink-0 border-l border-gray-300 py-3 transition-transform duration-300 hidden md:block ${
               sidepaneOpen ? "translate-x-0" : "translate-x-full"
             }`}
-          ></div>
+          >
+            <Sidepane />
+          </div>
         </div>
       </SidepaneContext.Provider>
     </SidebarContext.Provider>

@@ -1,4 +1,4 @@
-import CreateBlockSvg from "@/components/global/create-block-svg";
+import CreateBlockSvg from "@/components/global/svg/create-block-svg";
 import { ReactNode, useEffect, useRef } from "react";
 import { AiOutlineThunderbolt } from "react-icons/ai";
 import { BiComment } from "react-icons/bi";
@@ -83,7 +83,7 @@ const EffortlessWorkspace = () => {
     firstContainer.innerHTML += firstContainer.innerHTML;
 
     // Clone content for the second container and append as well
-    secondContainer.innerHTML += secondContainer.innerHTML 
+    secondContainer.innerHTML += secondContainer.innerHTML;
 
     // Start animations
     firstAnimationFrameId.current = requestAnimationFrame(scrollFirst);
@@ -104,7 +104,7 @@ const EffortlessWorkspace = () => {
     <div className="space-y-8">
       <div className="flex flex-col items-center gap-4">
         <div className="flex items-center gap-2 self-center border border-gray-300 px-3 shadow py-1 rounded-lg text-gray-700">
-          <CreateBlockSvg /> Effortless workflows 
+          <CreateBlockSvg /> Effortless workflows
         </div>
         <h1 className="text-3xl xl:text-5xl text-center font-medium text-gray-900">
           Every action at your fingertips

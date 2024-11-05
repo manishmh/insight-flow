@@ -54,7 +54,7 @@ const MainContent = () => {
         <PieChart data={pieData} circleColor="#e1e8ee" />
       </div>
       <div className="col-span-2">
-        <Table data={sampleTableData}/> 
+        <Table data={sampleTableData.data}/> 
       </div>
     </div>
   );

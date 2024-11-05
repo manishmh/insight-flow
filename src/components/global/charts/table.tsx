@@ -20,7 +20,7 @@ const Table: React.FC<TableProps> = ({ data }) => {
     <div className="overflow-x-auto rounded-md border py-2 border-gray-300 shadow font-sans h-[90vh]">
       <table className="min-w-full overflow-scroll">
         <thead>
-          <tr className="text-gray-400 uppercase text-xs leading-normal ">
+          <tr className="text-gray-400 uppercase text-[11px] leading-normal ">
             <th className="py-2 px-6 text-left font-medium">ID</th>
             <th className="py-2 px-6 text-left font-medium">First Name</th>
             <th className="py-2 px-6 text-left font-medium">Last Name</th>
@@ -30,13 +30,13 @@ const Table: React.FC<TableProps> = ({ data }) => {
             <th className="py-2 px-6 text-left font-medium">State</th>
           </tr>
         </thead>
-        <tbody className="text-gray-700 text-sm font-light">
-          {data.slice(0, 50).map((item) => (
+        <tbody className="text-gray-700 font-light">
+          {data.slice(0, 50).map((item, index) => (
             <tr
-              key={item.id}
+              key={item.id + index}
               className="border-b border-gray-200 hover:bg-[#d7dde394]"
             >
-              <td className=" px-6 text-left h-[40px]">{item.id}</td>
+              <td className=" px-6 text-left ">{item.id}</td>
               <td className=" px-6 text-left">{item.first_name}</td>
               <td className=" px-6 text-left">{item.last_name}</td>
               <td className="px-6 text-left">
@@ -53,8 +53,8 @@ const Table: React.FC<TableProps> = ({ data }) => {
                   <Image
                     src={item.avatar}
                     alt="avatar"
-                    width={40}
-                    height={40}
+                    width={30}
+                    height={20}
                     className="w-10 h-10 rounded-full"
                   />
                 ) : (

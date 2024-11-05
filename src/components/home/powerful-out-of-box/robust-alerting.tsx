@@ -1,5 +1,5 @@
-import DoneSvg from "@/components/global/done-svg";
-import LoadingSpinner from "@/components/global/loader";
+import DoneSvg from "@/components/global/svg/done-svg";
+import LoadingSpinner from "@/components/global/svg/loader";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
@@ -46,7 +46,6 @@ const RobustAlerting = () => {
         setRestart(true); // Restart the animation
         setKey((prevKey) => prevKey + 1); // Change the key to reset the animation
       }, 100); // Delay to allow div to disappear, then trigger re-render
-
     }, 6000);
     return () => clearTimeout(timer);
   }, [restart, showCheck]);
@@ -69,7 +68,7 @@ const RobustAlerting = () => {
               }`}
             >
               <motion.div
-                key={key} 
+                key={key}
                 className="shadow-md flex flex-col items-start gap-2 bg-[#eaf2f8] px-8 py-4 rounded-xl font-mono"
                 initial="hidden"
                 animate="visible"

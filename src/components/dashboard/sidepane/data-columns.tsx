@@ -11,7 +11,6 @@ const DataColumns: React.FC<DataColumnsProps> = ({ selectedData }) => {
   const [openColumns, setOpenColumns] = useState(false);
   const [checkedColumns, setCheckedColumns] = useState<string[]>([]);
   const [selectAll, setSelectAll] = useState(true);
-  console.log(checkedColumns);
 
   // Initialize all columns as checked when selectedData changes
   useEffect(() => {

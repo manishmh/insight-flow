@@ -11,8 +11,8 @@ export type sidepaneToolsType = {
 };
 
 const sidepaneTools: sidepaneToolsType = {
-  data: false,
-  charts: true,
+  data: true,
+  charts: false,
 };
 
 const Sidepane = () => {

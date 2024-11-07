@@ -9,6 +9,7 @@ import { IoSearch, IoSettingsSharp } from "react-icons/io5";
 import { LuCommand, LuLayoutDashboard } from "react-icons/lu";
 import { MdQueryStats } from "react-icons/md";
 import { PiPlugBold } from "react-icons/pi";
+import { useAddBlockContext } from "@/contexts/add-context";
 
 const Sidebar = ({
   handleSidebar,
@@ -18,6 +19,8 @@ const Sidebar = ({
   handleSearchState: () => void;
 }) => {
   const [dashboard, setDashboard] = useState(true);
+  const { addBlock } = useAddBlockContext();
+  console.log('adblock', addBlock)
   return (
     <div className="h-full flex flex-col justify-between flex-1 pl-1 py-2 pt-3 ">
       <div className="flex justify-between items-center gap-2 w-full pl-1">

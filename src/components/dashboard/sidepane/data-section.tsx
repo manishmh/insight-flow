@@ -3,9 +3,9 @@ import { sampleTableData } from "@/constants/sampel-table-data";
 import { useState } from "react";
 import DataColumns from "./data-columns";
 import GroupBy from "./group-by";
-import Modal from "./modal";
 import SelectQueryList from "./select-query-list";
 import SortBy from "./sort-by";
+import Aggregiate from "./aggregate";
 
 export type DataSourceItem = {
   label: string;
@@ -93,6 +93,7 @@ const DataSection = () => {
       <DataColumns selectedData={selectedData} />
       <GroupBy selectedData={selectedData} />
       <SortBy selectedData={selectedData} />
+      <Aggregiate  selectedData={selectedData}/>
     </>
   );
 };

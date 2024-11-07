@@ -1,6 +1,10 @@
+import BlockType from "./charts-section/block-type"
+
 const ChartSection = () => {
   return (
-    <div>Coming soon</div>
+    <div>
+      <BlockType />   
+    </div>
   )
 }
 

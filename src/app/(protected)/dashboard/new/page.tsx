@@ -1,8 +1,11 @@
-import React from 'react'
+import AddFirstBlock from "@/components/dashboard/main-content/add-first-block"
 
 const NewConnection = () => {
   return (
-    <div>NewConnection</div>
+    <div className="h-full">
+
+      <AddFirstBlock />
+    </div>
   )
 }
 

@@ -17,18 +17,33 @@ export const sendTwoFactorTokenEmail = async (
 }
 
 export const sendPasswordResetEmail = async (
-    email: string,
-    token: string
+  email: string,
+  token: string
 ) => {
-    const confirmLink = `${domain}/auth/new-password?token=${token}`;
+  const confirmLink = `${domain}/auth/new-password?token=${token}`;
 
-    await resend.emails.send({
-        from: "onboarding@resend.dev",
-        to: email,
-        subject: "Reset Your Password",
-        html: `<p>Click <a href="${confirmLink}"> here</a> to reset your password.</p>`,
-    })
-}
+  const htmlContent = `
+    <p> Click <a href="${confirmLink}" target="_blank">here</a> to reset your password. </p>
+    <div>Or copy and paste the following link into your browser: ${confirmLink}</div>
+  `;
+
+
+  const options = {
+    from: "onboarding@resend.dev",
+    to: email,
+    subject: "Reset Your Password",
+    html: htmlContent,
+  };
+
+  try {
+    const response = await resend.emails.send(options);
+    console.log("Password reset email sent with link:", confirmLink);
+    console.log("Email service response:", response); 
+  } catch (error) {
+    console.error("Error sending password reset email:", error);
+  }
+};
+
 
 export const sendVerificationEmail = async (
     email: string,
@@ -40,6 +55,6 @@ export const sendVerificationEmail = async (
         from: "onboarding@resend.dev",
         to: email,
         subject: "Confirm your email",
-        html: `<p>Click <a href="${confirmLink}"> here</a> to confirm your email.</p>`,
+        html: `<p>Click <a href="${confirmLink}"> here </a> to confirm your email.</p>`,
     })
 }

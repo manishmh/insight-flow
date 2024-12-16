@@ -78,9 +78,7 @@ const RobustAlerting = () => {
                   custom={0}
                   variants={slideInRef.current}
                 >
-                  <span className="text-orange-500 font-mono pr-2 font-medium">
-                    If
-                  </span>{" "}
+                  <span className="text-orange-500 font-mono pr-2 font-medium"> If </span>{" "}
                   &quot;Monday, 9 AM&quot;{" "}
                   <span>
                     {!showCheck ? (

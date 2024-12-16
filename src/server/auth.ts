@@ -56,8 +56,10 @@ export const {
       const existingUser = await findUserById(token.sub);
       
       if (!existingUser) return token;
+
       token.role = existingUser.role;
       token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;
+      token.defaultDashboardId = existingUser.defaultDashboardId;
       
       return token;
     },
@@ -74,6 +76,7 @@ export const {
 
       if (session.user) {
         session.user.isTwoFactorEnabled = token.isTwoFactorEnabled;
+        session.user.defaultDashboardId = token.defaultDashboardId;
       }
 
       return session;

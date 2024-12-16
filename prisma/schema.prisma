@@ -24,6 +24,28 @@ model User {
   accounts              Account[]
   isTwoFactorEnabled    Boolean                @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
+  dashboards            Dashboard[]
+  defaultDashboardId    String?
+
+  // todo: add cascade on delete
+}
+
+model Dashboard {
+  id        String  @id @default(cuid())
+  name      String
+  boards    Board[]
+  userId    String  
+  user      User    @relation(fields: [userId], references: [id])
+  isDefault Boolean @default(true)
+}
+
+model Board {
+  id          String @id @default(cuid())
+  dashboardId String
+  name        String
+  data        Json?
+
+  dashboard Dashboard @relation(fields: [dashboardId], references: [id])
 }
 
 model Account {
@@ -43,20 +65,6 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
-}
-
-model Dashboard {
-  id     String  @id @default(cuid())
-  boards Board[]
-}
-
-model Board {
-  id          String @id @default(cuid())
-  dashboardId String
-  name        String
-  data        Json?
-
-  dashboard Dashboard @relation(fields: [dashboardId], references: [id] )
 }
 
 model VerificationToken {

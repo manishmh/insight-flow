@@ -8,7 +8,7 @@ import { SidepaneContext } from "@/contexts/sidepane-context";
 import { ReactNode, useCallback, useEffect, useState } from "react";
 
 const DashboardLayout = ({ children }: { children: ReactNode }) => {
-  const [screenSize, setScreenSize] = useState<number | null>(null);
+  // const [screenSize, setScreenSize] = useState<number | null>(null);
   const [searchState, setSearchState] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sidebarHover, setSidebarHover] = useState(false);
@@ -19,7 +19,7 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const handleResize = () => {
       const currentWidth = window.innerWidth;
-      setScreenSize(currentWidth);
+      // setScreenSize(currentWidth);
       setSidebarOpen(currentWidth > 768);
     };
 
@@ -88,7 +88,7 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
                   onClick={handleSearchState}
                 ></div>
                 <div className="absolute z-50 bg-white w-full max-w-[600px] h-[400px] rounded-lg top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2">
-                  search bar upcoming.
+                  <div className="text-lg text-gray-600 w-full h-full grid place-items-center">coming soon...</div>
                 </div>
               </>
             )}

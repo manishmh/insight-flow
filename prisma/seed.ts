@@ -12,7 +12,9 @@ async function main() {
   await prisma.dashboard.deleteMany();
 
   const dashboard = await prisma.dashboard.create({
-    data: {}
+    data: {
+      name: 'New Dashboard', 
+    },
   });
 
   await prisma.board.create({

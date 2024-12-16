@@ -1,16 +1,16 @@
 'use server';
 
-import * as z from 'zod'
+import { getTwoFactorConfirmationByUserId } from '@/data/two-factor-confirmation';
+import { getTwoFactorTokenByEmail } from '@/data/two-factor-token';
+import { findUserByEmail } from '@/data/user';
+import { db } from '@/lib/db';
+import { sendTwoFactorTokenEmail, sendVerificationEmail } from '@/lib/mail';
+import { generateTwoFactorToken, generateVerificationToken } from '@/lib/token';
 import { loginSchema } from '@/schemas/input-validation';
 import { signIn } from '@/server/auth';
 import { DEFAULT_LOGIN_REDIRECT_URL } from '@/server/routes';
 import { AuthError } from 'next-auth';
-import { generateVerificationToken, generateTwoFactorToken } from '@/lib/token';
-import { findUserByEmail } from '@/data/user';
-import { sendVerificationEmail, sendTwoFactorTokenEmail } from '@/lib/mail';
-import { getTwoFactorTokenByEmail } from '@/data/two-factor-token';
-import { db } from '@/lib/db';
-import { getTwoFactorConfirmationByUserId } from '@/data/two-factor-confirmation';
+import * as z from 'zod';
 
 export const login = async (
     values: z.infer<typeof loginSchema>,
@@ -27,6 +27,23 @@ export const login = async (
 
     if (!existingUser || !existingUser.email || !existingUser.password) {
         return { success: false, message: "Email is not registered"}
+    }
+
+    if (existingUser.defaultDashboardId === null) {
+        const dashboard = await db.dashboard.create({
+            data: {
+                name: "Sample Board", 
+                userId: existingUser.id,
+                isDefault: true
+            }
+        })
+
+        await db.user.update({
+            where: { id: existingUser.id },
+            data: {
+                defaultDashboardId: dashboard.id
+            }
+        })
     }
 
     // if (!existingUser.emailVerified) {

@@ -1,5 +1,10 @@
-import Link from "next/link";
-import { ReactNode, useState } from "react";
+import { useAddBlockContext } from "@/contexts/add-context";
+import {
+  CreateNewDashboard,
+  GetDashboards,
+} from "@/server/components/dashboard-commands";
+import { useRouter } from "next/navigation";
+import { ReactNode, useEffect, useState, useTransition } from "react";
 import { BsArchive } from "react-icons/bs";
 import { CgStudio } from "react-icons/cg";
 import { FaChevronDown, FaPlus, FaRegHeart } from "react-icons/fa6";
@@ -9,7 +14,8 @@ import { IoSearch, IoSettingsSharp } from "react-icons/io5";
 import { LuCommand, LuLayoutDashboard } from "react-icons/lu";
 import { MdQueryStats } from "react-icons/md";
 import { PiPlugBold } from "react-icons/pi";
-import { useAddBlockContext } from "@/contexts/add-context";
+import { toast } from "sonner";
+import {RotatingLines} from 'react-loader-spinner'
 
 const Sidebar = ({
   handleSidebar,
@@ -18,9 +24,48 @@ const Sidebar = ({
   handleSidebar: () => void;
   handleSearchState: () => void;
 }) => {
-  const [dashboard, setDashboard] = useState(true);
+  const [dashboardState, setDashboardState] = useState(true);
+  const [userDashboards, setUserDashboards] = useState<
+    { id: string; name: string; userId: string; isDefault: boolean }[]
+  >([]);
+  const [isPending, startTransition] = useTransition();
   const { addBlock } = useAddBlockContext();
-  console.log('adblock', addBlock)
+
+  useEffect(() => {
+    const fetchDashboards = async () => {
+      try {
+        const dashboards = await GetDashboards();
+        setUserDashboards(dashboards);
+      } catch (error) {
+        console.error("Failed to fetch dashboards:", error);
+      }
+    };
+
+    fetchDashboards();
+  }, []);
+
+  const handleNewDashboard = () => {
+    startTransition(async () => {
+      try {
+        const newDashboard = await CreateNewDashboard();
+
+        if (newDashboard) {
+          setUserDashboards((prev) => [...prev, newDashboard]);
+          toast.success("New dashboard created!");
+        } else {
+          throw new Error("Dashboard creation failed");
+        }
+      } catch (error) {
+        console.error("Error creating dashboard:", error);
+        toast.error("Failed to create new dashboard! Try again later.");
+      }
+    });
+  };
+
+  const handleComingToast = () => {
+    toast.info("Coming soon!");
+  };
+
   return (
     <div className="h-full flex flex-col justify-between flex-1 pl-1 py-2 pt-3 ">
       <div className="flex justify-between items-center gap-2 w-full pl-1">
@@ -57,12 +102,11 @@ const Sidebar = ({
           </div>
         </div>
       </div>
-      <div
-        className="flex flex-col gap-1 flex-1"
-        onClick={() => setDashboard(!dashboard)}
-      >
-        <SidebarItem logo={<FaPlus />} title="New" link="/dashboard/new" />
-        <SidebarItem
+      <div className="flex flex-col gap-1 flex-1">
+        <div onClick={handleNewDashboard}>
+          <SidebarItem logo={<FaPlus />} title="New" />
+        </div>
+        {/* <SidebarItem
           logo={<PiPlugBold />}
           title="Connections"
           num={1}
@@ -78,14 +122,14 @@ const Sidebar = ({
           logo={<CgStudio />}
           title="Studio"
           link="/dashboard/studio"
-        />
+        /> */}
         <div
           className={`mt-4 flex px-3 gap-2 items-center text-gray-600 cursor-pointer`}
-          onClick={() => setDashboard(!dashboard)}
+          onClick={() => setDashboardState(!dashboardState)}
         >
           <span
             className={`transition-all duration-300 ${
-              !dashboard && "-rotate-90"
+              !dashboardState && "-rotate-90"
             }`}
           >
             <FaChevronDown />
@@ -93,56 +137,33 @@ const Sidebar = ({
           <span>Dashboard</span>
         </div>
       </div>
-      {dashboard && (
+      {dashboardState && (
         <div className="h-full overflow-scroll scrollbar-none py-2">
-          <SidebarItem
-            logo={<LuLayoutDashboard />}
-            title="Sample Board"
-            link="/dashboard/new"
-          />
-          <SidebarItem
-            logo={<LuLayoutDashboard />}
-            title="Test"
-            link="/dashboard/new"
-          />
-          <SidebarItem
-            logo={<LuLayoutDashboard />}
-            title="Untitled Board"
-            link="/dashboard/new"
-          />
-          <SidebarItem
-            logo={<LuLayoutDashboard />}
-            title="Untitled Board"
-            link="/dashboard/new"
-          />
-          <SidebarItem
-            logo={<LuLayoutDashboard />}
-            title="Untitled Board"
-            link="/dashboard/new"
-          />
-          <SidebarItem
-            logo={<LuLayoutDashboard />}
-            title="Untitled Board"
-            link="/dashboard/new"
-          />
+          {userDashboards.length > 0 &&
+            userDashboards.map((dashboard) => (
+              <SidebarItem
+                key={dashboard.id}
+                logo={<LuLayoutDashboard />}
+                title={dashboard.name}
+                link={`/dashboard/${dashboard.id}`}
+              />
+            ))}
+
+          {isPending && (
+            <div className="flex gap-2 items-center opacity-40 pl-3 bg-[#d1d5dbac] py-1 rounded-md">
+              <RotatingLines width="15" strokeColor="black" /> 
+              creating dashboard...
+            </div>
+          )}
         </div>
       )}
-      <div className=" py-1 border-t xl:border-none border-gray-300">
-        <SidebarItem
-          logo={<BsArchive />}
-          title="Archive"
-          link="/dashboard/new"
-        />
-        <SidebarItem
-          logo={<IoSettingsSharp />}
-          title="Settings"
-          link="/dashboard/new"
-        />
-        <SidebarItem
-          logo={<FaRegHeart />}
-          title="Share feedback"
-          link="/dashboard/new"
-        />
+      <div
+        className=" py-1 border-t xl:border-none border-gray-300 space-y-1"
+        onClick={handleComingToast}
+      >
+        <SidebarItem logo={<BsArchive />} title="Archive" />
+        <SidebarItem logo={<IoSettingsSharp />} title="Settings" />
+        <SidebarItem logo={<FaRegHeart />} title="Share feedback" />
       </div>
     </div>
   );
@@ -159,21 +180,23 @@ const SidebarItem = ({
   logo: ReactNode;
   title: string;
   num?: number;
-  link: string;
+  link?: string;
 }) => {
+  const router = useRouter();
   return (
-    <Link href={link}>
-      <div className="flex justify-between items-center group hover:bg-[#d1d5dbac] transition-all duration-300 pr-1 ml-1 rounded-md">
-        <div className="flex gap-2 items-center text-gray-600 text  px-2 py-1 rounded-md ">
-          {logo}
-          {title}
-        </div>
-        {num && (
-          <div className="w-5 h-5 aspect-square border border-gray-300 group-hover:border-gray-400 grid place-items-center rounded-md text-gray-500 ">
-            {num}
-          </div>
-        )}
+    <div
+      className="flex justify-between items-center group hover:bg-[#d1d5dbac] transition-all duration-300 pr-1 ml-1 rounded-md cursor-pointer"
+      onClick={link ? () => router.push(link) : () => {}}
+    >
+      <div className="flex gap-2 items-center text-gray-600 text  px-2 py-1 rounded-md ">
+        {logo}
+        {title}
       </div>
-    </Link>
+      {num && (
+        <div className="w-5 h-5 aspect-square border border-gray-300 group-hover:border-gray-400 grid place-items-center rounded-md text-gray-500 ">
+          {num}
+        </div>
+      )}
+    </div>
   );
 };

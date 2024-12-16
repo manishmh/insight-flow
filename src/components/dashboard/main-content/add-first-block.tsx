@@ -1,13 +1,15 @@
-'use client'
+"use client";
 
 import { FaPlus } from "react-icons/fa6";
 import { PiDotsNineBold } from "react-icons/pi";
-import { useAddBlockContext } from "@/contexts/add-context";
 
-const AddFirstBlock = () => {
-  const { addBlock, handleAddBlock } = useAddBlockContext();
-  console.log('adblock block', addBlock)
-
+const AddFirstBlock = ({
+  dashboardId,
+  handleEmptyBlock,
+}: {
+  dashboardId: string;
+  handleEmptyBlock: () => void;
+}) => {
   return (
     <div className="flex flex-col items-center justify-center select-none w-full h-full">
       <div className="w-36 flex flex-col gap-2 aspect-square border-gray-400">
@@ -36,8 +38,9 @@ const AddFirstBlock = () => {
       <div className="text-gray-500">
         Dashboards are visual display of your workspace data.
       </div>
-      <button className="flex items-center border text-gray-500 hover:text-gray-800 transition-colors duration-300 border-gray-300 rounded-md px-3 py-1 gap-1 mt-4"
-      onClick={handleAddBlock}
+      <button
+        className="flex items-center border text-gray-500 hover:text-gray-800 transition-colors duration-300 border-gray-300 rounded-md px-3 py-1 gap-1 mt-4"
+        onClick={handleEmptyBlock}
       >
         <FaPlus /> Add block
       </button>

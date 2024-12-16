@@ -1,6 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 import * as fs from 'fs';
 import path from 'path';
+import { auth } from '@/server/auth';
+import { GetDefaultDashboardId } from '@/server/components/dashboard-commands';
 
 const prisma = new PrismaClient();
 
@@ -8,20 +10,19 @@ const seedDataPath = path.join(__dirname, 'seedData', 'customers.json');
 const customersData = JSON.parse(fs.readFileSync(seedDataPath, 'utf-8'));
 
 async function main() {
+  const session =  await auth();
   await prisma.board.deleteMany();
   await prisma.dashboard.deleteMany();
 
-  const dashboard = await prisma.dashboard.create({
-    data: {
-      name: 'New Dashboard', 
-    },
-  });
+  const dashboardId = await GetDefaultDashboardId()
+
+  if (!dashboardId) return;
 
   await prisma.board.create({
     data: {
       name: 'Customers',
       data: customersData,
-      dashboardId: dashboard.id,
+      dashboardId: dashboardId,
     },
   });
 

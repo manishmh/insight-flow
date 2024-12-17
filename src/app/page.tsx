@@ -10,24 +10,30 @@ import QueryDataSql from "@/components/home/query-data/query-data-sql";
 import Sponsors from "@/components/home/sponsors/sponsors";
 import VisualizeData from "@/components/home/visualize-data/visualize-data";
 import { ModeToggle } from "@/components/toggle-mode";
+import Head from "next/head";
 
 export default function Home() {
   return (
-    <main className="space-y-[150px] md:space-y-[200px]">
-      <div className="font-sans max-w-screen-2xl mx-auto">
-        {/* <ModeToggle /> */}
-        <Navbar />
-        <div className="space-y-[150px] md:space-y-[200px]">
-          <Hero />
-          <Sponsors />
-          <ConnectYourData />
-          <QueryDataSql />
-          <VisualizeData />
-          <PowerfulOutOfBox />
-          <EffortlessWorkspace />
+    <div>
+      <Head>
+        <link rel="icon" href="/favicon.ico"/>
+      </Head>
+      <main className="space-y-[150px] md:space-y-[200px]">
+        <div className="font-sans max-w-screen-2xl mx-auto">
+          {/* <ModeToggle /> */}
+          <Navbar />
+          <div className="space-y-[150px] md:space-y-[200px]">
+            <Hero />
+            <Sponsors />
+            <ConnectYourData />
+            <QueryDataSql />
+            <VisualizeData />
+            <PowerfulOutOfBox />
+            <EffortlessWorkspace />
+          </div>
         </div>
-      </div>
-      <Footer />
-    </main>
+        <Footer />
+      </main>
+    </div>
   );
 }

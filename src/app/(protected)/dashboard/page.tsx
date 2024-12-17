@@ -1,32 +1,36 @@
-'use client'
+'use client';
 
-import { logout } from "@/actions/logout"
-import AddFirstBlock from "@/components/dashboard/main-content/add-first-block";
-import MainContent from "@/components/dashboard/main-content/main-content";
-import { useCurrentUser } from "@/hooks/use-current-user"
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { useEffect } from "react";
+import { GetDefaultDashboardId } from "@/server/components/dashboard-commands";
 
 const Dashboard = () => {
   const router = useRouter();
-  const user = useCurrentUser();
 
-  const signout = async () => {
-    try {
-      await logout();
-      toast.success('You have been signed out');
+  useEffect(() => {
+    const fetchDefaultDashboardId = async () => {
+      try {
+        const id = await GetDefaultDashboardId();
+        console.log('defaultdashboardid', id)
 
-      router.push('/auth/login');
-    } catch (error) {
-      toast.error('Failed to sign out. Try again later');
-    }
-  };
+        router.push(`/dashboard/${id}`);
+      } catch (error) {
+        console.error("Failed to fetch default dashboard ID:", error);
+      }
+    };
+
+    fetchDefaultDashboardId();
+  }, []);
 
   return (
-    <div className="h-full">
-      <MainContent />
+    <div className="p-4 h-full flex flex-col gap-4">
+      <div className="h-1/2 w-full flex gap-4">
+        <div className="w-full h-full bg-[#cdd4deac] animate-pulse"></div>
+        <div className="w-full h-full bg-[#cdd4deac] animate-pulse"></div>
+      </div>
+      <div className="w-full h-1/2 bg-[#cdd4deac] animate-pulse"></div>
     </div>
-  );
-}
+  )
+};
 
 export default Dashboard;

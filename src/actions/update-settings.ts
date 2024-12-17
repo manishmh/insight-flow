@@ -3,7 +3,7 @@
 import { db } from "@/lib/db"
 import { settingsSchema } from "@/schemas/input-validation"
 import * as z from 'zod'
-import { findUserByEmail, findUserById } from "@/data/user"
+import { findUserById } from "@/data/user"
 import { currentUser } from "@/server/components/user-data"
 
 export const updateSettings = async (values: z.infer<typeof settingsSchema>) => {

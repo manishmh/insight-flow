@@ -18,10 +18,11 @@ import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const ResetForm = () => {
   const [isPending, startTransition] = useTransition();
-
+  const router = useRouter();
   const form = useForm<z.infer<typeof resetSchema>>({
     resolver: zodResolver(resetSchema),
     defaultValues: {
@@ -41,6 +42,7 @@ const ResetForm = () => {
         } else if (success) {
           toast.success(message)
           form.reset();
+          router.push("/auth/login");
         }
       } catch (error: any) {
           console.error(error);

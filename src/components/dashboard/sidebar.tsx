@@ -1,4 +1,3 @@
-import { useAddBlockContext } from "@/contexts/add-context";
 import {
   CreateNewDashboard,
   GetDashboards,
@@ -24,12 +23,12 @@ const Sidebar = ({
   handleSidebar: () => void;
   handleSearchState: () => void;
 }) => {
+  const router = useRouter()
   const [dashboardState, setDashboardState] = useState(true);
   const [userDashboards, setUserDashboards] = useState<
     { id: string; name: string; userId: string; isDefault: boolean }[]
   >([]);
   const [isPending, startTransition] = useTransition();
-  const { addBlock } = useAddBlockContext();
 
   useEffect(() => {
     const fetchDashboards = async () => {
@@ -52,6 +51,7 @@ const Sidebar = ({
         if (newDashboard) {
           setUserDashboards((prev) => [...prev, newDashboard]);
           toast.success("New dashboard created!");
+          router.push(`/dashboard/${newDashboard.id}`);
         } else {
           throw new Error("Dashboard creation failed");
         }

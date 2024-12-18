@@ -2,7 +2,7 @@
 import Sidebar from "@/components/dashboard/sidebar";
 import Sidepane from "@/components/dashboard/sidepane/sidepane";
 import DashboardTopbar from "@/components/dashboard/topbar";
-import { AddBlockProvider } from "@/contexts/add-context";
+import { DashboardDataProvider } from "@/contexts/dashboard-context";
 import { SidebarContext } from "@/contexts/sidebar-context";
 import { SidepaneContext } from "@/contexts/sidepane-context";
 import { ReactNode, useCallback, useEffect, useState } from "react";
@@ -75,11 +75,11 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
   }, [isResizing, handleMouseMove, handleMouseUp]);
 
   return (
-    <SidebarContext.Provider
-      value={{ sidebarWidth, sidebarOpen, handleSidebar }}
-    >
-      <SidepaneContext.Provider value={{ sidepaneOpen, handleSidepane }}>
-        <AddBlockProvider>
+    <DashboardDataProvider>
+      <SidebarContext.Provider
+        value={{ sidebarWidth, sidebarOpen, handleSidebar }}
+      >
+        <SidepaneContext.Provider value={{ sidepaneOpen, handleSidepane }}>
           <div className="flex text-sm md:text-xs 3xl:text-sm select-none overflow-hidden">
             {searchState && (
               <>
@@ -88,7 +88,9 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
                   onClick={handleSearchState}
                 ></div>
                 <div className="absolute z-50 bg-white w-full max-w-[600px] h-[400px] rounded-lg top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2">
-                  <div className="text-lg text-gray-600 w-full h-full grid place-items-center">coming soon...</div>
+                  <div className="text-lg text-gray-600 w-full h-full grid place-items-center">
+                    coming soon...
+                  </div>
                 </div>
               </>
             )}
@@ -158,9 +160,9 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
               <Sidepane />
             </div>
           </div>
-        </AddBlockProvider>
-      </SidepaneContext.Provider>
-    </SidebarContext.Provider>
+        </SidepaneContext.Provider>
+      </SidebarContext.Provider>
+    </DashboardDataProvider>
   );
 };
 

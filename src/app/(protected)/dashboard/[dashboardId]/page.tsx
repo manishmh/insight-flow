@@ -11,7 +11,6 @@ const DynamicDashboard = ({ params }: { params: any }) => {
 
   const [isPendingDashbaord, startTransitionDashboard] = useTransition();
   const { dashboardData, handleDashboardData } = useDashboardContext();
-  console.log("dashboarddata", dashboardData);
 
   useEffect(() => {
     startTransitionDashboard(() => {
@@ -25,7 +24,7 @@ const DynamicDashboard = ({ params }: { params: any }) => {
 
 
   return (
-    <div className="h-full">
+    <div className="h-full p-4">
       {dashboardData?.boards.length <= 0 ? (
         <AddFirstBlock
           dashboardId={dashboardId}

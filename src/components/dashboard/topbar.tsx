@@ -1,5 +1,6 @@
 import { useDashboardContext } from "@/contexts/dashboard-context";
 import { createNewEmptyBlock } from "@/server/components/block-functions";
+import { SetDashboardName } from "@/server/components/dashboard-commands";
 import {
   Dispatch,
   SetStateAction,
@@ -48,6 +49,21 @@ const DashboardTopbar = ({
     });
   };
 
+  const handleRenameDashboard = async () => {
+    if (newblockName.trim() && newblockName !== dashboardData.name) {
+      try {
+        const dashboardId = dashboardData.id;
+        await SetDashboardName(dashboardId, newblockName.trim());
+        handleDashboardData(dashboardId);
+        toast.success("Dashboard renamed successfully");
+      } catch (error) {
+        toast.error("Failed to rename dashboard");
+        console.error(error);
+      }
+    }
+    setEditBlockname(false);
+  };
+
   return (
     <div className="flex justify-between items-center hfull h-full px-2">
       <div className="flex items-center text-gray-600">
@@ -72,11 +88,21 @@ const DashboardTopbar = ({
                 type="text"
                 className="bg-transparent border border-gray-400 text-black px-1"
                 value={newblockName}
+                autoFocus={editBlockname}
                 onChange={(e) => setNewBlockName(e.target.value)}
+                onBlur={handleRenameDashboard} 
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleRenameDashboard(); 
+                  }
+                }}
               />
             </div>
           ) : (
-            <div className="" onClick={() => setEditBlockname(!editBlockname)}>
+            <div
+              className="cursor-pointer"
+              onClick={() => setEditBlockname(!editBlockname)}
+            >
               {dashboardData.name}
             </div>
           )}

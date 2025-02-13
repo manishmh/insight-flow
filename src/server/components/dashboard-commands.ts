@@ -63,3 +63,33 @@ export const GetDefaultDashboardId = async () => {
 
     return defaultDashboardId;
 }
+
+/** 
+ * @returns to set the name of the dashboard
+*/
+
+export const SetDashboardName = async (dashboardId: string, name: string) => {
+    const dashboard = await db.dashboard.update({
+        where: { id: dashboardId },
+        data: { name }
+    })
+
+    return dashboard;
+}
+
+/** 
+ * @returns updates board size
+ */
+
+export const UpdateBoardSize = async (id: string, width: number, height: number) => {
+    try {
+        const board = await db.board.update({
+            where: { id },
+            data: { width, height }
+        })
+    
+        return board;
+    } catch (error) {
+        throw new Error("Failed to update board size");    
+    }
+}

@@ -1,7 +1,5 @@
 'use server'
 import { db } from "@/lib/db";
-import { auth } from "@/server/auth";
-import { connect } from "http2";
 
 /** 
  * @returns Creating new empty block
@@ -13,6 +11,8 @@ export const createNewEmptyBlock = async (dashboardId: string) => {
       data: {
         dashboardId: dashboardId,
         name: "New Block",
+        width: 384,
+        height: 360,
       },
     });
     return newBlock;
@@ -21,3 +21,34 @@ export const createNewEmptyBlock = async (dashboardId: string) => {
     throw new Error("Failed to create block");
   }
 };
+
+/** 
+ * @returns updaes selected block Query
+ */
+
+export const fetchSampleData = async (name: string) => {
+  try {
+    const sampleData = await db.sampleData.findFirst({
+      where: {
+        name: name
+      }
+    }) 
+
+    return sampleData;
+  } catch (error: any) {
+    throw new Error("Failed to fetch sample data", error);
+  }
+}
+
+export const setCurrentDataId = async (boardId: string, currentDataId: string ) => {
+  try {
+    const board = await db.board.update({
+      where: { id: boardId },
+      data: { currentDataId }
+    })
+
+    return board;
+  } catch (error) {
+    throw new Error("Failed to update board sample data id") 
+  }
+}

@@ -237,3 +237,7 @@ body {
 .animate-scroll-right {
   animation: scroll-right 15s linear infinite;
 }
+
+.react-resizable-handle-se {
+  opacity: 0!important;
+}

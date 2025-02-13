@@ -1,18 +1,54 @@
-import { auth } from "@/server/auth";
+'use server'
 import { db } from "@/lib/db";
-import { connect } from "http2";
 
 /** 
  * @returns Creating new empty block
  */
 
-export const CreateNewEmptyblock = async (dashboardId: string) => {
+export const createNewEmptyBlock = async (dashboardId: string) => {
+  try {
     const newBlock = await db.board.create({
-        data: {
-            dashboard: { connect: { id: dashboardId }},
-            name: "New Block",
-        }
+      data: {
+        dashboardId: dashboardId,
+        name: "New Block",
+        width: 384,
+        height: 360,
+      },
+    });
+    return newBlock;
+  } catch (error) {
+    console.error("Failed to create block:", error);
+    throw new Error("Failed to create block");
+  }
+};
+
+/** 
+ * @returns updaes selected block Query
+ */
+
+export const fetchSampleData = async (name: string) => {
+  try {
+    const sampleData = await db.sampleData.findFirst({
+      where: {
+        name: name
+      }
+    }) 
+
+    return sampleData;
+  } catch (error: any) {
+    throw new Error("Failed to fetch sample data", error);
+  }
+}
+
+export const setCurrentDataId = async (boardId: string, currentDataId: string ) => {
+  try {
+    const board = await db.board.update({
+      where: { id: boardId },
+      data: { currentDataId }
     })
 
-    return newBlock;
+    return board;
+  } catch (error) {
+    throw new Error("Failed to update board sample data id") 
+  }
 }

@@ -1,4 +1,3 @@
-import { useAddBlockContext } from "@/contexts/add-context";
 import {
   CreateNewDashboard,
   GetDashboards,
@@ -14,8 +13,9 @@ import { IoSearch, IoSettingsSharp } from "react-icons/io5";
 import { LuCommand, LuLayoutDashboard } from "react-icons/lu";
 import { MdQueryStats } from "react-icons/md";
 import { PiPlugBold } from "react-icons/pi";
+import { RotatingLines } from "react-loader-spinner";
 import { toast } from "sonner";
-import {RotatingLines} from 'react-loader-spinner'
+import SidebarItem from "./sidebar-item";
 
 const Sidebar = ({
   handleSidebar,
@@ -24,12 +24,12 @@ const Sidebar = ({
   handleSidebar: () => void;
   handleSearchState: () => void;
 }) => {
+  const router = useRouter();
   const [dashboardState, setDashboardState] = useState(true);
   const [userDashboards, setUserDashboards] = useState<
     { id: string; name: string; userId: string; isDefault: boolean }[]
   >([]);
   const [isPending, startTransition] = useTransition();
-  const { addBlock } = useAddBlockContext();
 
   useEffect(() => {
     const fetchDashboards = async () => {
@@ -52,6 +52,7 @@ const Sidebar = ({
         if (newDashboard) {
           setUserDashboards((prev) => [...prev, newDashboard]);
           toast.success("New dashboard created!");
+          router.push(`/dashboard/${newDashboard.id}`);
         } else {
           throw new Error("Dashboard creation failed");
         }
@@ -138,7 +139,7 @@ const Sidebar = ({
         </div>
       </div>
       {dashboardState && (
-        <div className="h-full overflow-scroll scrollbar-none py-2">
+        <div className="h-full overflow-scroll scrollbar-none py-2 space-y-1">
           {userDashboards.length > 0 &&
             userDashboards.map((dashboard) => (
               <SidebarItem
@@ -151,7 +152,7 @@ const Sidebar = ({
 
           {isPending && (
             <div className="flex gap-2 items-center opacity-40 pl-3 bg-[#d1d5dbac] py-1 rounded-md">
-              <RotatingLines width="15" strokeColor="black" /> 
+              <RotatingLines width="15" strokeColor="black" />
               creating dashboard...
             </div>
           )}
@@ -170,33 +171,3 @@ const Sidebar = ({
 };
 
 export default Sidebar;
-
-const SidebarItem = ({
-  logo,
-  title,
-  num,
-  link,
-}: {
-  logo: ReactNode;
-  title: string;
-  num?: number;
-  link?: string;
-}) => {
-  const router = useRouter();
-  return (
-    <div
-      className="flex justify-between items-center group hover:bg-[#d1d5dbac] transition-all duration-300 pr-1 ml-1 rounded-md cursor-pointer"
-      onClick={link ? () => router.push(link) : () => {}}
-    >
-      <div className="flex gap-2 items-center text-gray-600 text  px-2 py-1 rounded-md ">
-        {logo}
-        {title}
-      </div>
-      {num && (
-        <div className="w-5 h-5 aspect-square border border-gray-300 group-hover:border-gray-400 grid place-items-center rounded-md text-gray-500 ">
-          {num}
-        </div>
-      )}
-    </div>
-  );
-};

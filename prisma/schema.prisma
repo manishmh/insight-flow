@@ -34,18 +34,26 @@ model Dashboard {
   id        String  @id @default(cuid())
   name      String
   boards    Board[]
-  userId    String  
-  user      User    @relation(fields: [userId], references: [id])
+  userId    String
   isDefault Boolean @default(true)
+  user      User    @relation(fields: [userId], references: [id])
 }
 
 model Board {
-  id          String @id @default(cuid())
-  dashboardId String
-  name        String
-  data        Json?
+  id            String  @id @default(cuid())
+  dashboardId   String
+  name          String
+  currentDataId String?
+  width         Int
+  height        Int
 
   dashboard Dashboard @relation(fields: [dashboardId], references: [id])
+}
+
+model sampleData {
+  id   String @id @default(cuid())
+  name String
+  data Json
 }
 
 model Account {

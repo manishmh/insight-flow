@@ -1,15 +1,31 @@
 "use client";
 
+import { RotatingLines } from "react-loader-spinner";
+import { createNewEmptyBlock } from "@/server/components/block-functions";
+import { useTransition } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { PiDotsNineBold } from "react-icons/pi";
+import { toast } from "sonner";
+import { useDashboardContext } from "@/contexts/dashboard-context";
 
-const AddFirstBlock = ({
-  dashboardId,
-  handleEmptyBlock,
-}: {
-  dashboardId: string;
-  handleEmptyBlock: () => void;
-}) => {
+const AddFirstBlock = ({ dashboardId }: { dashboardId: string }) => {
+  const [isPendingBlock, startTransitionBlock] = useTransition();
+  const { handleDashboardData } = useDashboardContext();
+
+  const handleEmptyBlock = () => {
+    startTransitionBlock(async () => {
+      try {
+        const block = await createNewEmptyBlock(dashboardId);
+        console.log("blocksss", block)
+        handleDashboardData(dashboardId);
+        toast.success("Block added successfully");
+      } catch (error) {
+        toast.error("Failed to add block");
+        console.error(error);
+      }
+    });
+  };
+
   return (
     <div className="flex flex-col items-center justify-center select-none w-full h-full">
       <div className="w-36 flex flex-col gap-2 aspect-square border-gray-400">
@@ -42,7 +58,13 @@ const AddFirstBlock = ({
         className="flex items-center border text-gray-500 hover:text-gray-800 transition-colors duration-300 border-gray-300 rounded-md px-3 py-1 gap-1 mt-4"
         onClick={handleEmptyBlock}
       >
-        <FaPlus /> Add block
+        {isPendingBlock ? (
+          <RotatingLines width="15" strokeColor="black" /> 
+        ): (
+          <>
+            <FaPlus /> Add block
+          </>
+        )}
       </button>
     </div>
   );

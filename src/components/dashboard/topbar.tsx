@@ -1,8 +1,19 @@
-import { Dispatch, SetStateAction } from "react";
+import { useDashboardContext } from "@/contexts/dashboard-context";
+import { createNewEmptyBlock } from "@/server/components/block-functions";
+import { SetDashboardName } from "@/server/components/dashboard-commands";
+import {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useState,
+  useTransition,
+} from "react";
 import { AiOutlineAppstoreAdd } from "react-icons/ai";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { GoSidebarExpand } from "react-icons/go";
 import { LuLayoutDashboard } from "react-icons/lu";
+import { RotatingLines } from "react-loader-spinner";
+import { toast } from "sonner";
 
 const DashboardTopbar = ({
   setSidebarHover,
@@ -13,6 +24,46 @@ const DashboardTopbar = ({
   handleSidebar: () => void;
   sidebarOpen: boolean;
 }) => {
+  const { dashboardData, handleDashboardData } = useDashboardContext();
+  const [isPendingBlock, startTransitionBlock] = useTransition();
+  const [editBlockname, setEditBlockname] = useState(false);
+  const [newblockName, setNewBlockName] = useState(dashboardData.name);
+
+  useEffect(() => {
+    if (dashboardData.name) {
+      setNewBlockName(dashboardData.name);
+    }
+  }, [dashboardData.name]);
+
+  const handleEmptyBlock = () => {
+    startTransitionBlock(async () => {
+      try {
+        const dashboardId = dashboardData.id;
+        await createNewEmptyBlock(dashboardId);
+        handleDashboardData(dashboardId);
+        toast.success("Block added successfully");
+      } catch (error) {
+        toast.error("Failed to add block");
+        console.error(error);
+      }
+    });
+  };
+
+  const handleRenameDashboard = async () => {
+    if (newblockName.trim() && newblockName !== dashboardData.name) {
+      try {
+        const dashboardId = dashboardData.id;
+        await SetDashboardName(dashboardId, newblockName.trim());
+        handleDashboardData(dashboardId);
+        toast.success("Dashboard renamed successfully");
+      } catch (error) {
+        toast.error("Failed to rename dashboard");
+        console.error(error);
+      }
+    }
+    setEditBlockname(false);
+  };
+
   return (
     <div className="flex justify-between items-center hfull h-full px-2">
       <div className="flex items-center text-gray-600">
@@ -30,12 +81,45 @@ const DashboardTopbar = ({
           <div>
             <LuLayoutDashboard />
           </div>
-          <div className="">Name</div>
+
+          {editBlockname ? (
+            <div>
+              <input
+                type="text"
+                className="bg-transparent border border-gray-400 text-black px-1"
+                value={newblockName}
+                autoFocus={editBlockname}
+                onChange={(e) => setNewBlockName(e.target.value)}
+                onBlur={handleRenameDashboard} 
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleRenameDashboard(); 
+                  }
+                }}
+              />
+            </div>
+          ) : (
+            <div
+              className="cursor-pointer"
+              onClick={() => setEditBlockname(!editBlockname)}
+            >
+              {dashboardData.name}
+            </div>
+          )}
         </div>
       </div>
       <div className="text-gray-600 hover:text-gray-800 transition-colors duration-300 flex gap-4 items-center">
-        <button className="flex items-center border border-gray-300 rounded-md px-2 py-1 gap-1">
-          <AiOutlineAppstoreAdd /> Add block
+        <button
+          className="flex items-center border border-gray-300 rounded-md px-2 py-1 gap-1"
+          onClick={handleEmptyBlock}
+        >
+          {isPendingBlock ? (
+            <RotatingLines width="15" strokeColor="black" />
+          ) : (
+            <>
+              <AiOutlineAppstoreAdd /> Add block
+            </>
+          )}
         </button>
         <div className="hover:bg-gray-300 p-1 rounded-sm">
           <BsThreeDotsVertical />

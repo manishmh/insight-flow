@@ -1,40 +1,37 @@
 import { PrismaClient } from '@prisma/client';
-import * as fs from 'fs';
+import fs from 'fs';
 import path from 'path';
-import { auth } from '@/server/auth';
-import { GetDefaultDashboardId } from '@/server/components/dashboard-commands';
 
 const prisma = new PrismaClient();
 
-const seedDataPath = path.join(__dirname, 'seedData', 'customers.json');
-const customersData = JSON.parse(fs.readFileSync(seedDataPath, 'utf-8'));
-
 async function main() {
-  const session =  await auth();
-  await prisma.board.deleteMany();
-  await prisma.dashboard.deleteMany();
+  const directoryPath = path.join(__dirname, 'seedData'); 
 
-  const dashboardId = await GetDefaultDashboardId()
+  const files = fs.readdirSync(directoryPath);
 
-  if (!dashboardId) return;
-
-  await prisma.board.create({
-    data: {
-      name: 'Customers',
-      data: customersData,
-      dashboardId: dashboardId,
-    },
+  const dataToInsert = files.map((file) => {
+    const filePath = path.join(directoryPath, file);
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    return {
+      name: path.basename(file, path.extname(file)), 
+      data: JSON.parse(fileContent),
+    };
   });
 
-  console.log('Database has been seeded successfully');
+  for (const item of dataToInsert) {
+    await prisma.sampleData.create({
+      data: item,
+    });
+  }
+
+  console.log('Seed data inserted successfully.');
 }
 
 main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
+  .catch((e) => {
     console.error(e);
-    await prisma.$disconnect();
     process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
   });

@@ -5,6 +5,21 @@ import { db } from "@/lib/db";
  * @returns Creating new empty block
  */
 
+export const fetchBoardData = async (boardId: string) => {
+  try {
+    const data = await db.board.findUnique({
+      where: {
+        id: boardId
+      }
+    }) 
+
+    return data;
+  } catch (error) {
+    console.error("failed to fetch board data", error) ;
+    throw new Error("Failed to fetch block data");
+  }
+}
+
 export const createNewEmptyBlock = async (dashboardId: string) => {
   try {
     const newBlock = await db.board.create({

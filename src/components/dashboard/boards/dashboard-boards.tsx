@@ -1,18 +1,20 @@
 import { useDashboardContext } from "@/contexts/dashboard-context";
 import { useSidebar } from "@/contexts/sidebar-context";
+import { UpdateBoardSize } from "@/server/components/dashboard-commands";
 import { Board } from "@prisma/client";
 import { useEffect, useRef, useState } from "react";
 import { ResizableBox } from "react-resizable";
-import EmptyBoard from "./empty-board";
-import DragSvg from "../../../../public/dashboard/drag";
 import "react-resizable/css/styles.css";
-import { UpdateBoardSize } from "@/server/components/dashboard-commands";
+import DragSvg from "../../../../public/dashboard/drag";
+import EmptyBoard from "./empty-board";
+import { useSidepane } from "@/contexts/sidepane-context";
 
 const DashboardBoards = () => {
   const { dashboardData } = useDashboardContext();
   const containerRef = useRef<HTMLDivElement>(null);
   const [parentWidth, setParentWidth] = useState<number | null>(null);
   const { sidebarOpen } = useSidebar();
+  const { handleSidepane } = useSidepane();
 
   useEffect(() => {
     const updateWidth = () => {
@@ -24,7 +26,15 @@ const DashboardBoards = () => {
     updateWidth();
   }, [sidebarOpen]);
 
-  const handleResizeStop = async (id: string, width: number, height: number) => {
+  const handleSidepaneActivation = () => {
+    handleSidepane();
+  }
+
+  const handleResizeStop = async (
+    id: string,
+    width: number,
+    height: number
+  ) => {
     try {
       await UpdateBoardSize(id, width, height);
       console.log("Board size updated successfully", width, height);
@@ -51,7 +61,13 @@ const DashboardBoards = () => {
           <div className="h-full w-full relative">
             <div className="h-full w-full">
               {board.currentDataId != null ? (
-                <div className=" bg-blue-300 text-black">{board.currentDataId}</div>
+                <h1
+                  className="border-b border-gray-400 px-4 py-3 font-medium cursor-pointer"
+                  onClick={handleSidepaneActivation}
+                >
+                  {board.name} {" "}
+                  {board.currentDataId}
+                </h1>
               ) : (
                 <EmptyBoard board={board} />
               )}

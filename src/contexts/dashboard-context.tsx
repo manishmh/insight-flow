@@ -9,6 +9,7 @@ type DashboardWithBoards = Prisma.DashboardGetPayload<{
 interface DashboardContextType {
   dashboardData: DashboardWithBoards;
   handleDashboardData: (dashboardId: string) => void;
+  refreshDashboard: () => void;
 }
 
 const DashboardDataContext = createContext<DashboardContextType | undefined>(undefined);
@@ -24,17 +25,27 @@ export const DashboardDataProvider = ({ children }: { children: ReactNode }) => 
 
   const handleDashboardData = useCallback(async (dashboardId: string) => {
     try {
-      const data = await GetDashboardData(dashboardId); 
+      const data = await GetDashboardData(dashboardId);
       if (!data) return;
-
       setDashboardData(data);
     } catch (error) {
       console.error(error);
     }
   }, []);
 
+  const refreshDashboard = useCallback(async () => {
+    if (!dashboardData.id) return;
+    try {
+      const data = await GetDashboardData(dashboardData.id);
+      if (!data) return;
+      setDashboardData(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }, [dashboardData.id]);
+
   return (
-    <DashboardDataContext.Provider value={{ dashboardData, handleDashboardData }}>
+    <DashboardDataContext.Provider value={{ dashboardData, handleDashboardData, refreshDashboard }}>
       {children}
     </DashboardDataContext.Provider>
   );

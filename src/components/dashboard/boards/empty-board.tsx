@@ -7,18 +7,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useSidepane } from "@/contexts/sidepane-context";
-import { fetchSampleData, setCurrentDataId } from "@/server/components/block-functions";
+import { useDashboardContext } from "@/contexts/dashboard-context";
+import {
+  fetchSampleData,
+  setCurrentDataId,
+} from "@/server/components/block-functions";
 import { fetchDataByName, saveData } from "@/server/components/indexedDB";
 import { Board } from "@prisma/client";
 import { useState, useTransition } from "react";
 import { PiDotsNineBold } from "react-icons/pi";
+import { RotatingLines } from "react-loader-spinner";
 
 const EmptyBoard = ({ board }: { board: Board }) => {
   const [selectedQuery, setSelectedQuery] = useState<string>("");
   const [queryHistory, setQueryHistory] = useState<string[]>([]);
-  const { sidepaneOpen, handleSidepane } = useSidepane();
   const [selectChangePending, startTransition] = useTransition();
+  const { refreshDashboard } = useDashboardContext();
 
   const handleSelectChange = (value: string) => {
     setSelectedQuery(value);
@@ -29,11 +33,11 @@ const EmptyBoard = ({ board }: { board: Board }) => {
 
     startTransition(async () => {
       try {
-        const data = await fetchDataByName(value); 
+        const data = await fetchDataByName(value);
         console.log("data fetched by", data);
         let sampleData;
         if (!data || Object.keys(data).length === 0) {
-          sampleData = await fetchSampleData(value); 
+          sampleData = await fetchSampleData(value);
 
           if (sampleData && typeof sampleData.name === "string") {
             saveData(sampleData.id, sampleData.name, sampleData);
@@ -41,10 +45,12 @@ const EmptyBoard = ({ board }: { board: Board }) => {
           } else {
             console.log("Sample data is invalid or missing a name");
           }
-        } 
+        }
 
         let id = data ? data.id : sampleData?.id;
-        await setCurrentDataId(board.id, id)
+        await setCurrentDataId(board.id, id);
+
+        refreshDashboard();
       } catch (error) {
         console.log("Failed to update block query", error);
       }
@@ -53,12 +59,6 @@ const EmptyBoard = ({ board }: { board: Board }) => {
 
   return (
     <div className="flex flex-col h-full justify-center">
-      <h1
-        className="border-b border-gray-400 px-4 py-3 font-medium cursor-pointer"
-        onClick={handleSidepane}
-      >
-        {board.name}
-      </h1>
       <div className="pb-6 px-4 text-center space-y-3 flex flex-1 flex-col h-full justify-center">
         <div className="flex justify-center pb-2">
           <div className="w-28 flex flex-col gap-2 aspect-square border-gray-400">
@@ -116,6 +116,11 @@ const EmptyBoard = ({ board }: { board: Board }) => {
             </SelectContent>
           </Select>
         </div>
+        {selectChangePending && (
+          <div className="flex justify-center">
+            <RotatingLines width="15" strokeColor="black" />
+          </div>
+        )}
       </div>
     </div>
   );

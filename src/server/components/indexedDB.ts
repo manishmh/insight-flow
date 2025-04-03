@@ -51,9 +51,32 @@ export const saveData = async (id: string, name: string, jsonData: any): Promise
   };
 };
 
+export const fetchDataById = async (id: string): Promise<{ id: string; name: string; data: any } | null> => {
+  const db = await openDB();
+  const transaction = db.transaction(STORE_NAME, 'readonly');
+  const store = transaction.objectStore(STORE_NAME);
 
-export const fetchDataByName = async (name: string): Promise<any | null> => {
-  console.log("Fetching data by name:", name);
+  return new Promise((resolve, reject) => {
+    const request = store.get(id);
+    request.onsuccess = (event) => {
+      const result = (event.target as IDBRequest).result;
+      if (result && result.jsonData) {
+        resolve({
+          id: result.jsonData.id,
+          name: result.jsonData.name,
+          data: result.jsonData.data,
+        });
+      } else {
+        resolve(null);
+      }
+    };
+    request.onerror = (event) => {
+      reject((event.target as IDBRequest).error);
+    };
+  });
+};
+
+export const fetchDataByName = async (name: string): Promise<{ id: string; name: string; data: any } | null> => {
   const db = await openDB();
   const transaction = db.transaction(STORE_NAME, 'readonly');
   const store = transaction.objectStore(STORE_NAME);
@@ -63,13 +86,22 @@ export const fetchDataByName = async (name: string): Promise<any | null> => {
     const request = index.get(name);
     request.onsuccess = (event) => {
       const result = (event.target as IDBRequest).result;
-      resolve(result ?? null); // Explicitly return null if no data
+      if (result && result.jsonData) {
+        resolve({
+          id: result.jsonData.id,
+          name: result.jsonData.name,
+          data: result.jsonData.data,
+        });
+      } else {
+        resolve(null);
+      }
     };
     request.onerror = (event) => {
       reject((event.target as IDBRequest).error);
     };
   });
 };
+
 
 
 export const fetchAllData = async (): Promise<any[]> => {

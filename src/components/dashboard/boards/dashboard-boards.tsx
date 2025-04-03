@@ -1,20 +1,19 @@
 import { useDashboardContext } from "@/contexts/dashboard-context";
 import { useSidebar } from "@/contexts/sidebar-context";
+import { useSidepane } from "@/contexts/sidepane-context";
 import { UpdateBoardSize } from "@/server/components/dashboard-commands";
 import { Board } from "@prisma/client";
 import { useEffect, useRef, useState } from "react";
 import { ResizableBox } from "react-resizable";
 import "react-resizable/css/styles.css";
-import DragSvg from "../../../../public/dashboard/drag";
+import DynamicBoard from "./board";
 import EmptyBoard from "./empty-board";
-import { useSidepane } from "@/contexts/sidepane-context";
 
 const DashboardBoards = () => {
   const { dashboardData } = useDashboardContext();
   const containerRef = useRef<HTMLDivElement>(null);
   const [parentWidth, setParentWidth] = useState<number | null>(null);
   const { sidebarOpen } = useSidebar();
-  const { handleSidepane } = useSidepane();
 
   useEffect(() => {
     const updateWidth = () => {
@@ -25,10 +24,6 @@ const DashboardBoards = () => {
 
     updateWidth();
   }, [sidebarOpen]);
-
-  const handleSidepaneActivation = () => {
-    handleSidepane();
-  }
 
   const handleResizeStop = async (
     id: string,
@@ -58,23 +53,12 @@ const DashboardBoards = () => {
           }
           className="border border-gray-400 rounded-xl relative flex flex-col overflow-hidden"
         >
-          <div className="h-full w-full relative">
-            <div className="h-full w-full">
-              {board.currentDataId != null ? (
-                <h1
-                  className="border-b border-gray-400 px-4 py-3 font-medium cursor-pointer"
-                  onClick={handleSidepaneActivation}
-                >
-                  {board.name} {" "}
-                  {board.currentDataId}
-                </h1>
-              ) : (
-                <EmptyBoard board={board} />
-              )}
-            </div>
-            <div className="w-5 opacity-60 absolute bottom-2 right-2 cursor-se-resize">
-              <DragSvg />
-            </div>
+          <div className="h-full w-full">
+            {board.currentDataId != null ? (
+              <DynamicBoard board={board} />
+            ) : (
+              <EmptyBoard board={board} />
+            )}
           </div>
         </ResizableBox>
       ))}

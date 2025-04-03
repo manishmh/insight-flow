@@ -25,7 +25,7 @@ export default async function RootLayout({
       <body
         className={cn(
           font.className,
-          "bg-[#e1e8ee] dark:bg-[#030014] scroll-smooth h-full"
+          "bg-[#e1e8ee] dark:bg-[#030014] h-full"
         )}
       >
         <SessionProvider session={session}>

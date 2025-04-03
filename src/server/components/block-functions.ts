@@ -1,5 +1,6 @@
 'use server'
 import { db } from "@/lib/db";
+import { sample } from "lodash";
 
 /** 
  * @returns Creating new empty block
@@ -26,8 +27,8 @@ export const createNewEmptyBlock = async (dashboardId: string) => {
       data: {
         dashboardId: dashboardId,
         name: "New Block",
-        width: 384,
-        height: 360,
+        width: 550,
+        height: 400,
       },
     });
     return newBlock;
@@ -51,7 +52,21 @@ export const fetchSampleData = async (name: string) => {
 
     return sampleData;
   } catch (error: any) {
-    throw new Error("Failed to fetch sample data", error);
+    throw new error("failed to fetch sample data", error);
+  }
+}
+
+export const fetchSampleDataWithId = async (id: string) => {
+  try {
+    const sampleData = await db.sampleData.findUnique({
+      where: {
+        id
+      }
+    }) 
+
+    return sampleData;
+  } catch (error: any) {
+    throw new error("failed to fetch sample data", error);
   }
 }
 

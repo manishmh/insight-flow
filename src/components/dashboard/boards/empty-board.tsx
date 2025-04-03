@@ -33,26 +33,31 @@ const EmptyBoard = ({ board }: { board: Board }) => {
 
     startTransition(async () => {
       try {
-        const data = await fetchDataByName(value);
-        console.log("data fetched by", data);
-        let sampleData;
-        if (!data || Object.keys(data).length === 0) {
-          sampleData = await fetchSampleData(value);
+        let data = await fetchDataByName(value);
+        console.log("Data fetched by name:", data);
 
-          if (sampleData && typeof sampleData.name === "string") {
-            saveData(sampleData.id, sampleData.name, sampleData);
+        let sampleData;
+        if (!data || !data.id || !data.data) {
+          sampleData = await fetchSampleData(value);
+          console.log("Fetched sample data:", sampleData);
+
+          if (sampleData?.id && typeof sampleData.name === "string") {
+            await saveData(sampleData.id, sampleData.name, sampleData);
             console.log("Block query updated successfully", sampleData);
           } else {
-            console.log("Sample data is invalid or missing a name");
+            console.log("Sample data is invalid or missing required fields");
           }
         }
 
-        let id = data ? data.id : sampleData?.id;
-        await setCurrentDataId(board.id, id);
-
-        refreshDashboard();
+        const id = data?.id || sampleData?.id;
+        if (id) {
+          await setCurrentDataId(board.id, id);
+          refreshDashboard();
+        } else {
+          console.log("No valid ID found for update");
+        }
       } catch (error) {
-        console.log("Failed to update block query", error);
+        console.error("Failed to update block query", error);
       }
     });
   };

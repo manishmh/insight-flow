@@ -22,7 +22,8 @@ module.exports = {
       },
       colors: {
         primary: {
-          blue_button: "rgb(71, 82, 196)"
+          blue_button: "rgb(71, 82, 196)",
+          "bg": "#e1e8ee"
         },
         secondary: {
 

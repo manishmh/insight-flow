@@ -22,7 +22,6 @@ import { FaExclamationTriangle } from "react-icons/fa";
 import { toast } from "sonner";
 import * as z from "zod";
 
-
 const LoginForm = () => {
   const [isPending, startTransition] = useTransition();
   const [showTwoFactor, setShowTwoFactor] = useState(false);

@@ -35,8 +35,8 @@ model Dashboard {
   name      String
   boards    Board[]
   userId    String
-  isDefault Boolean @default(true)
-  user      User    @relation(fields: [userId], references: [id])
+  isDefault Boolean @default(false)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Board {
@@ -47,7 +47,7 @@ model Board {
   width         Int
   height        Int
 
-  dashboard Dashboard @relation(fields: [dashboardId], references: [id])
+  dashboard Dashboard @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
 }
 
 model sampleData {

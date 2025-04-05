@@ -20,7 +20,7 @@ const Dashboard = () => {
     };
 
     fetchDefaultDashboardId();
-  }, []);
+  }, [router]);
 
   return (
     <div className="p-4 h-full flex flex-col gap-4">

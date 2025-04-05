@@ -1,6 +1,13 @@
-import { barDataType } from "@/components/dashboard/main-content/main-content";
 import { useEffect, useState } from "react";
 import { useSidebar } from "@/contexts/sidebar-context";
+
+export type barDataType = {
+    labels: string[];
+    datasets: {
+        label: string;
+        data: number[];
+    }[];
+}
 
 const BarChart = ({ barData }: { barData: barDataType }) => {
   const [yaxis, setYaxis] = useState<number[]>([]);

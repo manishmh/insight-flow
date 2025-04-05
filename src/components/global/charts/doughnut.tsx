@@ -1,5 +1,10 @@
-import { PieDataType } from "@/components/dashboard/main-content/main-content";
 import React, { useEffect, useState } from "react";
+
+export type PieDataType = {
+  value: number;
+  color: string;
+  title: string;
+};
 
 const PieChart = ({
   data,

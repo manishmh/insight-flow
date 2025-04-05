@@ -1,3 +1,4 @@
+import { useBoardContext } from "@/contexts/board-context";
 import { useDashboardContext } from "@/contexts/dashboard-context";
 import { useSidebar } from "@/contexts/sidebar-context";
 import { useSidepane } from "@/contexts/sidepane-context";
@@ -14,6 +15,8 @@ const DashboardBoards = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [parentWidth, setParentWidth] = useState<number | null>(null);
   const { sidebarOpen } = useSidebar();
+  const { sidepaneOpen } = useSidepane();
+  const { activeBoardData } = useBoardContext();
 
   useEffect(() => {
     const updateWidth = () => {
@@ -51,7 +54,13 @@ const DashboardBoards = () => {
           onResizeStop={(_, { size }) =>
             handleResizeStop(board.id, size.width, size.height)
           }
-          className="border border-gray-400 rounded-xl relative flex flex-col overflow-hidden"
+          className={`rounded-lg relative flex flex-col overflow-hidden pb-11 
+            ${
+              sidepaneOpen && activeBoardData?.boardId === board.id
+                ? "border-2 border-cyan-400"
+                : "border border-gray-400"
+            }   
+          `}
         >
           <div className="h-full w-full">
             {board.currentDataId != null ? (

@@ -1,6 +1,5 @@
 'use server'
 import { db } from "@/lib/db";
-import { sample } from "lodash";
 
 /** 
  * @returns Creating new empty block
@@ -80,5 +79,18 @@ export const setCurrentDataId = async (boardId: string, currentDataId: string ) 
     return board;
   } catch (error) {
     throw new Error("Failed to update board sample data id") 
+  }
+}
+
+export const setBoardName = async (name: string, id: string) => {
+  try {
+    const board = await db.board.update({
+      where: { id },
+      data: { name }
+    }) 
+
+    return board;
+  } catch (error) {
+    throw new Error("Failed to update board name") 
   }
 }

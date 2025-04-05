@@ -1,14 +1,18 @@
 import Table from "@/components/global/charts/table";
-import DragSvg from "../../../../public/dashboard/drag";
 import { useBoardContext } from "@/contexts/board-context";
+import { useDashboardContext } from "@/contexts/dashboard-context";
 import { useSidepane } from "@/contexts/sidepane-context";
-import { fetchSampleDataWithId } from "@/server/components/block-functions";
+import {
+  fetchSampleDataWithId,
+  setBoardName,
+} from "@/server/components/block-functions";
 import { fetchDataById } from "@/server/components/indexedDB";
 import { Board } from "@prisma/client";
 import { useEffect, useState, useTransition } from "react";
-
+import DragSvg from "../../../../public/dashboard/drag";
 export interface BoardDataType {
   id: string;
+  boardId: string;
   name: string;
   data: {
     data: any[];
@@ -23,10 +27,10 @@ const DynamicBoard = ({ board }: { board: Board }) => {
   const { handleSidepane } = useSidepane();
   const [isPending, startTransition] = useTransition();
   const [boardData, setBoardData] = useState<BoardDataType | null>(null);
-  const { handleActiveBoardId } = useBoardContext();
+  const { handleActiveBoardData } = useBoardContext();
 
-  const handleSidepaneActivation = (boardId: string) => {
-    handleActiveBoardId(boardId);
+  const handleSidepaneActivation = () => {
+    handleActiveBoardData(boardData);
     handleSidepane();
   };
 
@@ -40,11 +44,10 @@ const DynamicBoard = ({ board }: { board: Board }) => {
           data = await fetchSampleDataWithId(board.currentDataId ?? "");
         }
 
-        console.log("data", data);
-
         const formattedData: BoardDataType = {
           id: data?.id ?? "",
-          name: data?.name ?? "Untitled",
+          boardId: board.id,
+          name: board.name ?? "Untitled",
           data: {
             data: data?.data?.data ?? [],
             columns: data?.data?.columns ?? [],
@@ -62,29 +65,28 @@ const DynamicBoard = ({ board }: { board: Board }) => {
         );
       }
     });
-  }, [board?.currentDataId]);
+  }, [board?.currentDataId, board.id, board.name]);
 
   return (
-    <div className="h-full relative">
-      <div className="px-4 py-3 border-b border-gray-400">
-        <h1
-          className=" font-medium cursor-pointer capitalize"
-          onClick={() => handleSidepaneActivation(board.id)}
-        >
+    <div className="h-full flex flex-col w-full relative">
+      <div
+        className="px-4 py-3 border-b border-gray-400 cursor-pointer"
+        onClick={() => handleSidepaneActivation()}
+      >
+        <h1 className=" font-medium capitalize">
           {boardData?.name}
         </h1>
       </div>
-      <div className="h-full overflow-scroll">
+      <div className="h-full ">
         {boardData ? (
           <Table data={boardData} />
         ) : (
           <p className="text-gray-500 p-4">Loading data...</p>
         )}
-        {/* <div className="w-5 opacity-60 absolute bottom-1 right-1 cursor-se-resize">
-          <DragSvg />
-        </div> */}
       </div>
-      <div className="bg-primary-bg border border-t-gray-400 flex items-center px-4  w-full h-8 absolute bottom-0">Manish</div>
+      {/* <div className="w-5 opacity-60 absolute bottom-1 right-1 cursor-se-resize">
+        <DragSvg />
+      </div> */}
     </div>
   );
 };

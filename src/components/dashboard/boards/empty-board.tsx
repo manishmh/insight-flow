@@ -10,6 +10,7 @@ import {
 import { useDashboardContext } from "@/contexts/dashboard-context";
 import {
   fetchSampleData,
+  setBoardName,
   setCurrentDataId,
 } from "@/server/components/block-functions";
 import { fetchDataByName, saveData } from "@/server/components/indexedDB";
@@ -36,7 +37,7 @@ const EmptyBoard = ({ board }: { board: Board }) => {
         let data = await fetchDataByName(value);
         console.log("Data fetched by name:", data);
 
-        let sampleData;
+        let sampleData = data;
         if (!data || !data.id || !data.data) {
           sampleData = await fetchSampleData(value);
           console.log("Fetched sample data:", sampleData);
@@ -52,6 +53,9 @@ const EmptyBoard = ({ board }: { board: Board }) => {
         const id = data?.id || sampleData?.id;
         if (id) {
           await setCurrentDataId(board.id, id);
+          console.log('sampledata', sampleData)
+          console.log('sampledata name', sampleData?.name)
+          await setBoardName(sampleData?.name || "Untitled", board.id)
           refreshDashboard();
         } else {
           console.log("No valid ID found for update");

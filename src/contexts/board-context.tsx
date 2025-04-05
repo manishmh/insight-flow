@@ -1,21 +1,22 @@
 import { createContext, useState, ReactNode, useContext } from "react";
+import { BoardDataType } from "@/components/dashboard/boards/board";
 
 interface BoardContextType {
-    activeBoardId: string;
-    handleActiveBoardId: (boardId: string) => void;
+    activeBoardData: BoardDataType | null;
+    handleActiveBoardData: (data: BoardDataType | null) => void;
 }
 
 const BoardDataContext = createContext<BoardContextType | undefined>(undefined);
 
 export const BoardDataProvider = ({ children }: { children: ReactNode}) => {
-    const [activeBoardId, setActiveBoardId] = useState<string>('');
+    const [activeBoardData, setActiveBoardData] = useState<BoardDataType | null>(null)
 
-    const handleActiveBoardId = (boardId: string) => {
-        setActiveBoardId(boardId)
-    };
+    const handleActiveBoardData = (data: BoardDataType | null) => {
+        setActiveBoardData(data);
+    }
 
     return (
-        <BoardDataContext.Provider value={{ activeBoardId, handleActiveBoardId }}>
+        <BoardDataContext.Provider value={{ activeBoardData, handleActiveBoardData }}>
             {children}
         </BoardDataContext.Provider>
     )

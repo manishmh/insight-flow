@@ -1,12 +1,31 @@
 import AddEmoji from "@/components/global/svg/add-emoji";
+import { useDashboardContext } from "@/contexts/dashboard-context";
+import { setBoardName } from "@/server/components/block-functions";
 import React, { useState } from "react";
 
-const EmojiNName = () => {
-  const [nameInputValue, setNameInputValue] = useState("New Block");
+const EmojiNName = ({
+  name,
+  dataId,
+  boardId,
+}: {
+  name: string;
+  dataId: string;
+  boardId: string;
+}) => {
+  const [nameInputValue, setNameInputValue] = useState(name);
   const [description, setDescription] = useState("");
+  const {refreshDashboard} = useDashboardContext()
 
   const handleNameInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNameInputValue(e.target.value);
+  };
+
+  const handleNameChange = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      const data = await setBoardName(nameInputValue, boardId);
+      setNameInputValue(data.name); 
+      refreshDashboard();
+    }
   };
 
   const handleDescription = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,7 +47,8 @@ const EmojiNName = () => {
             type="text"
             value={nameInputValue}
             onChange={handleNameInputValue}
-            className="w-full bg-transparent h-6 hover:bg-[#d1d5db52] transition-colors duration-200 rounded px-2 outline-none focus:border-cyan-500 focus:border focus:bg-transparent py-[2px] caret-cyan-500 font-medium text-gray-800"
+            onKeyDown={handleNameChange}
+            className="w-full bg-transparent capitalize h-6 hover:bg-[#d1d5db52] transition-colors duration-200 rounded px-2 outline-none focus:border-cyan-500 focus:border focus:bg-transparent py-[2px] caret-cyan-500 font-medium text-gray-800"
           />
         </div>
       </div>

@@ -1,11 +1,12 @@
 import SelectQuerySvg from "@/components/global/svg/select-query-svg";
 import { sampleTableData } from "@/constants/sampel-table-data";
 import { useState } from "react";
+import { BoardDataType } from "../boards/board";
+import Aggregiate from "./aggregate";
 import DataColumns from "./data-columns";
 import GroupBy from "./group-by";
 import SelectQueryList from "./select-query-list";
 import SortBy from "./sort-by";
-import Aggregiate from "./aggregate";
 
 export type DataSourceItem = {
   label: string;
@@ -28,7 +29,11 @@ const originalList = [
 
 export type QueryType = (typeof originalList)[number];
 
-const DataSection = () => {
+const DataSection = ({
+  activeBoardData,
+}: {
+  activeBoardData: BoardDataType;
+}) => {
   const [selectQuery, setSelectQuery] = useState(false);
   const [selectedQuery, setSelectedQuery] = useState<QueryType | null>(
     "Customers"
@@ -90,10 +95,10 @@ const DataSection = () => {
         </div>
       </div>
       {/* Pass selectedData to DataColumns */}
-      <DataColumns selectedData={selectedData} />
+      <DataColumns TableColumns={activeBoardData.data.columns}/>
       <GroupBy selectedData={selectedData} />
       <SortBy selectedData={selectedData} />
-      <Aggregiate  selectedData={selectedData}/>
+      <Aggregiate selectedData={selectedData} />
     </>
   );
 };

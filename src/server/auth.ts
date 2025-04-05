@@ -15,13 +15,34 @@ export const {
     signIn:"/auth/login",
     error: "/auth/error",
   },
+  // this method is called only when oAuth provider is being used and not on credentials Auth.
   events: {
-    // this method is called only when oAuth provider is being used and not on credentials Auth.
     async linkAccount({ user }) {
       await db.user.update({
-        where: {id: user.id},
-        data: { emailVerified: new Date() }
-      })
+        where: { id: user.id },
+        data: { emailVerified: new Date() },
+      });
+
+      const existingUser = await db.user.findUnique({
+        where: { id: user.id },
+      });
+
+      if (!existingUser?.defaultDashboardId) {
+        const dashboard = await db.dashboard.create({
+          data: {
+            name: "Sample Board",
+            userId: user.id!, // <-- non-null assertion
+            isDefault: true,
+          },
+        });
+
+        await db.user.update({
+          where: { id: user.id },
+          data: {
+            defaultDashboardId: dashboard.id,
+          },
+        });
+      }
     }
   },
   callbacks: {

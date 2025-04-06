@@ -1,15 +1,36 @@
 import { BoardDataType } from "@/components/dashboard/boards/board";
-import { useState } from "react";
+import { DataStateInterface, useTableContext } from "@/contexts/sidepane-localhost-storage-context";
+import { getTableState } from "@/utils/localStorage";
+import { useEffect, useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 
 const Table = ({ data }: { data: BoardDataType }) => {
   const [expandedCells, setExpandedCells] = useState<Set<string>>(new Set());
   const [pagination, setPagination] = useState(1);
+  const [tableHeader, setTableHeader] = useState<string[]>([])
+  const [filteredData, setFilteredData] = useState<any[][]>([]);
   const RECORDS_PER_PAGE = 50;
-
   const totalPages = Math.ceil(data.data.data.length / RECORDS_PER_PAGE)
-  const startIndex = (pagination - 1) * RECORDS_PER_PAGE;
-  const filterdData = data.data.data.slice(startIndex, startIndex + RECORDS_PER_PAGE);
+  const { dataStates } = useTableContext();
+
+  useEffect(() => {
+    const startIndex = (pagination - 1) * RECORDS_PER_PAGE;
+    const allRows = data.data.data;
+    const allColumns = data.data.columns;
+
+    const TableActionsState: DataStateInterface = getTableState(data.id)
+    const activeColumn = TableActionsState.activeColumns ?? [];
+    setTableHeader(activeColumn)
+
+    const activeIndexes = activeColumn.map(col => allColumns.indexOf(col)).filter(i => i !== -1)
+
+    // Step 3: slice & filter rows based on active indexes
+    const paginatedRows = allRows.slice(startIndex, startIndex + RECORDS_PER_PAGE);
+    const filtered = paginatedRows.map(row => activeIndexes.map(i => row[i]));
+
+    setFilteredData(filtered);
+
+  }, [pagination, data.id, data.data, dataStates])
 
   const toggleExpand = (rowIndex: number, colIndex: number) => {
     setExpandedCells((prev) => {
@@ -24,17 +45,19 @@ const Table = ({ data }: { data: BoardDataType }) => {
     });
   };
 
+  // todo: fix the ui when a column is removed. 
+
   return (
     <div className="h-full w-full flex flex-col pt-2">
       <div className="w-full h-full overflow-hidden">
         <div className="overflow-scroll w-full h-full">
-          <table className="min-w-full table-fixed">
+          <table className="min-w-full ">
             <thead>
               <tr className="text-left ">
-                {data.data.columns.map((column, index) => (
+                {tableHeader.map((column, index) => (
                   <th
                     key={index}
-                    className="pl-4 border-gray-300 text-gray-500 font-semibold border-r-2 truncate"
+                    className="pl-4 border-gray-300 text-gray-500 font-semibold border-r-2 truncate w-full min-w-[200px] max-w-[200px]"
                   >
                     {column}
                   </th>
@@ -42,7 +65,7 @@ const Table = ({ data }: { data: BoardDataType }) => {
               </tr>
             </thead>
             <tbody>
-              {filterdData.map((row, rowIndex) => (
+              {filteredData.map((row, rowIndex) => (
                 <tr key={rowIndex} className="">
                   {row.map((value: any, colIndex: number) => {
                     const columnKey = data.data.columns[

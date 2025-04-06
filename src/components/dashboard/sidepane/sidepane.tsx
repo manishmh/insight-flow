@@ -16,28 +16,6 @@ const sidepaneTools: sidepaneToolsType = {
   charts: false,
 };
 
-/**
- * @info types for the state of the board data in sidepande stored in localhost.
- */
-export interface DataStateInterface {
-  description: string;
-  activeColumns: string[];
-  groupBy: string;
-  sortBy: "asc" | "desc" | "none";
-  aggregate: {
-    countValues: Record<string, number>;
-    countUnique: Record<string, number>;
-    countEmpty: Record<string, number>;
-    countRows: Record<string, number>;
-    percentEmpty: Record<string, number>;
-    percentNotEmpty: Record<string, number>;
-    sum: Record<string, number>;
-    average: Record<string, number>;
-    median: Record<string, number>;
-    max: Record<string, number>;
-  };
-}
-
 const Sidepane = () => {
   const [headerMenu, setHeaderMenu] = useState(false);
   const [activeTools, setActiveTools] = useState(sidepaneTools);

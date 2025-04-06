@@ -94,7 +94,7 @@ const DataSection = ({
           </div>
         </div>
       </div>
-      {/* Pass selectedData to DataColumns */}
+
       <DataColumns TableColumns={activeBoardData.data.columns}/>
       <GroupBy selectedData={selectedData} />
       <SortBy selectedData={selectedData} />

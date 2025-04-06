@@ -1,31 +1,33 @@
+import { useBoardContext } from "@/contexts/board-context";
+import { useTableContext } from "@/contexts/sidepane-localhost-storage-context";
 import { useState } from "react";
 import { FaCheck, FaMinus } from "react-icons/fa6";
-import { DataSourceItem } from "./data-section";
 import Modal from "./modal";
 
 type DataColumnsProps = {
   TableColumns: string[];
 };
 
-const DataColumns: React.FC<DataColumnsProps> = ({
-  TableColumns,
-}) => {
+const DataColumns: React.FC<DataColumnsProps> = ({ TableColumns }) => {
   const [openColumns, setOpenColumns] = useState(false);
   const [checkedColumns, setCheckedColumns] = useState<string[]>(TableColumns);
   const [selectAll, setSelectAll] = useState(true);
+  const { activeBoardData } = useBoardContext();
+  const { updateState } = useTableContext();
 
   const handleOpencolumns = () => {
     setOpenColumns(!openColumns);
   };
 
+  // todo columns does not map same as localhost after refresh. 
+
   // Toggle Select All/Deselect All functionality
   const handleSelectAllToggle = () => {
-    if (selectAll) {
-      setCheckedColumns([]); // Uncheck all
-    } else {
-      setCheckedColumns(TableColumns); // Check all
-    }
+    const updated = selectAll ? [] : TableColumns;
+
+    setCheckedColumns(updated);
     setSelectAll(!selectAll);
+    updateState(activeBoardData?.id ?? "", "activeColumns", updated); // <-- Hook update here too
   };
 
   // Toggle individual checkbox
@@ -36,7 +38,11 @@ const DataColumns: React.FC<DataColumnsProps> = ({
         : [...prev, column];
 
       // Maintain the order from TableColumns
-      return TableColumns.filter((col) => updated.includes(col));
+      const ordered = TableColumns.filter((col) => updated.includes(col));
+      // store in localhost of the new column state.
+      updateState(activeBoardData?.id ?? "", "activeColumns", ordered);
+
+      return ordered;
     });
   };
 

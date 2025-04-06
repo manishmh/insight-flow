@@ -16,6 +16,7 @@ import { PiPlugBold } from "react-icons/pi";
 import { RotatingLines } from "react-loader-spinner";
 import { toast } from "sonner";
 import SidebarItem from "./sidebar-item";
+import WorkspaceModal from "./workspace-modal";
 
 const Sidebar = ({
   handleSidebar,
@@ -30,6 +31,11 @@ const Sidebar = ({
     { id: string; name: string; userId: string; isDefault: boolean }[]
   >([]);
   const [isPending, startTransition] = useTransition();
+  const [workspaceModal, setWorkspaceModal] = useState(true);
+
+  const handleWorkspaceModal = () => {
+    setWorkspaceModal(prev => !prev);
+  }
 
   useEffect(() => {
     const fetchDashboards = async () => {
@@ -70,7 +76,8 @@ const Sidebar = ({
   return (
     <div className="h-full flex flex-col justify-between flex-1 pl-1 py-2 pt-3 ">
       <div className="flex justify-between items-center gap-2 w-full pl-1">
-        <div className="flex items-center gap-1 hover:bg-[#d1d5dbac] px-1 py-1 rounded-sm w-full transition-all duration-300 cursor-pointer">
+        <div className="flex items-center gap-1 hover:bg-[#d1d5dbac] px-1 py-1 rounded-sm w-full transition-all duration-300 cursor-pointer relative" onClick={handleWorkspaceModal}>
+          {workspaceModal && <WorkspaceModal />}
           <div className="bg-blue-200 rounded-sm aspect-square w-6 grid place-items-center">
             T
           </div>

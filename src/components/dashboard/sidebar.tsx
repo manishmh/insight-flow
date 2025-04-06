@@ -3,7 +3,7 @@ import {
   GetDashboards,
 } from "@/server/components/dashboard-commands";
 import { useRouter } from "next/navigation";
-import { ReactNode, useEffect, useState, useTransition } from "react";
+import { ReactNode, useEffect, useRef, useState, useTransition } from "react";
 import { BsArchive } from "react-icons/bs";
 import { CgStudio } from "react-icons/cg";
 import { FaChevronDown, FaPlus, FaRegHeart } from "react-icons/fa6";
@@ -31,11 +31,12 @@ const Sidebar = ({
     { id: string; name: string; userId: string; isDefault: boolean }[]
   >([]);
   const [isPending, startTransition] = useTransition();
-  const [workspaceModal, setWorkspaceModal] = useState(true);
+  const [workspaceModal, setWorkspaceModal] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null)
 
-  const handleWorkspaceModal = () => {
-    setWorkspaceModal(prev => !prev);
-  }
+  const handleWorkspaceToggle = () => {
+    setWorkspaceModal((prev) => !prev);
+  };
 
   useEffect(() => {
     const fetchDashboards = async () => {
@@ -76,8 +77,14 @@ const Sidebar = ({
   return (
     <div className="h-full flex flex-col justify-between flex-1 pl-1 py-2 pt-3 ">
       <div className="flex justify-between items-center gap-2 w-full pl-1">
-        <div className="flex items-center gap-1 hover:bg-[#d1d5dbac] px-1 py-1 rounded-sm w-full transition-all duration-300 cursor-pointer relative" onClick={handleWorkspaceModal}>
-          {workspaceModal && <WorkspaceModal />}
+        <div
+          className="flex items-center gap-1 hover:bg-[#d1d5dbac] px-1 py-1 rounded-sm w-full transition-all duration-300 cursor-pointer relative"
+          onClick={handleWorkspaceToggle}
+          ref={wrapperRef}
+        >
+          {workspaceModal && (
+            <WorkspaceModal handleWorkspaceClose={handleWorkspaceToggle} wrapperRef={wrapperRef}/>
+          )}
           <div className="bg-blue-200 rounded-sm aspect-square w-6 grid place-items-center">
             T
           </div>

@@ -44,6 +44,9 @@ const DataColumns: React.FC<DataColumnsProps> = ({ TableColumns }) => {
       // store in localhost of the new column state.
       updateState(activeBoardData?.id ?? "", "activeColumns", ordered);
 
+      console.log('ordered', ordered)
+      if (ordered.length === 0) setSelectAll(false)
+      if (ordered.length === TableColumns.length) setSelectAll(true)
       return ordered;
     });
   };

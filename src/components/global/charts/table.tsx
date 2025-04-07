@@ -6,6 +6,7 @@ import {
 import { getTableState } from "@/utils/localStorage";
 import { useEffect, useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
+import { LuLayoutDashboard } from "react-icons/lu";
 
 const Table = ({ data }: { data: BoardDataType }) => {
   const [expandedCells, setExpandedCells] = useState<Set<string>>(new Set());
@@ -54,6 +55,16 @@ const Table = ({ data }: { data: BoardDataType }) => {
       return newSet;
     });
   };
+
+  if (tableHeader.length === 0) return (
+    <div className="flex flex-col justify-center items-center h-full gap-2">
+      <div className="border border-gray-300 p-5 text-lg rounded-lg mb-2">
+        <LuLayoutDashboard />
+      </div>
+      <div className="font-semibold">No columns selected</div>
+      <div>Select a column to show data.</div>
+    </div>
+  )
 
   return (
     <div className="h-full w-full flex flex-col pt-2">

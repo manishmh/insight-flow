@@ -8,6 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useDashboardContext } from "@/contexts/dashboard-context";
+import { useTableContext } from "@/contexts/sidepane-localhost-storage-context";
 import {
   fetchSampleData,
   setBoardName,
@@ -23,6 +24,7 @@ const EmptyBoard = ({ board }: { board: Board }) => {
   const [selectedQuery, setSelectedQuery] = useState<string>("");
   const [queryHistory, setQueryHistory] = useState<string[]>([]);
   const [selectChangePending, startTransition] = useTransition();
+  const { updateState } = useTableContext();
   const { refreshDashboard } = useDashboardContext();
 
   const handleSelectChange = (value: string) => {
@@ -54,8 +56,8 @@ const EmptyBoard = ({ board }: { board: Board }) => {
         if (id) {
           await setCurrentDataId(board.id, id);
           console.log('sampledata', sampleData)
-          console.log('sampledata name', sampleData?.name)
           await setBoardName(sampleData?.name || "Untitled", board.id)
+          updateState(id, "activeColumns", sampleData?.data.columns)
           refreshDashboard();
         } else {
           console.log("No valid ID found for update");

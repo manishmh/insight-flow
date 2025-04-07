@@ -54,7 +54,7 @@ const DashboardBoards = () => {
           onResizeStop={(_, { size }) =>
             handleResizeStop(board.id, size.width, size.height)
           }
-          className={`rounded-lg relative flex flex-col overflow-hidden pb-11 
+          className={`rounded-lg relative flex flex-col overflow-hidden 
             ${
               sidepaneOpen && activeBoardData?.boardId === board.id
                 ? "border-2 border-cyan-400"

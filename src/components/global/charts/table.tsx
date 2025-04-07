@@ -1,5 +1,8 @@
 import { BoardDataType } from "@/components/dashboard/boards/board";
-import { DataStateInterface, useTableContext } from "@/contexts/sidepane-localhost-storage-context";
+import {
+  DataStateInterface,
+  useTableContext,
+} from "@/contexts/sidepane-localhost-storage-context";
 import { getTableState } from "@/utils/localStorage";
 import { useEffect, useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
@@ -7,10 +10,10 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 const Table = ({ data }: { data: BoardDataType }) => {
   const [expandedCells, setExpandedCells] = useState<Set<string>>(new Set());
   const [pagination, setPagination] = useState(1);
-  const [tableHeader, setTableHeader] = useState<string[]>([])
+  const [tableHeader, setTableHeader] = useState<string[]>([]);
   const [filteredData, setFilteredData] = useState<any[][]>([]);
   const RECORDS_PER_PAGE = 50;
-  const totalPages = Math.ceil(data.data.data.length / RECORDS_PER_PAGE)
+  const totalPages = Math.ceil(data.data.data.length / RECORDS_PER_PAGE);
   const { dataStates } = useTableContext();
 
   useEffect(() => {
@@ -18,19 +21,26 @@ const Table = ({ data }: { data: BoardDataType }) => {
     const allRows = data.data.data;
     const allColumns = data.data.columns;
 
-    const TableActionsState: DataStateInterface = getTableState(data.id)
-    const activeColumn = TableActionsState.activeColumns ?? [];
-    setTableHeader(activeColumn)
+    const TableActionsState: DataStateInterface = getTableState(data.id);
+    const activeColumn = TableActionsState?.activeColumns ?? [];
+    setTableHeader(activeColumn);
 
-    const activeIndexes = activeColumn.map(col => allColumns.indexOf(col)).filter(i => i !== -1)
+    const activeIndexes = activeColumn
+      .map((col) => allColumns.indexOf(col))
+      .filter((i) => i !== -1);
 
     // Step 3: slice & filter rows based on active indexes
-    const paginatedRows = allRows.slice(startIndex, startIndex + RECORDS_PER_PAGE);
-    const filtered = paginatedRows.map(row => activeIndexes.map(i => row[i]));
+    const paginatedRows = allRows.slice(
+      startIndex,
+      startIndex + RECORDS_PER_PAGE
+    );
+    const filtered = paginatedRows.map((row) =>
+      activeIndexes.map((i) => [i, row[i]])
+    );
 
     setFilteredData(filtered);
-
-  }, [pagination, data.id, data.data, dataStates])
+    console.log("filtereed", filtered);
+  }, [pagination, data.id, data.data, dataStates]);
 
   const toggleExpand = (rowIndex: number, colIndex: number) => {
     setExpandedCells((prev) => {
@@ -45,46 +55,42 @@ const Table = ({ data }: { data: BoardDataType }) => {
     });
   };
 
-  // todo: fix the ui when a column is removed. 
-
   return (
     <div className="h-full w-full flex flex-col pt-2">
       <div className="w-full h-full overflow-hidden">
         <div className="overflow-scroll w-full h-full">
-          <table className="min-w-full ">
-            <thead>
-              <tr className="text-left ">
-                {tableHeader.map((column, index) => (
-                  <th
-                    key={index}
-                    className="pl-4 border-gray-300 text-gray-500 font-semibold border-r-2 truncate w-full min-w-[200px] max-w-[200px]"
-                  >
-                    {column}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
+          <div className="w-full">
+            <div className="flex text-base w-full">
+              {tableHeader.map((column, index) => (
+                <div
+                  key={index}
+                  className="w-[200px] px-4 flex-shrink-0 border-r border-gray-400 truncate text-gray-600"
+                >
+                  {column}
+                </div>
+              ))}
+            </div>
+            <div>
               {filteredData.map((row, rowIndex) => (
-                <tr key={rowIndex} className="">
-                  {row.map((value: any, colIndex: number) => {
+                <div key={rowIndex} className="flex w-full">
+                  {row.map(([originalColIndex, value], colIndex) => {
                     const columnKey = data.data.columns[
-                      colIndex
+                      originalColIndex
                     ] as keyof typeof data.data.columnsInfo;
                     const columnInfo = data.data.columnsInfo[columnKey] ?? {};
-                    let displayValue: string | JSX.Element = value;
-                    const cellKey = `${rowIndex}-${colIndex}`;
+                    const cellKey = `${rowIndex}-${originalColIndex}`;
 
+                    let displayValue: string | JSX.Element = value;
                     if (value === null) {
                       displayValue = <div className="text-gray-500">NULL</div>;
-                    } else if (columnInfo?.dataType === "Boolean") {
+                    } else if (columnInfo?.dataType == "Boolean") {
                       displayValue = (
-                        <span className="text-gray-500 border rounded-md border-gray-300 px-3 py-1">
-                          {value ? "True" : "False"}
-                        </span>
+                        <div className="w-full">
+                          <div className="text-gray-500 border rounded-md border-gray-300 py-1 w-16 flex justify-center">
+                            {value ? "True" : "False"}
+                          </div>
+                        </div>
                       );
-                    } else if (columnInfo?.dataType === "Date") {
-                      displayValue = new Date(value).toLocaleString();
                     } else if (columnInfo?.dataType === "Url") {
                       displayValue = (
                         <a
@@ -96,7 +102,9 @@ const Table = ({ data }: { data: BoardDataType }) => {
                           {value}
                         </a>
                       );
-                    } else if (columnInfo?.dataType == "Object") {
+                    } else if (columnInfo?.dataType === "Date") {
+                      displayValue = new Date(value).toLocaleString();
+                    } else if (columnInfo?.dataType === "Object") {
                       displayValue = (
                         <div>
                           <pre>
@@ -109,9 +117,9 @@ const Table = ({ data }: { data: BoardDataType }) => {
                     }
 
                     return (
-                      <td
+                      <div
                         key={colIndex}
-                        className={` px-4 py-2 truncate overflow-hidden ${
+                        className={`w-[200px] flex-shrink-0 px-4 py-2 truncate overflow-hidden ${
                           expandedCells.has(cellKey)
                             ? "whitespace-normal bg-gray-200 border-cyan-400 border "
                             : "whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]"
@@ -119,19 +127,22 @@ const Table = ({ data }: { data: BoardDataType }) => {
                         onClick={() => toggleExpand(rowIndex, colIndex)}
                       >
                         {displayValue}
-                      </td>
+                      </div>
                     );
                   })}
-                </tr>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+          </div>
         </div>
       </div>
       <div className="bg-primary-bg border border-t-gray-400 flex items-center px-4 py-2">
         <div className="flex items-center justify-center gap-4 w-full text-gray-500 font-mono">
-          <button className="text-xs p-2 hover:bg-gray-300 rounded-md hover:cursor-pointer" 
-            onClick={() => {setPagination(pagination - 1)}}
+          <button
+            className="text-xs p-2 hover:bg-gray-300 rounded-md hover:cursor-pointer"
+            onClick={() => {
+              setPagination(pagination - 1);
+            }}
             disabled={pagination === 1}
           >
             <FaChevronLeft />
@@ -141,8 +152,11 @@ const Table = ({ data }: { data: BoardDataType }) => {
             <span>of</span>
             <span>{totalPages}</span>
           </div>
-          <button className="text-xs p-2 hover:bg-gray-300 rounded-md hover:cursor-pointer" 
-            onClick={() => {setPagination(pagination + 1)}}
+          <button
+            className="text-xs p-2 hover:bg-gray-300 rounded-md hover:cursor-pointer"
+            onClick={() => {
+              setPagination(pagination + 1);
+            }}
             disabled={pagination === totalPages}
           >
             <FaChevronRight />

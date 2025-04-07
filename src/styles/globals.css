@@ -182,35 +182,27 @@ body {
   }
 }
 
-/* Hide scrollbar for WebKit browsers (Chrome, Safari, etc.) */
-.scrollbar-none::-webkit-scrollbar {
-  display: none;
-}
 
-.scrollbar-none {
-  scrollbar-width: none;
-}
-
-.scrollbar-none {
-  -ms-overflow-style: none;
-  overflow: auto; 
-}
-
+/* For WebKit browsers (Chrome, Safari) */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 8px;
-  background-color: transparent;
+  width: 8px; /* or any width you prefer */
 }
 
-::-webkit-scrollbar-corner {
-  background-color: transparent;
+::-webkit-scrollbar-track {
+  background: transparent; /* removes gray background */
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #a0aec0;
-  border-radius: 10px;
-  transition: width 0.3s ease; 
+  background-color: black; /* scroll thumb */
+  border-radius: 4px;
 }
+
+/* Optional for Firefox */
+* {
+  scrollbar-color: black transparent;
+  scrollbar-width: thin;
+}
+
 
 @keyframes scroll-left {
   0% {

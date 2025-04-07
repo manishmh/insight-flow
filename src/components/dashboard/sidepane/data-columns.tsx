@@ -3,6 +3,7 @@ import { useTableContext } from "@/contexts/sidepane-localhost-storage-context";
 import { useState } from "react";
 import { FaCheck, FaMinus } from "react-icons/fa6";
 import Modal from "./modal";
+import { getTableState } from "@/utils/localStorage";
 
 type DataColumnsProps = {
   TableColumns: string[];
@@ -10,16 +11,17 @@ type DataColumnsProps = {
 
 const DataColumns: React.FC<DataColumnsProps> = ({ TableColumns }) => {
   const [openColumns, setOpenColumns] = useState(false);
-  const [checkedColumns, setCheckedColumns] = useState<string[]>(TableColumns);
   const [selectAll, setSelectAll] = useState(true);
   const { activeBoardData } = useBoardContext();
   const { updateState } = useTableContext();
+  let localCheckedColumns = getTableState(activeBoardData?.id ?? "")
+  localCheckedColumns = localCheckedColumns?.activeColumns ?? [];
+  const [checkedColumns, setCheckedColumns] = useState<string[]>(localCheckedColumns);
+
 
   const handleOpencolumns = () => {
     setOpenColumns(!openColumns);
-  };
-
-  // todo columns does not map same as localhost after refresh. 
+  };    
 
   // Toggle Select All/Deselect All functionality
   const handleSelectAllToggle = () => {

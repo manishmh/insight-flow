@@ -1,5 +1,5 @@
 export const sampleTableData = {
-  label: "Customers",
+  label: "customers",
   data: [
   {
     id: 4,

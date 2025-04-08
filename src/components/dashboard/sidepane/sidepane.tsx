@@ -52,11 +52,11 @@ const Sidepane = () => {
             <DataSection activeBoardData={activeBoardData}/>
           </>
         )}
-        {activeTools.charts && (
+        {/* {activeTools.charts && (
           <div>
             <ChartSection />
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

@@ -14,12 +14,12 @@ const HeaderMenu = ({
   return (
     <div className="flex justify-between items-center text-gray-500">
       <div className="flex items-center gap-4 text-[10px]">
-        <div className="cursor-pointer hover:bg-gray-300 p-1 rounded transition-colors duration-200">
+        {/* <div className="cursor-pointer hover:bg-gray-300 p-1 rounded transition-colors duration-200">
           <ImUndo />
         </div>
         <div className="cursor-pointer hover:bg-gray-300 p-1 rounded transition-colors duration-200">
           <ImRedo />
-        </div>
+        </div> */}
       </div>
       <div className="flex items-center gap-4">
         <div className="relative">

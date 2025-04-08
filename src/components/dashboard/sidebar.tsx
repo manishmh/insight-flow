@@ -118,9 +118,9 @@ const Sidebar = ({
         </div>
       </div>
       <div className="flex flex-col gap-1 flex-1">
-        <div onClick={handleNewDashboard}>
+        {/* <div onClick={handleNewDashboard}>
           <SidebarItem logo={<FaPlus />} title="New" />
-        </div>
+        </div> */}
         {/* <SidebarItem
           logo={<PiPlugBold />}
           title="Connections"
@@ -176,9 +176,9 @@ const Sidebar = ({
         className=" py-1 border-t xl:border-none border-gray-300 space-y-1"
         onClick={handleComingToast}
       >
-        <SidebarItem logo={<BsArchive />} title="Archive" />
+        {/* <SidebarItem logo={<BsArchive />} title="Archive" />
         <SidebarItem logo={<IoSettingsSharp />} title="Settings" />
-        <SidebarItem logo={<FaRegHeart />} title="Share feedback" />
+        <SidebarItem logo={<FaRegHeart />} title="Share feedback" /> */}
       </div>
     </div>
   );

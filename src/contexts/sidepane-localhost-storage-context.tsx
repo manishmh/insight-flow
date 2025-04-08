@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
-import { setTableState, getTableState } from "../utils/localStorage";
+import { getTableState, setTableState } from "../utils/localStorage";
 
 export interface DataStateInterface {
   description: string;
@@ -42,7 +42,11 @@ export const defaultDataValues: DataStateInterface = {
 interface TableContextType {
   dataStates: Record<string, DataStateInterface>;
   getDataState: (dataId: string) => DataStateInterface;
-  updateState: (dataId: string, key: keyof DataStateInterface, value: any) => void;
+  updateState: (
+    dataId: string,
+    key: keyof DataStateInterface,
+    value: any
+  ) => void;
   updateAggregate: (
     dataId: string,
     key: keyof DataStateInterface["aggregate"],
@@ -52,8 +56,12 @@ interface TableContextType {
 
 const TableContext = createContext<TableContextType | undefined>(undefined);
 
-export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [dataStates, setDataStates] = useState<Record<string, DataStateInterface>>({});
+export const TableProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [dataStates, setDataStates] = useState<
+    Record<string, DataStateInterface>
+  >({});
 
   const getDataState = (dataId: string): DataStateInterface => {
     if (!dataStates[dataId]) {
@@ -70,11 +78,15 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     value: any
   ) => {
     setDataStates((prevStates) => {
+      const prev = prevStates[dataId] ?? getDataState(dataId);
+
       const updated = {
-        ...prevStates[dataId],
+        ...prev,
         [key]: value,
       };
+
       setTableState(dataId, updated);
+
       return {
         ...prevStates,
         [dataId]: updated,
@@ -108,7 +120,7 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   return (
     <TableContext.Provider
       value={{
-        dataStates, 
+        dataStates,
         getDataState,
         updateState,
         updateAggregate,
@@ -121,6 +133,7 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
 export const useTableContext = () => {
   const ctx = useContext(TableContext);
-  if (!ctx) throw new Error("useTableContext must be used inside <TableProvider>");
+  if (!ctx)
+    throw new Error("useTableContext must be used inside <TableProvider>");
   return ctx;
 };

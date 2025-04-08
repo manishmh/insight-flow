@@ -26,7 +26,7 @@ const ActiveSidepaneTools = ({
           Data
         </div>
       </div>
-      <div
+      {/* <div
         className={`flex items-center gap-2 w-full justify-center py-2 ${
           activeTools.charts
             ? "border-b-2 border-cyan-500 text-cyan-600"
@@ -40,7 +40,7 @@ const ActiveSidepaneTools = ({
           <MdInsertChartOutlined />
           Charts
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

@@ -36,7 +36,7 @@ const DataSection = ({
 }) => {
   const [selectQuery, setSelectQuery] = useState(false);
   const [selectedQuery, setSelectedQuery] = useState<QueryType | null>(
-    "Customers"
+    "customers"
   );
   const [recentlyUsed, setRecentlyUsed] = useState<QueryType[]>([]);
 
@@ -96,9 +96,9 @@ const DataSection = ({
       </div>
 
       <DataColumns TableColumns={activeBoardData.data.columns}/>
-      <GroupBy selectedData={selectedData} />
+      {/* <GroupBy selectedData={selectedData} />
       <SortBy selectedData={selectedData} />
-      <Aggregiate selectedData={selectedData} />
+      <Aggregiate selectedData={selectedData} /> */}
     </>
   );
 };

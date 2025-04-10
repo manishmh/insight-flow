@@ -84,9 +84,6 @@ const DynamicBoard = ({ board }: { board: Board }) => {
           <p className="text-gray-500 p-4">Loading data...</p>
         )}
       </div>
-      {/* <div className="w-5 opacity-60 absolute bottom-1 right-1 cursor-se-resize">
-        <DragSvg />
-      </div> */}
     </div>
   );
 };

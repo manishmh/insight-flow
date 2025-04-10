@@ -7,6 +7,8 @@ import DataColumns from "./data-columns";
 import GroupBy from "./group-by";
 import SelectQueryList from "./select-query-list";
 import SortBy from "./sort-by";
+import { useTableContext } from "@/contexts/sidepane-localhost-storage-context";
+import { useBoardContext } from "@/contexts/board-context";
 
 export type DataSourceItem = {
   label: string;
@@ -30,15 +32,16 @@ const originalList = [
 export type QueryType = (typeof originalList)[number];
 
 const DataSection = ({
-  activeBoardData,
+  // activeBoardData,
 }: {
-  activeBoardData: BoardDataType;
+  // activeBoardData: BoardDataType;
 }) => {
   const [selectQuery, setSelectQuery] = useState(false);
   const [selectedQuery, setSelectedQuery] = useState<QueryType | null>(
     "customers"
   );
   const [recentlyUsed, setRecentlyUsed] = useState<QueryType[]>([]);
+  const {activeBoardData } = useBoardContext();
 
   const handleSetSelectQuery = () => {
     setSelectQuery(!selectQuery);
@@ -82,7 +85,7 @@ const DataSection = ({
             {selectedQuery ? (
               <div className="flex justify-between w-full ">
                 <span className="text-gray-800 font-semibold truncate w-1/2">
-                  {selectedQuery}
+                  {activeBoardData?.name}
                 </span>
                 <span className="whitespace-nowrap w-1/2">
                   Sample Collection
@@ -95,7 +98,7 @@ const DataSection = ({
         </div>
       </div>
 
-      <DataColumns TableColumns={activeBoardData.data.columns}/>
+      <DataColumns TableColumns={activeBoardData!.data.columns}/>
       {/* <GroupBy selectedData={selectedData} />
       <SortBy selectedData={selectedData} />
       <Aggregiate selectedData={selectedData} /> */}

@@ -14,41 +14,29 @@ const DataColumns: React.FC<DataColumnsProps> = ({ TableColumns }) => {
   const [selectAll, setSelectAll] = useState(true);
   const { activeBoardData } = useBoardContext();
   const { updateState } = useTableContext();
-  let localCheckedColumns = getTableState(activeBoardData?.id ?? "")
-  localCheckedColumns = localCheckedColumns?.activeColumns ?? [];
-  const [checkedColumns, setCheckedColumns] = useState<string[]>(localCheckedColumns);
 
+  const localCheckedColumns = getTableState(activeBoardData?.id ?? "")?.activeColumns ?? [];
 
   const handleOpencolumns = () => {
     setOpenColumns(!openColumns);
-  };    
-
-  // Toggle Select All/Deselect All functionality
-  const handleSelectAllToggle = () => {
-    const updated = selectAll ? [] : TableColumns;
-
-    setCheckedColumns(updated);
-    setSelectAll(!selectAll);
-    updateState(activeBoardData?.id ?? "", "activeColumns", updated); // <-- Hook update here too
   };
 
-  // Toggle individual checkbox
+  const handleSelectAllToggle = () => {
+    const updated = selectAll ? [] : TableColumns;
+    setSelectAll(!selectAll);
+    updateState(activeBoardData?.id ?? "", "activeColumns", updated);
+  };
+
   const handleCheckboxToggle = (column: string) => {
-    setCheckedColumns((prev) => {
-      const updated = prev.includes(column)
-        ? prev.filter((col) => col !== column)
-        : [...prev, column];
+    const updated = localCheckedColumns.includes(column)
+      ? localCheckedColumns.filter((col: any) => col !== column)
+      : [...localCheckedColumns, column];
 
-      // Maintain the order from TableColumns
-      const ordered = TableColumns.filter((col) => updated.includes(col));
-      // store in localhost of the new column state.
-      updateState(activeBoardData?.id ?? "", "activeColumns", ordered);
+    const ordered = TableColumns.filter((col) => updated.includes(col));
+    updateState(activeBoardData?.id ?? "", "activeColumns", ordered);
 
-      console.log('ordered', ordered)
-      if (ordered.length === 0) setSelectAll(false)
-      if (ordered.length === TableColumns.length) setSelectAll(true)
-      return ordered;
-    });
+    if (ordered.length === 0) setSelectAll(false);
+    if (ordered.length === TableColumns.length) setSelectAll(true);
   };
 
   return (
@@ -73,6 +61,7 @@ const DataColumns: React.FC<DataColumnsProps> = ({ TableColumns }) => {
               {selectAll ? "Deselect all" : "Select all"}
             </div>
           </div>
+
           <div className="border-t border-b border-gray-300">
             <div className="space-y-1 py-2 px-3">
               {TableColumns.map((column, index) => (
@@ -83,11 +72,12 @@ const DataColumns: React.FC<DataColumnsProps> = ({ TableColumns }) => {
                 >
                   <div
                     className={`border border-gray-300 w-4 h-4 grid place-items-center rounded-sm text-[10px] ${
-                      checkedColumns.includes(column) &&
-                      "bg-cyan-500 text-white"
+                      localCheckedColumns.includes(column)
+                        ? "bg-cyan-500 text-white"
+                        : ""
                     }`}
                   >
-                    {checkedColumns.includes(column) && <FaCheck />}
+                    {localCheckedColumns.includes(column) && <FaCheck />}
                   </div>
                   <div className="text-gray-600">{column}</div>
                 </div>
@@ -96,6 +86,7 @@ const DataColumns: React.FC<DataColumnsProps> = ({ TableColumns }) => {
           </div>
         </Modal>
       )}
+
       <div className="max-h-[320px] overflow-scroll">
         <div
           className="flex items-center justify-between text-gray-500 font-medium hover:bg-[#d1d5db52] px-2 rounded-md cursor-pointer "
@@ -112,7 +103,7 @@ const DataColumns: React.FC<DataColumnsProps> = ({ TableColumns }) => {
         </div>
 
         <div className="space-y-2">
-          {checkedColumns.map((column, index) => (
+          {TableColumns.map((column, index) => (
             <div
               key={`checked-column-${column}-${index}`}
               className="flex items-center justify-between "

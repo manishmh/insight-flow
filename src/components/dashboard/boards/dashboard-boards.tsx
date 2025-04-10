@@ -7,6 +7,7 @@ import { Board } from "@prisma/client";
 import { useEffect, useRef, useState } from "react";
 import { ResizableBox } from "react-resizable";
 import "react-resizable/css/styles.css";
+import DragSvg from "../../../../public/dashboard/drag";
 import DynamicBoard from "./board";
 import EmptyBoard from "./empty-board";
 
@@ -54,7 +55,7 @@ const DashboardBoards = () => {
           onResizeStop={(_, { size }) =>
             handleResizeStop(board.id, size.width, size.height)
           }
-          className={`rounded-lg relative flex flex-col overflow-hidden 
+          className={`rounded-lg relative flex flex-col overflow-hidden pb-11
             ${
               sidepaneOpen && activeBoardData?.boardId === board.id
                 ? "border-2 border-cyan-400"
@@ -68,6 +69,9 @@ const DashboardBoards = () => {
             ) : (
               <EmptyBoard board={board} />
             )}
+          </div>
+          <div className="w-5 opacity-60 z-50 absolute bottom-2 right-2 cursor-se-resize">
+            <DragSvg />
           </div>
         </ResizableBox>
       ))}

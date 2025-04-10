@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ActiveSidepaneTools from "./active-sidepane-tools";
 import ChartSection from "./charts-section";
 import DataSection from "./data-section";
@@ -49,7 +49,7 @@ const Sidepane = () => {
         />
         {activeTools.data && (
           <>
-            <DataSection activeBoardData={activeBoardData}/>
+            <DataSection />
           </>
         )}
         {/* {activeTools.charts && (

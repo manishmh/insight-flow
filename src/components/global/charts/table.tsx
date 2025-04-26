@@ -40,7 +40,6 @@ const Table = ({ data }: { data: BoardDataType }) => {
     );
 
     setFilteredData(filtered);
-    console.log("filtereed", filtered);
   }, [pagination, data.id, data.data, dataStates]);
 
   const toggleExpand = (rowIndex: number, colIndex: number) => {

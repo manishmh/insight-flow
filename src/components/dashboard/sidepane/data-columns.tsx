@@ -96,14 +96,14 @@ const DataColumns: React.FC<DataColumnsProps> = ({ TableColumns }) => {
           <div className="flex gap-2 items-center">
             Columns{" "}
             <span className="border border-gray-300 rounded px-1">
-              {TableColumns.length}
+              {localCheckedColumns.length}
             </span>
           </div>
           <div className="text-xl text-gray-400">+</div>
         </div>
 
         <div className="space-y-2">
-          {TableColumns.map((column, index) => (
+          {localCheckedColumns.map((column: any, index: number) => (
             <div
               key={`checked-column-${column}-${index}`}
               className="flex items-center justify-between "

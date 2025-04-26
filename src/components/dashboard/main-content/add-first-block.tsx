@@ -16,7 +16,6 @@ const AddFirstBlock = ({ dashboardId }: { dashboardId: string }) => {
     startTransitionBlock(async () => {
       try {
         const block = await createNewEmptyBlock(dashboardId);
-        console.log("blocksss", block)
         handleDashboardData(dashboardId);
         toast.success("Block added successfully");
       } catch (error) {

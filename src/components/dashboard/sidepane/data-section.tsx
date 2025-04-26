@@ -1,5 +1,7 @@
 import SelectQuerySvg from "@/components/global/svg/select-query-svg";
 import { sampleTableData } from "@/constants/sampel-table-data";
+import { useBoardContext } from "@/contexts/board-context";
+import { useTableContext } from "@/contexts/sidepane-localhost-storage-context";
 import { useState } from "react";
 import { BoardDataType } from "../boards/board";
 import Aggregiate from "./aggregate";
@@ -7,8 +9,6 @@ import DataColumns from "./data-columns";
 import GroupBy from "./group-by";
 import SelectQueryList from "./select-query-list";
 import SortBy from "./sort-by";
-import { useTableContext } from "@/contexts/sidepane-localhost-storage-context";
-import { useBoardContext } from "@/contexts/board-context";
 
 export type DataSourceItem = {
   label: string;
@@ -31,17 +31,13 @@ const originalList = [
 
 export type QueryType = (typeof originalList)[number];
 
-const DataSection = ({
-  // activeBoardData,
-}: {
-  // activeBoardData: BoardDataType;
-}) => {
+const DataSection = () => {
   const [selectQuery, setSelectQuery] = useState(false);
   const [selectedQuery, setSelectedQuery] = useState<QueryType | null>(
     "customers"
   );
   const [recentlyUsed, setRecentlyUsed] = useState<QueryType[]>([]);
-  const {activeBoardData } = useBoardContext();
+  const { activeBoardData } = useBoardContext();
 
   const handleSetSelectQuery = () => {
     setSelectQuery(!selectQuery);
@@ -55,11 +51,6 @@ const DataSection = ({
 
     handleSetSelectQuery();
   };
-
-  // Find data corresponding to the selected query
-  const selectedData = dataSources.find(
-    (source) => source.label === selectedQuery
-  );
 
   return (
     <>
@@ -98,7 +89,7 @@ const DataSection = ({
         </div>
       </div>
 
-      <DataColumns TableColumns={activeBoardData!.data.columns}/>
+      <DataColumns TableColumns={activeBoardData!.data.columns} />
       {/* <GroupBy selectedData={selectedData} />
       <SortBy selectedData={selectedData} />
       <Aggregiate selectedData={selectedData} /> */}

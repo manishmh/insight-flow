@@ -63,16 +63,18 @@ const DashboardBoards = () => {
             }   
           `}
         >
-          <div className="h-full w-full">
-            {board.currentDataId != null ? (
-              <DynamicBoard board={board} />
-            ) : (
-              <EmptyBoard board={board} />
-            )}
-          </div>
-          <div className="w-5 opacity-60 z-50 absolute bottom-2 right-2 cursor-se-resize">
-            <DragSvg />
-          </div>
+          <>
+            <div className="h-full w-full">
+              {board.currentDataId != null ? (
+                <DynamicBoard iboard={board} />
+              ) : (
+                <EmptyBoard board={board} />
+              )}
+            </div>
+            <div className="w-5 opacity-60 z-50 absolute bottom-1 right-1 cursor-se-resize">
+              <DragSvg />
+            </div>
+          </>
         </ResizableBox>
       ))}
     </div>

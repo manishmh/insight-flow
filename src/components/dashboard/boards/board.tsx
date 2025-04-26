@@ -5,11 +5,11 @@ import { useSidepane } from "@/contexts/sidepane-context";
 import {
   fetchSampleDataWithId,
   setBoardName,
+  setCurrentDataId,
 } from "@/server/components/block-functions";
 import { fetchDataById } from "@/server/components/indexedDB";
 import { Board } from "@prisma/client";
 import { useEffect, useState, useTransition } from "react";
-import DragSvg from "../../../../public/dashboard/drag";
 export interface BoardDataType {
   id: string;
   boardId: string;
@@ -23,16 +23,28 @@ export interface BoardDataType {
   };
 }
 
-const DynamicBoard = ({ board }: { board: Board }) => {
+const DynamicBoard = ({ iboard }: { iboard: Board }) => {
   const { handleSidepane } = useSidepane();
   const [isPending, startTransition] = useTransition();
   const [boardData, setBoardData] = useState<BoardDataType | null>(null);
-  const { handleActiveBoardData } = useBoardContext();
+  const { activeBoardData, handleActiveBoardData } = useBoardContext();
+  const [board, setBoard] = useState<Board>(iboard);
 
   const handleSidepaneActivation = () => {
     handleActiveBoardData(boardData);
     handleSidepane();
   };
+
+  // useEffect(() => {
+  //   const handleActiveDataChange = async () => {
+  //     if (activeBoardData) {
+  //       const newBoard =  await setCurrentDataId(activeBoardData?.boardId, activeBoardData?.id);
+  //       setBoard(newBoard)
+  //     }
+  //   };
+
+  //   handleActiveDataChange();
+  // }, [activeBoardData]);
 
   useEffect(() => {
     if (!board?.currentDataId) return;
@@ -73,9 +85,7 @@ const DynamicBoard = ({ board }: { board: Board }) => {
         className="px-4 py-3 border-b border-gray-400 cursor-pointer"
         onClick={() => handleSidepaneActivation()}
       >
-        <h1 className=" font-medium capitalize">
-          {boardData?.name}
-        </h1>
+        <h1 className=" font-medium capitalize">{boardData?.name}</h1>
       </div>
       <div className="h-full ">
         {boardData ? (

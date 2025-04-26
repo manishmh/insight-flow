@@ -1,5 +1,8 @@
 'use server'
+import { BoardDataType } from "@/components/dashboard/boards/board";
 import { db } from "@/lib/db";
+import { Board } from "@prisma/client";
+import { fetchDataById } from "./indexedDB";
 
 /** 
  * @returns Creating new empty block
@@ -94,3 +97,30 @@ export const setBoardName = async (name: string, id: string) => {
     throw new Error("Failed to update board name") 
   }
 }
+
+ export const fetchAndFormatBoardData = async (dataId: string, board: Board): Promise<BoardDataType | null> => {
+    try {
+      let data = await fetchDataById(dataId);
+      if (!data || Object.keys(data).length === 0) {
+        data = await fetchSampleDataWithId(dataId);
+      }
+
+      const formattedData: BoardDataType = {
+        id: data?.id ?? "",
+        boardId: board.id,
+        name: board.name ?? "Untitled",
+        data: {
+          data: data?.data?.data ?? [],
+          columns: data?.data?.columns ?? [],
+          columnsInfo: data?.data?.columnsInfo ?? [],
+          duration: data?.data?.duration ?? 0,
+          updatedAt: data?.data?.updatedAt ?? Date.now(),
+        },
+      };
+
+      return formattedData;
+    } catch (error) {
+      console.error(`Error fetching board data (ID: ${dataId}):`, error);
+      return null;
+    }
+  };

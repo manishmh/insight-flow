@@ -3,7 +3,7 @@
 import DashboardBoards from "@/components/dashboard/boards/dashboard-boards";
 import AddFirstBlock from "@/components/dashboard/main-content/add-first-block";
 import { useDashboardContext } from "@/contexts/dashboard-context";
-import React, { useEffect, useState, useTransition } from "react";
+import React, { useEffect, useTransition } from "react";
 import { toast } from "sonner";
 
 const DynamicDashboard = ({ params }: { params: any }) => {
@@ -22,6 +22,7 @@ const DynamicDashboard = ({ params }: { params: any }) => {
     });
   }, [dashboardId, handleDashboardData]);
 
+  if (!dashboardData) return <div>Loading...</div>
 
   return (
     <div className="h-full p-4">

@@ -2,7 +2,7 @@ import CreateBlockSvg from "@/components/global/svg/create-block-svg";
 import { ReactNode, useEffect, useRef } from "react";
 import { AiOutlineThunderbolt } from "react-icons/ai";
 import { BiComment } from "react-icons/bi";
-import { FaNetworkWired, FaRegKeyboard } from "react-icons/fa";
+import { FaRegKeyboard } from "react-icons/fa";
 import {
   FaArrowRightLong,
   FaBoxArchive,
@@ -48,11 +48,10 @@ const EffortlessWorkspace = () => {
 
     if (!firstContainer || !secondContainer) return;
 
-    const scrollSpeed = 0.5; // Adjust speed if necessary
+    const scrollSpeed = 0.5; 
     let scrollLeft = 0;
     let scrollRight = 0;
 
-    // Scroll function for the first container (left to right)
     const scrollFirst = () => {
       scrollLeft -= scrollSpeed;
 
@@ -65,11 +64,9 @@ const EffortlessWorkspace = () => {
       firstAnimationFrameId.current = requestAnimationFrame(scrollFirst);
     };
 
-    // Scroll function for the second container (right to left)
     const scrollSecond = () => {
       scrollRight -= scrollSpeed;
 
-      // If scrolling reaches the end, reset to start
       if (scrollRight <= -secondContainer.scrollWidth / 2) {
         scrollRight = 0;
       }
@@ -79,17 +76,13 @@ const EffortlessWorkspace = () => {
       secondAnimationFrameId.current = requestAnimationFrame(scrollSecond);
     };
 
-    // Clone content for the first container and append to ensure loop
     firstContainer.innerHTML += firstContainer.innerHTML;
 
-    // Clone content for the second container and append as well
     secondContainer.innerHTML += secondContainer.innerHTML;
 
-    // Start animations
     firstAnimationFrameId.current = requestAnimationFrame(scrollFirst);
     secondAnimationFrameId.current = requestAnimationFrame(scrollSecond);
 
-    // Cleanup function to cancel the animations
     return () => {
       if (firstAnimationFrameId.current) {
         cancelAnimationFrame(firstAnimationFrameId.current);

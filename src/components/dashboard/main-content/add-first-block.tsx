@@ -33,11 +33,8 @@ const AddFirstBlock = ({ dashboardId }: { dashboardId: string }) => {
             <div className="text-gray-400 text-3xl z-10 relative grid place-items-center h-full">
               <PiDotsNineBold />
             </div>
-            {/* Box container */}
             <div className="absolute inset-0 bg-gradient-to-b from-[#e1e8ee] to-[#c9d1d9] rounded-lg"></div>
-            {/* Top Bulge */}
             <div className="absolute top-0 left-0 w-full h2 bg-gradient-to-b from-transparent to-[#e1e8ee] rounded-t-lg"></div>
-            {/* Bottom Bulge */}
             <div className="absolute bottom-0 left-0 w-full h-4 bg-gradient-to-t from-[#dae0e6] to-transparent rounded-b-lg"></div>
           </div>
           <div className="w-full h-full rounded-lg border-2 border-dashed border-gray-400"></div>

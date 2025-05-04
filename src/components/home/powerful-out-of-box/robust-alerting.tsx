@@ -24,7 +24,7 @@ const RobustAlerting = () => {
   const [showCheck, setShowCheck] = useState(false);
   const [restart, setRestart] = useState(true);
   const [translate, setTranslate] = useState(false);
-  const [key, setKey] = useState(0); // Add a state for key
+  const [key, setKey] = useState(0);
 
   const slideInRef = useRef(slideIn);
 
@@ -40,12 +40,11 @@ const RobustAlerting = () => {
       setTranslate(false);
       setShowCheck(false);
 
-      // Add a small delay before resetting restart
       setTimeout(() => {
         setRestart(false);
-        setRestart(true); // Restart the animation
-        setKey((prevKey) => prevKey + 1); // Change the key to reset the animation
-      }, 100); // Delay to allow div to disappear, then trigger re-render
+        setRestart(true); 
+        setKey((prevKey) => prevKey + 1);
+      }, 100); 
     }, 6000);
     return () => clearTimeout(timer);
   }, [restart, showCheck]);

@@ -1,5 +1,4 @@
 import { FaArrowUp } from "react-icons/fa6";
-// 242.86
 const CustomerSpending = () => {
   return (
     <div className="border border-gray-300 col-span-3 md:col-span-1 py-2 shadow flex flex-col h-full rounded-lg group">

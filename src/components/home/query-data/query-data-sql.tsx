@@ -17,7 +17,7 @@ import { motion } from 'framer-motion'
       opacity: 1,
       y: 0,
       transition: {
-        delay: 0.2, // Stagger the animation for each row
+        delay: 0.2, 
       },
     }),
   };

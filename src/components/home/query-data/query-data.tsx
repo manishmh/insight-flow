@@ -2,14 +2,13 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import { motion } from "framer-motion";
 
 const QueryData = ({ customers }: { customers: any }) => {
-  // Define animation for each row
   const rowAnimation = {
     hidden: { opacity: 0, y: 20 },
     visible: (i: number) => ({
       opacity: 1,
       y: 0,
       transition: {
-        delay: i * 0.1, // Stagger the animation for each row
+        delay: i * 0.1, 
       },
     }),
   };
@@ -54,7 +53,7 @@ const QueryData = ({ customers }: { customers: any }) => {
                   key={customer.id}
                   initial="hidden"
                   animate="visible"
-                  custom={index} // Pass index to stagger animations
+                  custom={index} 
                   variants={rowAnimation}
                   className=""
                 >

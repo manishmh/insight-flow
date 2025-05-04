@@ -22,7 +22,7 @@ const FloatingDivs = ({ online }: { online: boolean }) => {
     const moveDivs = () => {
       setPositions((prevPositions) =>
         prevPositions.map((pos) => {
-          const newTop = pos.top + (Math.random() * 50 - 25); // More random movement
+          const newTop = pos.top + (Math.random() * 50 - 25); 
           const newLeft = pos.left + (Math.random() * 50 - 25);
           const boundedTop = Math.min(90, Math.max(0, newTop));
           const boundedLeft = Math.min(90, Math.max(0, newLeft));
@@ -32,17 +32,17 @@ const FloatingDivs = ({ online }: { online: boolean }) => {
     };
 
     if (online) {
-      intervalId = setInterval(moveDivs, 2000); // Start movement if online
+      intervalId = setInterval(moveDivs, 2000); 
     } else if (intervalId) {
-      clearInterval(intervalId); // Clear interval if not online
+      clearInterval(intervalId); 
     }
 
     return () => {
       if (intervalId) {
-        clearInterval(intervalId); // Clean up on unmount or if online changes
+        clearInterval(intervalId); 
       }
     };
-  }, [online]); // Re-run effect when online changes
+  }, [online]); 
 
   return (
     <div className="absolute inset-0 bg-transparent z-0">

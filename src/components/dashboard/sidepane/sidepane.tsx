@@ -40,7 +40,7 @@ const Sidepane = () => {
           headerMenu={headerMenu}
           handleHeaderMenu={() => setHeaderMenu(!headerMenu)}
         />
-        <EmojiNName name={activeBoardData?.name} dataId={activeBoardData?.id} boardId={activeBoardData.boardId} />
+        <EmojiNName />
       </div>
       <div>
         <ActiveSidepaneTools

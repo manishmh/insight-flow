@@ -1,4 +1,5 @@
 import AddEmoji from "@/components/global/svg/add-emoji";
+import { useBoardContext } from "@/contexts/board-context";
 import { useDashboardContext } from "@/contexts/dashboard-context";
 import {
   DataStateInterface,
@@ -8,16 +9,10 @@ import { setBoardName } from "@/server/components/block-functions";
 import { getTableState } from "@/utils/localStorage";
 import React, { useEffect, useRef, useState } from "react";
 
-const EmojiNName = ({
-  name,
-  dataId,
-  boardId,
-}: {
-  name: string;
-  dataId: string;
-  boardId: string;
-}) => {
-  const [nameInputValue, setNameInputValue] = useState(name);
+const EmojiNName = () => {
+  const { activeBoardData } = useBoardContext();
+  const [nameInputValue, setNameInputValue] = useState<string>(activeBoardData?.name!);
+  console.log("input value", nameInputValue);
   const [description, setDescription] = useState("");
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
@@ -29,7 +24,13 @@ const EmojiNName = ({
   const descRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    const TableLocalStorageData: DataStateInterface = getTableState(dataId);
+    setNameInputValue(activeBoardData?.name || "Untitled");
+  }, [activeBoardData?.name]);
+
+  useEffect(() => {
+    const TableLocalStorageData: DataStateInterface = getTableState(
+      activeBoardData?.id!
+    );
     setDescription(TableLocalStorageData?.description || "");
   }, []);
 
@@ -59,7 +60,10 @@ const EmojiNName = ({
   ) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      const data = await setBoardName(nameInputValue, boardId);
+      const data = await setBoardName(
+        nameInputValue,
+        activeBoardData?.boardId!
+      );
       setNameInputValue(data.name);
       setIsEditingName(false);
       refreshDashboard();
@@ -78,7 +82,7 @@ const EmojiNName = ({
   ) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      updateState(dataId, "description", description);
+      updateState(activeBoardData?.id!, "description", description);
       setIsEditingDescription(false);
     }
   };
@@ -89,7 +93,7 @@ const EmojiNName = ({
         <div className="opacity-50 transition-colors duration-300 rounded-sm p-1 hover:bg-[#d1d5db52]">
           <AddEmoji />
         </div>
-        <div className="w-full">
+        <div className="w-full pt-0.5">
           {isEditingName ? (
             <textarea
               ref={nameRef}
@@ -105,7 +109,7 @@ const EmojiNName = ({
               onClick={() => setIsEditingName(true)}
               className="capitalize font-medium text-gray-800 cursor-text px-2 py-[2px] hover:bg-[#d1d5db52] rounded transition-colors duration-200 whitespace-pre-wrap break-words"
             >
-              {nameInputValue || "Untitled"}
+              {activeBoardData?.name || "Untitled"}
             </div>
           )}
         </div>

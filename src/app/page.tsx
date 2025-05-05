@@ -9,7 +9,6 @@ import PowerfulOutOfBox from "@/components/home/powerful-out-of-box/powerful-out
 import QueryDataSql from "@/components/home/query-data/query-data-sql";
 import Sponsors from "@/components/home/sponsors/sponsors";
 import VisualizeData from "@/components/home/visualize-data/visualize-data";
-import { ModeToggle } from "@/components/toggle-mode";
 import Head from "next/head";
 
 export default function Home() {
@@ -20,7 +19,6 @@ export default function Home() {
       </Head>
       <main className="space-y-[150px] md:space-y-[200px]">
         <div className="font-sans max-w-screen-2xl mx-auto">
-          {/* <ModeToggle /> */}
           <Navbar />
           <div className="space-y-[150px] md:space-y-[200px]">
             <Hero />

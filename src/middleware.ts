@@ -18,35 +18,35 @@ export default auth((req) => {
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
   // every one can access isApiAuthRoute "/api/auth"
-  if (isApiAuthRoute) {
-    return null;
-  }
+  // if (isApiAuthRoute) {
+  //   return null;
+  // }
 
   // check access of auth routes "/login", "/register" and if user is logged in then redirect to DEFAULT_LOGIN_REDIRECT_URL else it is public 
-  if (isAuthRoute) {
-    if (isLoggedIn) {
-      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT_URL, nextUrl));
-    }
+  // if (isAuthRoute) {
+  //   if (isLoggedIn) {
+  //     return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT_URL, nextUrl));
+  //   }
 
-    return null;
-  }
+  //   return null;
+  // }
 
   // if user is not logged in and it is not public route (i.e. if user is trying to access private routes) it will redirec to "/auth/login" 
-  if (!isLoggedIn && !isPublicRoutes && nextUrl.pathname !== "/login") {  
-    let callBackUrl = nextUrl.pathname;
-    if (nextUrl.search) {
-      callBackUrl += nextUrl.search;
-    }
+  // if (!isLoggedIn && !isPublicRoutes && nextUrl.pathname !== "/login") {  
+  //   let callBackUrl = nextUrl.pathname;
+  //   if (nextUrl.search) {
+  //     callBackUrl += nextUrl.search;
+  //   }
 
-    const encodedCallbackUrl = encodeURIComponent(callBackUrl)
+  //   const encodedCallbackUrl = encodeURIComponent(callBackUrl)
 
-    return Response.redirect(new URL(
-      `/auth/login?callbackUrl=${encodedCallbackUrl}`,
-      nextUrl
-    ));
-  }
+  //   return Response.redirect(new URL(
+  //     `/auth/login?callbackUrl=${encodedCallbackUrl}`,
+  //     nextUrl
+  //   ));
+  // }
 
-  return null;
+  // return null;
 
 })
 

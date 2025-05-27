@@ -65,7 +65,7 @@ const DashboardTopbar = ({
   };
 
   return (
-    <div className="flex justify-between items-center hfull h-full px-2">
+    <div className="flex justify-between items-center h-full px-2">
       <div className="flex items-center text-gray-600">
         {!sidebarOpen && (
           <div

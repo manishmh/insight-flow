@@ -154,6 +154,7 @@ const LoginForm = () => {
               <Button
                 size={"sm"}
                 variant={"link"}
+                type="button"
                 asChild
                 className="px-0 font-normal"
               >

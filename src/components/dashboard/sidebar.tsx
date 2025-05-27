@@ -3,16 +3,12 @@ import {
   GetDashboards,
 } from "@/server/components/dashboard-commands";
 import { useRouter } from "next/navigation";
-import { ReactNode, useEffect, useRef, useState, useTransition } from "react";
-import { BsArchive } from "react-icons/bs";
-import { CgStudio } from "react-icons/cg";
-import { FaChevronDown, FaPlus, FaRegHeart } from "react-icons/fa6";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { FaChevronDown } from "react-icons/fa6";
 import { GoSidebarExpand } from "react-icons/go";
 import { HiOutlineSwitchVertical } from "react-icons/hi";
-import { IoSearch, IoSettingsSharp } from "react-icons/io5";
+import { IoSearch} from "react-icons/io5";
 import { LuCommand, LuLayoutDashboard } from "react-icons/lu";
-import { MdQueryStats } from "react-icons/md";
-import { PiPlugBold } from "react-icons/pi";
 import { RotatingLines } from "react-loader-spinner";
 import { toast } from "sonner";
 import SidebarItem from "./sidebar-item";
@@ -118,26 +114,6 @@ const Sidebar = ({
         </div>
       </div>
       <div className="flex flex-col gap-1 flex-1">
-        {/* <div onClick={handleNewDashboard}>
-          <SidebarItem logo={<FaPlus />} title="New" />
-        </div> */}
-        {/* <SidebarItem
-          logo={<PiPlugBold />}
-          title="Connections"
-          num={1}
-          link="/dashboard/connections"
-        />
-        <SidebarItem
-          logo={<MdQueryStats />}
-          title="Queries"
-          num={2}
-          link="/dashboard/queries"
-        />
-        <SidebarItem
-          logo={<CgStudio />}
-          title="Studio"
-          link="/dashboard/studio"
-        /> */}
         <div
           className={`mt-4 flex px-3 gap-2 items-center text-gray-600 cursor-pointer`}
           onClick={() => setDashboardState(!dashboardState)}

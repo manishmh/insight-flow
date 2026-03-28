@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSidebar } from "@/contexts/sidebar-context";
+import { useAppSelector } from "@/store/hooks";
 
 export type barDataType = {
     labels: string[];
@@ -12,19 +12,24 @@ export type barDataType = {
 const BarChart = ({ barData }: { barData: barDataType }) => {
   const [yaxis, setYaxis] = useState<number[]>([]);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const { sidebarWidth, sidebarOpen } = useSidebar();
+  const { sidebar } = useAppSelector((state) => state.ui);
 
   useEffect(() => {
-    // Calculate the min and max values from the data
-    const min = Math.min(...barData.datasets[0].data);
-    const max = Math.max(...barData.datasets[0].data);
+    const data = barData.datasets[0]?.data;
+    if (!data?.length) {
+      setYaxis([0]);
+      return;
+    }
+    const min = Math.min(...data);
+    const max = Math.max(...data);
+    const range = max - min || 1;
 
     // Generate 8 evenly spaced y-axis values
     const newYaxis = [];
     for (let i = 7; i >= 0; i--) {
-      newYaxis.push(min + i * ((max - min) / 7));
+      newYaxis.push(min + (i / 7) * range);
     }
-    newYaxis.push(0);
+    newYaxis.push(min);
 
     setYaxis(newYaxis);
   }, [barData.datasets]);
@@ -45,46 +50,51 @@ const BarChart = ({ barData }: { barData: barDataType }) => {
         ))}
       </div>
       <div className="w-full flex flex-col justify-between ">
-        {barData.datasets.map((dataset, index) => (
-          <div
-            key={`bardataset-${index}`}
-            className="flex gap-1 justify-between h-full items-end"
-          >
-            {dataset.data.map((data, index) => (
-              <div
-                key={`dataset-${index}`}
-                className={`w-full flex flex-col itemscenter h-full justify-end`}
-              >
-                <div className="h-full flex items-end pt-1">
-                  <div
-                    className={`bg-cyan-500 w-full group`}
-                    style={{ height: `${(data / (yaxis.length - 1)) * 100}%` }}
-                    onMouseMove={handleMouseMove}
-                  >
+        {barData.datasets.map((dataset, dsIndex) => {
+          const dataArr = dataset.data;
+          const maxVal = dataArr.length ? Math.max(...dataArr) : 0;
+          const scale = maxVal > 0 ? 100 / maxVal : 0;
+          return (
+            <div
+              key={`bardataset-${dsIndex}`}
+              className="flex gap-1 justify-between h-full items-end"
+            >
+              {dataArr.map((data, barIndex) => (
+                <div
+                  key={`dataset-${barIndex}`}
+                  className="w-full flex flex-col items-center h-full justify-end"
+                >
+                  <div className="h-full flex items-end pt-1 w-full">
                     <div
-                      className={`absolute rounded-md hidden py-1 group-hover:block bg-gray-800 z-50 text-xs `}
-                      style={{
-                        top: `${mousePosition.y + 10}px`,
-                        left: `${sidebarOpen ? mousePosition.x - sidebarWidth : mousePosition.x}px`,
-                      }}
+                      className="bg-cyan-500 w-full group min-h-[4px]"
+                      style={{ height: `${scale * data}%` }}
+                      onMouseMove={handleMouseMove}
                     >
-                      <div className="p-2 space-y-2 font-semibold font-mono">
-                        <div className="text-white">
-                          Date: {barData.labels[index]}
+                      <div
+                        className="absolute rounded-md hidden py-1 group-hover:block bg-gray-800 z-50 text-xs"
+                        style={{
+                          top: `${mousePosition.y + 10}px`,
+                          left: `${sidebar.open ? mousePosition.x - sidebar.width : mousePosition.x}px`,
+                        }}
+                      >
+                        <div className="p-2 space-y-2 font-semibold font-mono">
+                          <div className="text-white">
+                            {barData.labels[barIndex] ?? barIndex + 1}
+                          </div>
+                          <div className="text-white">{dataset.label}: {data}</div>
                         </div>
-                        <div className="text-white">{dataset.label}: {data}</div>
                       </div>
                     </div>
                   </div>
+                  <div className="overflow-hidden text-gray-400 flex flex-col items-center">
+                    <div className="w-[1px] h-1.5 bg-gray-400" />
+                    <div>{barIndex + 1}</div>
+                  </div>
                 </div>
-                <div className="overflow-hidden text-gray-400 flex flex-col items-center">
-                    <div className="w-[1px] h-1.5 bg-gray-400"></div>
-                    <div>{index + 1}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        ))}
+              ))}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

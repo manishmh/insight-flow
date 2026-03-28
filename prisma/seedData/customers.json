@@ -1,4 +1,5 @@
 {
+  "columns": ["id", "first_name", "last_name", "email", "avatar", "address", "state", "zip", "total_spending", "date_joined", "last_order", "membership"],
   "data": [
       [
           4,

@@ -1,6 +1,7 @@
 import AddEmoji from "@/components/global/svg/add-emoji";
-import { useBoardContext } from "@/contexts/board-context";
-import { useDashboardContext } from "@/contexts/dashboard-context";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { setCurrentDashboard, updateBoardInDashboard } from "@/store/slices/dashboardSlice";
+import { GetDashboardData } from "@/server/components/dashboard-commands";
 import {
   DataStateInterface,
   useTableContext,
@@ -10,29 +11,31 @@ import { getTableState } from "@/utils/localStorage";
 import React, { useEffect, useRef, useState } from "react";
 
 const EmojiNName = () => {
-  const { activeBoardData } = useBoardContext();
-  const [nameInputValue, setNameInputValue] = useState<string>(activeBoardData?.name!);
+  const dispatch = useAppDispatch();
+  const { activeBoard } = useAppSelector((state) => state.board);
+  const [nameInputValue, setNameInputValue] = useState<string>(activeBoard?.name || "");
   console.log("input value", nameInputValue);
   const [description, setDescription] = useState("");
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
 
-  const { refreshDashboard } = useDashboardContext();
   const { updateState } = useTableContext();
 
   const nameRef = useRef<HTMLTextAreaElement>(null);
   const descRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    setNameInputValue(activeBoardData?.name || "Untitled");
-  }, [activeBoardData?.name]);
+    setNameInputValue(activeBoard?.name || "Untitled");
+  }, [activeBoard?.name]);
 
   useEffect(() => {
-    const TableLocalStorageData: DataStateInterface = getTableState(
-      activeBoardData?.id!
-    );
-    setDescription(TableLocalStorageData?.description || "");
-  }, []);
+    if (activeBoard?.id) {
+      const TableLocalStorageData: DataStateInterface = getTableState(
+        activeBoard.id
+      );
+      setDescription(TableLocalStorageData?.description || "");
+    }
+  }, [activeBoard?.id]);
 
   useEffect(() => {
     if (isEditingName && nameRef.current) {
@@ -58,15 +61,23 @@ const EmojiNName = () => {
   const handleNameKeyDown = async (
     e: React.KeyboardEvent<HTMLTextAreaElement>
   ) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey && activeBoard) {
       e.preventDefault();
-      const data = await setBoardName(
+      const updatedBoard = await setBoardName(
         nameInputValue,
-        activeBoardData?.boardId!
+        activeBoard.boardId
       );
-      setNameInputValue(data.name);
+      setNameInputValue(updatedBoard.name);
       setIsEditingName(false);
-      refreshDashboard();
+      
+      // Update Redux store
+      dispatch(updateBoardInDashboard(updatedBoard));
+      
+      // Refresh dashboard to get latest state
+      const updatedDashboard = await GetDashboardData(updatedBoard.dashboardId);
+      if (updatedDashboard) {
+        dispatch(setCurrentDashboard(updatedDashboard));
+      }
     }
   };
 
@@ -80,9 +91,9 @@ const EmojiNName = () => {
   const handleDescriptionKeyDown = (
     e: React.KeyboardEvent<HTMLTextAreaElement>
   ) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey && activeBoard) {
       e.preventDefault();
-      updateState(activeBoardData?.id!, "description", description);
+      updateState(activeBoard.id, "description", description);
       setIsEditingDescription(false);
     }
   };
@@ -109,7 +120,7 @@ const EmojiNName = () => {
               onClick={() => setIsEditingName(true)}
               className="capitalize font-medium text-gray-800 cursor-text px-2 py-[2px] hover:bg-[#d1d5db52] rounded transition-colors duration-200 whitespace-pre-wrap break-words"
             >
-              {activeBoardData?.name || "Untitled"}
+              {activeBoard?.name || "Untitled"}
             </div>
           )}
         </div>

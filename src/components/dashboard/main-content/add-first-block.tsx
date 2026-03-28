@@ -2,21 +2,29 @@
 
 import { RotatingLines } from "react-loader-spinner";
 import { createNewEmptyBlock } from "@/server/components/block-functions";
+import { GetDashboardData } from "@/server/components/dashboard-commands";
+import { useAppDispatch } from "@/store/hooks";
+import { setCurrentDashboard } from "@/store/slices/dashboardSlice";
 import { useTransition } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { PiDotsNineBold } from "react-icons/pi";
 import { toast } from "sonner";
-import { useDashboardContext } from "@/contexts/dashboard-context";
 
 const AddFirstBlock = ({ dashboardId }: { dashboardId: string }) => {
+  const dispatch = useAppDispatch();
   const [isPendingBlock, startTransitionBlock] = useTransition();
-  const { handleDashboardData } = useDashboardContext();
 
   const handleEmptyBlock = () => {
     startTransitionBlock(async () => {
       try {
-        const block = await createNewEmptyBlock(dashboardId);
-        handleDashboardData(dashboardId);
+        await createNewEmptyBlock(dashboardId);
+        
+        // Refresh dashboard in Redux
+        const updatedDashboard = await GetDashboardData(dashboardId);
+        if (updatedDashboard) {
+          dispatch(setCurrentDashboard(updatedDashboard));
+        }
+        
         toast.success("Block added successfully");
       } catch (error) {
         toast.error("Failed to add block");

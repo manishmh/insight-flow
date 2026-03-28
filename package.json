@@ -26,6 +26,7 @@
     "@radix-ui/react-toast": "^1.1.5",
     "@react-three/drei": "^9.111.5",
     "@react-three/fiber": "^8.17.6",
+    "@reduxjs/toolkit": "^2.11.2",
     "@tailwindcss/line-clamp": "^0.4.4",
     "@types/bcryptjs": "^2.4.6",
     "axios": "^1.6.2",
@@ -41,13 +42,16 @@
     "next": "14.0.3",
     "next-auth": "^5.0.0-beta.5",
     "next-themes": "^0.2.1",
+    "pg": "^8.20.0",
     "react": "^18",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18",
     "react-element-to-jsx-string": "^15.0.0",
     "react-hook-form": "^7.49.3",
     "react-icons": "^5.0.1",
+    "react-joyride": "^3.0.0",
     "react-loader-spinner": "^6.1.6",
+    "react-redux": "^9.2.0",
     "react-resizable": "^3.0.5",
     "react-spinners": "^0.13.8",
     "resend": "^3.1.0",
@@ -65,6 +69,7 @@
     "@types/js-cookie": "^3.0.6",
     "@types/lodash": "^4.17.10",
     "@types/node": "^20",
+    "@types/pg": "^8.20.0",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/react-resizable": "^3.0.8",
@@ -77,5 +82,8 @@
     "tailwindcss": "^3.3.0",
     "tsx": "^4.19.2",
     "typescript": "^5"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }

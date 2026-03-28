@@ -4,6 +4,7 @@ import {
   useTableContext,
 } from "@/contexts/sidepane-localhost-storage-context";
 import { getTableState } from "@/utils/localStorage";
+import { sortTableDataByColumn } from "@/utils/sortData";
 import { useEffect, useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import { LuLayoutDashboard } from "react-icons/lu";
@@ -13,25 +14,106 @@ const Table = ({ data }: { data: BoardDataType }) => {
   const [pagination, setPagination] = useState(1);
   const [tableHeader, setTableHeader] = useState<string[]>([]);
   const [filteredData, setFilteredData] = useState<any[][]>([]);
+  const [prevSortKey, setPrevSortKey] = useState<string>("");
   const RECORDS_PER_PAGE = 50;
-  const totalPages = Math.ceil(data.data.data.length / RECORDS_PER_PAGE);
   const { dataStates } = useTableContext();
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    const startIndex = (pagination - 1) * RECORDS_PER_PAGE;
     const allRows = data.data.data;
     const allColumns = data.data.columns;
 
+    console.log("Table component - data structure:", {
+      allRowsLength: allRows.length,
+      allColumnsLength: allColumns.length,
+      allColumns: allColumns,
+      firstRow: allRows[0],
+      dataId: data.id
+    });
+
     const TableActionsState: DataStateInterface = getTableState(data.id);
-    const activeColumn = TableActionsState?.activeColumns ?? [];
+    let activeColumn = TableActionsState?.activeColumns ?? [];
+    
+    // If no active columns, use all columns as fallback
+    if (activeColumn.length === 0 && allColumns.length > 0) {
+      activeColumn = allColumns;
+      // Save to localStorage
+      const { setTableState } = require("@/utils/localStorage");
+      const currentState = TableActionsState || {};
+      setTableState(data.id, {
+        ...currentState,
+        activeColumns: allColumns
+      });
+    }
+    
     setTableHeader(activeColumn);
+
+    // Get sort preferences
+    const sortColumn = TableActionsState?.sortColumn ?? null;
+    const sortOrder = TableActionsState?.sortBy ?? "none";
+    const currentSortKey = `${sortColumn}-${sortOrder}`;
+
+    // Reset pagination to page 1 if sort changed
+    if (prevSortKey !== currentSortKey && prevSortKey !== "") {
+      setPagination(1);
+    }
+    setPrevSortKey(currentSortKey);
+
+    // Apply filtering
+    const filters = TableActionsState?.filters || [];
+    let processedRows = allRows;
+    
+    if (filters.length > 0) {
+      processedRows = allRows.filter((row) => {
+        return filters.every((filter) => {
+          if (!filter.column || !filter.value) return true;
+          const cellValue = String(row[filter.column] ?? "").toLowerCase();
+          const filterValue = filter.value.toLowerCase();
+          
+          switch (filter.condition) {
+            case "equals":
+              return cellValue === filterValue;
+            case "contains":
+              return cellValue.includes(filterValue);
+            case "starts_with":
+              return cellValue.startsWith(filterValue);
+            case "greater_than":
+              return Number(row[filter.column]) > Number(filter.value);
+            case "less_than":
+              return Number(row[filter.column]) < Number(filter.value);
+            default:
+              return true;
+          }
+        });
+      });
+    }
+
+    // Apply sorting BEFORE pagination
+    let sortedRows = processedRows;
+    if (sortOrder !== "none" && sortColumn) {
+      sortedRows = sortTableDataByColumn(processedRows, allColumns, sortColumn, sortOrder);
+      console.log("Table component - sorting applied:", {
+        sortColumn,
+        sortOrder,
+        originalLength: allRows.length,
+        sortedLength: sortedRows.length
+      });
+    }
 
     const activeIndexes = activeColumn
       .map((col) => allColumns.indexOf(col))
       .filter((i) => i !== -1);
 
-    // Step 3: slice & filter rows based on active indexes
-    const paginatedRows = allRows.slice(
+    console.log("Table component - filtering:", {
+      activeColumn,
+      activeIndexes,
+      allColumns,
+      allRowsLength: sortedRows.length
+    });
+
+    // Apply pagination AFTER sorting
+    const startIndex = (pagination - 1) * RECORDS_PER_PAGE;
+    const paginatedRows = sortedRows.slice(
       startIndex,
       startIndex + RECORDS_PER_PAGE
     );
@@ -39,7 +121,16 @@ const Table = ({ data }: { data: BoardDataType }) => {
       activeIndexes.map((i) => [i, row[i]])
     );
 
+    console.log("Table component - filtered data:", {
+      paginatedRowsLength: paginatedRows.length,
+      filteredLength: filtered.length,
+      firstFilteredRow: filtered[0]
+    });
+
     setFilteredData(filtered);
+    
+    // Update total pages based on sorted data length
+    setTotalPages(Math.ceil(sortedRows.length / RECORDS_PER_PAGE));
   }, [pagination, data.id, data.data, dataStates]);
 
   const toggleExpand = (rowIndex: number, colIndex: number) => {
@@ -70,11 +161,11 @@ const Table = ({ data }: { data: BoardDataType }) => {
       <div className="w-full h-full overflow-hidden">
         <div className="overflow-scroll w-full h-full">
           <div className="w-full">
-            <div className="flex text-base w-full">
+            <div className="flex text-sm w-full">
               {tableHeader.map((column, index) => (
                 <div
                   key={index}
-                  className="w-[200px] px-4 flex-shrink-0 border-r border-gray-400 truncate text-gray-600"
+                  className="w-[200px] px-4 py-2 flex-shrink-0 border-r border-gray-400 truncate text-gray-600"
                 >
                   {column}
                 </div>
@@ -82,7 +173,7 @@ const Table = ({ data }: { data: BoardDataType }) => {
             </div>
             <div>
               {filteredData.map((row, rowIndex) => (
-                <div key={rowIndex} className="flex w-full">
+                <div key={rowIndex} className="flex w-full text-sm">
                   {row.map(([originalColIndex, value], colIndex) => {
                     const columnKey = data.data.columns[
                       originalColIndex

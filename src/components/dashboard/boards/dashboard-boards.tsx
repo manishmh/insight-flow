@@ -1,8 +1,7 @@
-import { useBoardContext } from "@/contexts/board-context";
-import { useDashboardContext } from "@/contexts/dashboard-context";
-import { useSidebar } from "@/contexts/sidebar-context";
-import { useSidepane } from "@/contexts/sidepane-context";
+import { useAppSelector } from "@/store/hooks";
 import { UpdateBoardSize } from "@/server/components/dashboard-commands";
+import { updateBoardInDashboard } from "@/store/slices/dashboardSlice";
+import { useAppDispatch } from "@/store/hooks";
 import { Board } from "@prisma/client";
 import { useEffect, useRef, useState } from "react";
 import { ResizableBox } from "react-resizable";
@@ -12,12 +11,12 @@ import DynamicBoard from "./board";
 import EmptyBoard from "./empty-board";
 
 const DashboardBoards = () => {
-  const { dashboardData } = useDashboardContext();
+  const dispatch = useAppDispatch();
+  const { currentDashboard } = useAppSelector((state) => state.dashboard);
+  const { activeBoard } = useAppSelector((state) => state.board);
+  const { sidebar, sidepane } = useAppSelector((state) => state.ui);
   const containerRef = useRef<HTMLDivElement>(null);
   const [parentWidth, setParentWidth] = useState<number | null>(null);
-  const { sidebarOpen } = useSidebar();
-  const { sidepaneOpen } = useSidepane();
-  const { activeBoardData } = useBoardContext();
 
   useEffect(() => {
     const updateWidth = () => {
@@ -27,7 +26,7 @@ const DashboardBoards = () => {
     };
 
     updateWidth();
-  }, [sidebarOpen]);
+  }, [sidebar.open]);
 
   const handleResizeStop = async (
     id: string,
@@ -35,18 +34,25 @@ const DashboardBoards = () => {
     height: number
   ) => {
     try {
-      await UpdateBoardSize(id, width, height);
+      const updatedBoard = await UpdateBoardSize(id, width, height);
+      if (updatedBoard) {
+        dispatch(updateBoardInDashboard(updatedBoard));
+      }
       console.log("Board size updated successfully", width, height);
     } catch (error) {
       console.log("Failed to update board size", error);
     }
   };
 
+  if (!currentDashboard) {
+    return <div>No dashboard data</div>;
+  }
+
   return (
     <div ref={containerRef} className="flex gap-4 h-full flex-wrap max-w-full">
-      {dashboardData?.boards.map((board: Board) => (
+      {currentDashboard.boards.map((board: Board) => (
         <ResizableBox
-          key={board.id}
+          key={`${board.id}-${board.currentDataId || 'empty'}`}
           width={board.width}
           height={board.height}
           minConstraints={[384, 320]}
@@ -57,7 +63,7 @@ const DashboardBoards = () => {
           }
           className={`rounded-lg relative flex flex-col overflow-hidden pb-11
             ${
-              sidepaneOpen && activeBoardData?.boardId === board.id
+              sidepane.open && activeBoard?.boardId === board.id
                 ? "border-2 border-cyan-400"
                 : "border border-gray-400"
             }   

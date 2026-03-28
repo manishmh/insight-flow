@@ -54,7 +54,8 @@ export const fetchSampleData = async (name: string) => {
 
     return sampleData;
   } catch (error: any) {
-    throw new error("failed to fetch sample data", error);
+    console.error("failed to fetch sample data", error);
+    throw new Error("failed to fetch sample data");
   }
 }
 
@@ -68,7 +69,8 @@ export const fetchSampleDataWithId = async (id: string) => {
 
     return sampleData;
   } catch (error: any) {
-    throw new error("failed to fetch sample data", error);
+    console.error("failed to fetch sample data", error);
+    throw new Error("failed to fetch sample data");
   }
 }
 

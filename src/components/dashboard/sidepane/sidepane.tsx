@@ -4,7 +4,8 @@ import ChartSection from "./charts-section";
 import DataSection from "./data-section";
 import EmojiNName from "./emoji-n-name";
 import HeaderMenu from "./header-menu";
-import { useBoardContext } from "@/contexts/board-context";
+import { useAppSelector } from "@/store/hooks";
+import { RotatingLines } from "react-loader-spinner";
 
 export type sidepaneToolsType = {
   data: boolean;
@@ -19,7 +20,7 @@ const sidepaneTools: sidepaneToolsType = {
 const Sidepane = () => {
   const [headerMenu, setHeaderMenu] = useState(false);
   const [activeTools, setActiveTools] = useState(sidepaneTools);
-  const { activeBoardData } = useBoardContext();
+  const { activeBoard, sidepaneQueryLoading } = useAppSelector((state) => state.board);
 
   const handleActiveTools = (tool: keyof sidepaneToolsType) => {
     setActiveTools({
@@ -28,13 +29,24 @@ const Sidepane = () => {
     });
   };
 
-  if (!activeBoardData) {
-    //TODO: add skeleton loader here. 
-    return <div>No Active data</div>
+  if (!activeBoard) {
+    return (
+      <div className="flex items-center justify-center py-12 text-gray-500">
+        No block selected. Click a block header to open settings.
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 relative">
+      {sidepaneQueryLoading && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-gray-200 border-2 border-gray-300 shadow-md">
+          <div className="flex flex-col items-center gap-3">
+            <RotatingLines width="40" strokeColor="#0ea5e9" strokeWidth="3" />
+            <span className="text-sm text-gray-700 font-medium">Loading data...</span>
+          </div>
+        </div>
+      )}
       <div className="px-3 space-y-3">
         <HeaderMenu
           headerMenu={headerMenu}
@@ -52,11 +64,11 @@ const Sidepane = () => {
             <DataSection />
           </>
         )}
-        {/* {activeTools.charts && (
+        {activeTools.charts && (
           <div>
             <ChartSection />
           </div>
-        )} */}
+        )}
       </div>
     </div>
   );

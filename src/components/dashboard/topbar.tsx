@@ -1,46 +1,54 @@
-import { useDashboardContext } from "@/contexts/dashboard-context";
 import { createNewEmptyBlock } from "@/server/components/block-functions";
 import { SetDashboardName } from "@/server/components/dashboard-commands";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useState,
-  useTransition,
-} from "react";
+  setCurrentDashboard,
+  updateDashboardName,
+  updateDashboardBoards,
+} from "@/store/slices/dashboardSlice";
+import { GetDashboardData } from "@/server/components/dashboard-commands";
+import { useEffect, useState, useTransition } from "react";
 import { AiOutlineAppstoreAdd } from "react-icons/ai";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { GoSidebarExpand } from "react-icons/go";
 import { LuLayoutDashboard } from "react-icons/lu";
 import { RotatingLines } from "react-loader-spinner";
 import { toast } from "sonner";
-
-const DashboardTopbar = ({
+import {
   setSidebarHover,
-  handleSidebar,
-  sidebarOpen,
-}: {
-  setSidebarHover: Dispatch<SetStateAction<boolean>>;
-  handleSidebar: () => void;
-  sidebarOpen: boolean;
-}) => {
-  const { dashboardData, handleDashboardData } = useDashboardContext();
+  toggleSidebar,
+} from "@/store/slices/uiSlice";
+
+const DashboardTopbar = () => {
+  const dispatch = useAppDispatch();
+  const { currentDashboard } = useAppSelector((state) => state.dashboard);
+  const { sidebar } = useAppSelector((state) => state.ui);
   const [isPendingBlock, startTransitionBlock] = useTransition();
   const [editBlockname, setEditBlockname] = useState(false);
-  const [newblockName, setNewBlockName] = useState(dashboardData.name);
+  const [newblockName, setNewBlockName] = useState(
+    currentDashboard?.name || ""
+  );
 
   useEffect(() => {
-    if (dashboardData.name) {
-      setNewBlockName(dashboardData.name);
+    if (currentDashboard?.name) {
+      setNewBlockName(currentDashboard.name);
     }
-  }, [dashboardData.name]);
+  }, [currentDashboard?.name]);
 
   const handleEmptyBlock = () => {
+    if (!currentDashboard) return;
+    
     startTransitionBlock(async () => {
       try {
-        const dashboardId = dashboardData.id;
-        await createNewEmptyBlock(dashboardId);
-        handleDashboardData(dashboardId);
+        const dashboardId = currentDashboard.id;
+        const newBoard = await createNewEmptyBlock(dashboardId);
+        
+        // Refresh dashboard data
+        const updatedDashboard = await GetDashboardData(dashboardId);
+        if (updatedDashboard) {
+          dispatch(setCurrentDashboard(updatedDashboard));
+        }
+        
         toast.success("Block added successfully");
       } catch (error) {
         toast.error("Failed to add block");
@@ -50,11 +58,22 @@ const DashboardTopbar = ({
   };
 
   const handleRenameDashboard = async () => {
-    if (newblockName.trim() && newblockName !== dashboardData.name) {
+    if (!currentDashboard) return;
+    
+    if (newblockName.trim() && newblockName !== currentDashboard.name) {
       try {
-        const dashboardId = dashboardData.id;
+        const dashboardId = currentDashboard.id;
         await SetDashboardName(dashboardId, newblockName.trim());
-        handleDashboardData(dashboardId);
+        
+        // Update Redux state
+        dispatch(updateDashboardName({ id: dashboardId, name: newblockName.trim() }));
+        
+        // Refresh dashboard data to get latest boards
+        const updatedDashboard = await GetDashboardData(dashboardId);
+        if (updatedDashboard) {
+          dispatch(setCurrentDashboard(updatedDashboard));
+        }
+        
         toast.success("Dashboard renamed successfully");
       } catch (error) {
         toast.error("Failed to rename dashboard");
@@ -64,15 +83,30 @@ const DashboardTopbar = ({
     setEditBlockname(false);
   };
 
+  if (!currentDashboard) {
+    return (
+      <div className="flex justify-between items-center h-full px-4 w-full">
+        <div className="flex items-center gap-3">
+          <div className="h-4 w-4 bg-gray-200 animate-pulse rounded-sm"></div>
+          <div className="h-6 w-48 bg-gray-200 animate-pulse rounded-md"></div>
+        </div>
+        <div className="flex gap-4">
+          <div className="h-8 w-24 bg-gray-200 animate-pulse rounded-md"></div>
+          <div className="h-8 w-8 bg-gray-200 animate-pulse rounded-sm"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex justify-between items-center h-full px-2">
       <div className="flex items-center text-gray-600">
-        {!sidebarOpen && (
+        {!sidebar.open && (
           <div
             className="h-14 aspect-square grid place-items-center cursor-pointer"
-            onClick={handleSidebar}
-            onMouseEnter={() => setSidebarHover(true)}
-            onMouseLeave={() => setSidebarHover(false)}
+            onClick={() => dispatch(toggleSidebar())}
+            onMouseEnter={() => dispatch(setSidebarHover(true))}
+            onMouseLeave={() => dispatch(setSidebarHover(false))}
           >
             <GoSidebarExpand />
           </div>
@@ -100,17 +134,17 @@ const DashboardTopbar = ({
             </div>
           ) : (
             <div
-              className="cursor-pointer"
+              className="tour-dashboard-name cursor-pointer"
               onClick={() => setEditBlockname(!editBlockname)}
             >
-              {dashboardData.name}
+              {currentDashboard.name}
             </div>
           )}
         </div>
       </div>
       <div className="text-gray-600 hover:text-gray-800 transition-colors duration-300 flex gap-4 items-center">
         <button
-          className="flex items-center border border-gray-300 rounded-md px-2 py-1 gap-1"
+          className="tour-add-block flex items-center border border-gray-300 rounded-md px-2 py-1 gap-1"
           onClick={handleEmptyBlock}
         >
           {isPendingBlock ? (

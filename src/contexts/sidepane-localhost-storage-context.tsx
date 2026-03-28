@@ -6,6 +6,7 @@ export interface DataStateInterface {
   activeColumns: string[];
   groupBy: string;
   sortBy: "asc" | "desc" | "none";
+  sortColumn: string | null;
   aggregate: {
     countValues: Record<string, number>;
     countUnique: Record<string, number>;
@@ -18,13 +19,16 @@ export interface DataStateInterface {
     median: Record<string, number>;
     max: Record<string, number>;
   };
+  filters: { id: string; column: string; condition: string; value: string }[];
 }
+
 
 export const defaultDataValues: DataStateInterface = {
   description: "",
   activeColumns: [],
   groupBy: "",
   sortBy: "none",
+  sortColumn: null,
   aggregate: {
     countValues: {},
     countUnique: {},
@@ -37,7 +41,9 @@ export const defaultDataValues: DataStateInterface = {
     median: {},
     max: {},
   },
+  filters: [],
 };
+
 
 interface TableContextType {
   dataStates: Record<string, DataStateInterface>;
@@ -52,6 +58,10 @@ interface TableContextType {
     key: keyof DataStateInterface["aggregate"],
     value: Record<string, number>
   ) => void;
+  undo: (dataId: string) => void;
+  redo: (dataId: string) => void;
+  canUndo: (dataId: string) => boolean;
+  canRedo: (dataId: string) => boolean;
 }
 
 const TableContext = createContext<TableContextType | undefined>(undefined);
@@ -61,6 +71,10 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [dataStates, setDataStates] = useState<
     Record<string, DataStateInterface>
+  >({});
+  
+  const [history, setHistory] = useState<
+    Record<string, { past: DataStateInterface[]; future: DataStateInterface[] }>
   >({});
 
   const getDataState = (dataId: string): DataStateInterface => {
@@ -77,11 +91,22 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({
     key: keyof DataStateInterface,
     value: any
   ) => {
+    const prev = dataStates[dataId] ?? getDataState(dataId);
+    
+    setHistory((currHistory) => {
+      const past = currHistory[dataId]?.past || [];
+      const newPast = [...past, prev].slice(-50);
+      return {
+        ...currHistory,
+        [dataId]: { past: newPast, future: [] },
+      };
+    });
+
     setDataStates((prevStates) => {
-      const prev = prevStates[dataId] ?? getDataState(dataId);
+      const prevLocal = prevStates[dataId] ?? getDataState(dataId);
 
       const updated = {
-        ...prev,
+        ...prevLocal,
         [key]: value,
       };
 
@@ -99,14 +124,25 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({
     aggregateKey: keyof DataStateInterface["aggregate"],
     value: Record<string, number>
   ) => {
+    const prev = dataStates[dataId] ?? getDataState(dataId);
+    
+    setHistory((currHistory) => {
+      const past = currHistory[dataId]?.past || [];
+      const newPast = [...past, prev].slice(-50);
+      return {
+        ...currHistory,
+        [dataId]: { past: newPast, future: [] },
+      };
+    });
+
     setDataStates((prevStates) => {
-      const prev = prevStates[dataId] ?? defaultDataValues;
+      const prevLocal = prevStates[dataId] ?? defaultDataValues;
       const updatedAggregate = {
-        ...prev.aggregate,
+        ...prevLocal.aggregate,
         [aggregateKey]: value,
       };
       const updated = {
-        ...prev,
+        ...prevLocal,
         aggregate: updatedAggregate,
       };
       setTableState(dataId, updated);
@@ -117,6 +153,64 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
+  const undo = (dataId: string) => {
+    const item = history[dataId];
+    if (!item || item.past.length === 0) return;
+
+    const newPast = [...item.past];
+    const stateToRestore = newPast.pop()!;
+    const currentState = dataStates[dataId] ?? getDataState(dataId);
+
+    setHistory((currHistory) => ({
+      ...currHistory,
+      [dataId]: {
+        past: newPast,
+        future: [currentState, ...(currHistory[dataId]?.future || [])],
+      },
+    }));
+
+    setDataStates((prevStates) => {
+      setTableState(dataId, stateToRestore);
+      return {
+        ...prevStates,
+        [dataId]: stateToRestore,
+      };
+    });
+  };
+
+  const redo = (dataId: string) => {
+    const item = history[dataId];
+    if (!item || item.future.length === 0) return;
+
+    const newFuture = [...item.future];
+    const stateToRestore = newFuture.shift()!;
+    const currentState = dataStates[dataId] ?? getDataState(dataId);
+
+    setHistory((currHistory) => ({
+      ...currHistory,
+      [dataId]: {
+        past: [...(currHistory[dataId]?.past || []), currentState],
+        future: newFuture,
+      },
+    }));
+
+    setDataStates((prevStates) => {
+      setTableState(dataId, stateToRestore);
+      return {
+        ...prevStates,
+        [dataId]: stateToRestore,
+      };
+    });
+  };
+
+  const canUndo = (dataId: string) => {
+    return (history[dataId]?.past.length || 0) > 0;
+  };
+
+  const canRedo = (dataId: string) => {
+    return (history[dataId]?.future.length || 0) > 0;
+  };
+
   return (
     <TableContext.Provider
       value={{
@@ -124,6 +218,10 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({
         getDataState,
         updateState,
         updateAggregate,
+        undo,
+        redo,
+        canUndo,
+        canRedo,
       }}
     >
       {children}

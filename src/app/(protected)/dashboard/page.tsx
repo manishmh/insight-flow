@@ -11,7 +11,11 @@ const Dashboard = () => {
     const fetchDefaultDashboardId = async () => {
       try {
         const id = await GetDefaultDashboardId();
-        console.log('defaultdashboardid', id)
+
+        if (!id) {
+          console.error("No default dashboard found for user.");
+          return;
+        }
 
         router.push(`/dashboard/${id}`);
       } catch (error) {

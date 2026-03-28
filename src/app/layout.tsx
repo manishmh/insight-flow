@@ -6,6 +6,7 @@ import { SessionProvider } from "next-auth/react";
 import { Open_Sans } from "next/font/google";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "../providers/theme-provider";
+import { ReduxProvider } from "../providers/redux-provider";
 
 const font = Open_Sans({ subsets: ["latin"] });
 
@@ -29,21 +30,23 @@ export default async function RootLayout({
         )}
       >
         <SessionProvider session={session}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            enableSystem={false}
-            storageKey="discord-theme"
-            disableTransitionOnChange
-          >
-            {children}
-            <Toaster
-              position="bottom-right"
-              expand={true}
-              duration={2000}
-              richColors
-            />
-          </ThemeProvider>
+          <ReduxProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              enableSystem={false}
+              storageKey="discord-theme"
+              disableTransitionOnChange
+            >
+              {children}
+              <Toaster
+                position="bottom-right"
+                expand={true}
+                duration={2000}
+                richColors
+              />
+            </ThemeProvider>
+          </ReduxProvider>
         </SessionProvider>
       </body>
     </html>

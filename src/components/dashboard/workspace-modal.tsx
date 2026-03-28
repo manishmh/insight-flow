@@ -34,7 +34,7 @@ const WorkspaceModal = ({
 
   return (
     <div
-      className="absolute top-full bg-primary-bg w-full p-3 mt-1 rounded-4 border drop-shadow-md border-gray-300"
+      className="absolute z-50 top-full bg-[#f8fafc] w-full p-3 mt-1 rounded-md border drop-shadow-md border-gray-300"
     >
       <div className="text-sm flex flex-col gap-2 text-gray-600">
         <div>{user?.name}</div>

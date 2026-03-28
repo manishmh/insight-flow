@@ -11,8 +11,15 @@ export const GetDashboardData = async (dashboardId: string) => {
         where: { id: dashboardId },
         include: { boards: true },
     });
-    
-    return dashboard;
+
+    if (!dashboard) return dashboard;
+
+    // Keep board order stable by id (creation order). Do not sort by name so
+    // changing block name or sample data does not rearrange blocks.
+    const boardsOrdered = [...dashboard.boards].sort((a, b) =>
+        a.id.localeCompare(b.id)
+    );
+    return { ...dashboard, boards: boardsOrdered };
 }
 
 /**
@@ -32,24 +39,68 @@ export const GetDashboards = async () => {
 
 
 /**
+ * Deletes a dashboard by id. User must own the dashboard.
+ * @param dashboardId Dashboard id to delete
+ * @returns Deleted dashboard or null
+ */
+export const DeleteDashboard = async (dashboardId: string) => {
+  const session = await auth();
+  const userId = session?.user.id;
+  if (!userId) return null;
+
+  const dashboard = await db.dashboard.findFirst({
+    where: { id: dashboardId, userId },
+  });
+  if (!dashboard) return null;
+
+  await db.dashboard.delete({
+    where: { id: dashboardId },
+  });
+  return dashboard;
+};
+
+/**
  * 
- * @param userId 
+ * @param name Optional dashboard name. Defaults to "Untitled Board" if not provided
  * @returns to create a new dashboard
  */
-export const CreateNewDashboard = async () => {
-    const session = await auth();
-    const userId = session?.user.id;
+export const CreateNewDashboard = async (name?: string) => {
+    try {
+        const session = await auth();
+        const userId = session?.user.id;
 
-    if (!userId) return;
-
-    const dashboard = await db.dashboard.create({
-        data: {
-            name: "Untitled Board", 
-            userId: userId,
+        if (!userId) {
+            console.error("CreateNewDashboard: No userId found in session");
+            return null; // Return null explicitly if auth fails
         }
-    })
 
-    return dashboard
+        const dashboard = await db.dashboard.create({
+            data: {
+                name: name || "Untitled Board", 
+                userId: userId,
+            }
+        });
+
+        // Add a default board to the new dashboard
+        await db.board.create({
+            data: {
+                name: "Main Board",
+                dashboardId: dashboard.id,
+                width: 400,
+                height: 300
+            }
+        });
+
+        const fullDashboard = await db.dashboard.findUnique({
+            where: { id: dashboard.id },
+            include: { boards: true }
+        });
+
+        return fullDashboard;
+    } catch (e: any) {
+        console.error("CreateNewDashboard Error:", e);
+        return null; // Handle smoothly so client can show proper error
+    }
 }
 
 /**

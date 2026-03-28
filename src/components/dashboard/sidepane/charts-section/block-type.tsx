@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect } from "react";
 import { BsBarChartLineFill, BsTable } from "react-icons/bs";
 import {
   FaChartArea,
@@ -7,26 +7,38 @@ import {
   FaCircleQuestion,
 } from "react-icons/fa6";
 import { MdOutlineScatterPlot } from "react-icons/md";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { setBoardVisualization, type BoardVisualizationType } from "@/store/slices/boardSlice";
 
 const BlockType = () => {
+  const dispatch = useAppDispatch();
+  const { activeBoard, boardVisualization } = useAppSelector((state) => state.board);
+
   const blockTypes = [
-    { id: "table", title: "Table", logo: <BsTable /> },
-    { id: "barChart", title: "Bar chart", logo: <BsBarChartLineFill /> },
-    { id: "lineChart", title: "Line chart", logo: <FaChartLine /> },
-    { id: "areaChart", title: "Area chart", logo: <FaChartArea /> },
-    {
-      id: "scatterPlot",
-      title: "Scatter plot",
-      logo: <MdOutlineScatterPlot />,
-    },
-    { id: "pieChart", title: "Pie chart", logo: <FaChartPie /> },
-    { id: "singleValue", title: "Single value", logo: <FaCircleQuestion /> },
+    { id: "table" as const, title: "Table", logo: <BsTable /> },
+    { id: "barChart" as const, title: "Bar chart", logo: <BsBarChartLineFill /> },
+    { id: "lineChart" as const, title: "Line chart", logo: <FaChartLine /> },
+    { id: "areaChart" as const, title: "Area chart", logo: <FaChartArea /> },
+    { id: "scatterPlot" as const, title: "Scatter plot", logo: <MdOutlineScatterPlot /> },
+    { id: "pieChart" as const, title: "Pie chart", logo: <FaChartPie /> },
+    { id: "singleValue" as const, title: "Single value", logo: <FaCircleQuestion /> },
   ];
 
-  const [activeBlockType, setActiveBlockType] = useState("table");
+  const activeBlockType = activeBoard
+    ? (boardVisualization[activeBoard.boardId] ?? "table")
+    : "table";
+
   const handleActiveBlockType = (id: string) => {
-    setActiveBlockType(id);
-  }
+    if (activeBoard) {
+      const type = id as BoardVisualizationType;
+      dispatch(setBoardVisualization({ boardId: activeBoard.boardId, type }));
+      try {
+        localStorage.setItem(`board-viz-${activeBoard.boardId}`, type);
+      } catch {
+        // ignore
+      }
+    }
+  };
 
   return (
     <div className="p-3 px-4">

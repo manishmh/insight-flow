@@ -1,57 +1,114 @@
-import { ReactNode } from "react";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { useSidepane } from "@/contexts/sidepane-context";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { toggleSidepane } from "@/store/slices/uiSlice";
+import { FaTrash } from "react-icons/fa6";
 
 const SidebarItem = ({
     logo,
     title,
     num,
     link,
+    dashboardId,
+    onDelete,
   }: {
     logo: ReactNode;
     title: string;
     num?: number;
     link?: string;
+    dashboardId?: string;
+    onDelete?: (dashboardId: string) => void;
   }) => {
     const router = useRouter();
     const pathname = usePathname();
-    const { sidepaneOpen, handleSidepane } = useSidepane();
-  
+    const dispatch = useAppDispatch();
+    const { sidepane } = useAppSelector((state) => state.ui);
+    const [contextMenuOpen, setContextMenuOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+
     const extractId = (url: string) => {
       const parts = url.split("/");
       return parts[parts.length - 1];
     };
-  
+
     const activeId = extractId(pathname);
 
     const handleSidebarPush = () => {
-      if(sidepaneOpen) {
-        handleSidepane();
+      if (sidepane.open) {
+        dispatch(toggleSidepane());
       }
-
       if (link) {
-        router.push(link)
+        router.push(link);
       }
-    }
-  
+    };
+
+    const handleContextMenu = useCallback(
+      (e: React.MouseEvent) => {
+        e.preventDefault();
+        if (dashboardId && onDelete) {
+          setContextMenuOpen(true);
+        }
+      },
+      [dashboardId, onDelete]
+    );
+
+    const handleDelete = useCallback(
+      (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (dashboardId && onDelete) {
+          onDelete(dashboardId);
+          setContextMenuOpen(false);
+        }
+      },
+      [dashboardId, onDelete]
+    );
+
+    useEffect(() => {
+      const handleClickOutside = (e: MouseEvent) => {
+        if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+          setContextMenuOpen(false);
+        }
+      };
+      if (contextMenuOpen) {
+        document.addEventListener("mousedown", handleClickOutside);
+      }
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [contextMenuOpen]);
+
     return (
       <div
-        className={`flex justify-between items-center group hover:bg-[#d1d5dbac] transition-all duration-300 pr-1 ml-1 rounded-md cursor-pointer ${
+        className={`relative flex justify-between items-center group hover:bg-[#d1d5dbac] transition-all duration-300 pr-1 ml-1 rounded-md cursor-pointer ${
           link?.includes(activeId) ? "bg-[#d1d5dbac]" : ""
         }`}
         onClick={handleSidebarPush}
+        onContextMenu={handleContextMenu}
       >
-        <div className="flex gap-2 items-center text-gray-600 text px-2 py-1 rounded-md">
+        <div className="flex gap-2 items-center text-gray-600 text px-2 py-1 rounded-md min-w-0 flex-1">
           {logo}
-          {title}
+          <span className="truncate">{title}</span>
         </div>
         {num && (
-          <div className="w-5 h-5 aspect-square border border-gray-300 group-hover:border-gray-400 grid place-items-center rounded-md text-gray-500">
+          <div className="w-5 h-5 aspect-square border border-gray-300 group-hover:border-gray-400 grid place-items-center rounded-md text-gray-500 flex-shrink-0">
             {num}
+          </div>
+        )}
+        {contextMenuOpen && dashboardId && onDelete && (
+          <div
+            ref={menuRef}
+            className="absolute left-0 top-full mt-0.5 z-50 min-w-[120px] bg-gray-50 border border-gray-300 rounded-md shadow-md py-1"
+          >
+            <button
+              type="button"
+              onClick={handleDelete}
+              className="w-full flex items-center gap-2 px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 rounded mx-1"
+            >
+              <FaTrash className="text-xs" />
+              Delete
+            </button>
           </div>
         )}
       </div>
     );
   };
-  
+
   export default SidebarItem;

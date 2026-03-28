@@ -1,4 +1,4 @@
-import { useBoardContext } from "@/contexts/board-context";
+import { useAppSelector } from "@/store/hooks";
 import { useTableContext } from "@/contexts/sidepane-localhost-storage-context";
 import { useState } from "react";
 import { FaCheck, FaMinus } from "react-icons/fa6";
@@ -10,12 +10,12 @@ type DataColumnsProps = {
 };
 
 const DataColumns: React.FC<DataColumnsProps> = ({ TableColumns }) => {
+  const { activeBoard } = useAppSelector((state) => state.board);
   const [openColumns, setOpenColumns] = useState(false);
   const [selectAll, setSelectAll] = useState(true);
-  const { activeBoardData } = useBoardContext();
   const { updateState } = useTableContext();
 
-  const localCheckedColumns = getTableState(activeBoardData?.id ?? "")?.activeColumns ?? [];
+  const localCheckedColumns = getTableState(activeBoard?.id ?? "")?.activeColumns ?? [];
 
   const handleOpencolumns = () => {
     setOpenColumns(!openColumns);
@@ -24,7 +24,7 @@ const DataColumns: React.FC<DataColumnsProps> = ({ TableColumns }) => {
   const handleSelectAllToggle = () => {
     const updated = selectAll ? [] : TableColumns;
     setSelectAll(!selectAll);
-    updateState(activeBoardData?.id ?? "", "activeColumns", updated);
+    updateState(activeBoard?.id ?? "", "activeColumns", updated);
   };
 
   const handleCheckboxToggle = (column: string) => {
@@ -33,7 +33,7 @@ const DataColumns: React.FC<DataColumnsProps> = ({ TableColumns }) => {
       : [...localCheckedColumns, column];
 
     const ordered = TableColumns.filter((col) => updated.includes(col));
-    updateState(activeBoardData?.id ?? "", "activeColumns", ordered);
+    updateState(activeBoard?.id ?? "", "activeColumns", ordered);
 
     if (ordered.length === 0) setSelectAll(false);
     if (ordered.length === TableColumns.length) setSelectAll(true);

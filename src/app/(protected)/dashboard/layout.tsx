@@ -1,4 +1,5 @@
 "use client";
+import { motion, AnimatePresence } from "framer-motion";
 import Sidebar from "@/components/dashboard/sidebar";
 import Sidepane from "@/components/dashboard/sidepane/sidepane";
 import DashboardTopbar from "@/components/dashboard/topbar";
@@ -7,6 +8,7 @@ import TourGuide from "@/components/dashboard/tour-guide";
 import { BoardDataProvider } from "@/contexts/board-context";
 import { TableProvider } from "@/contexts/sidepane-localhost-storage-context";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { usePathname } from "next/navigation";
 import {
   setSidebarOpen,
   setSidebarWidth,
@@ -21,6 +23,7 @@ import { ReactNode, useCallback, useEffect, useState } from "react";
 
 const DashboardLayout = ({ children }: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
+  const pathname = usePathname();
   const { sidebar, sidepane, search } = useAppSelector((state) => state.ui);
   const [isResizing, setIsResizing] = useState(false);
 
@@ -86,7 +89,7 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
       <TableProvider>
         <GuestToast />
         <TourGuide />
-        <div className="flex text-sm md:text-xs 3xl:text-sm overflow-hidden">
+        <div className="flex text-sm md:text-xs 3xl:text-sm overflow-hidden bg-white">
           {search.open && (
                   <>
                     <div
@@ -103,7 +106,7 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
 
                 {/* Sidebar */}
                 <div
-                  className={`bg-[#e1e8ee] z-10 transition-all shadow-sm border-r border-gray-300 duration-300 max-h-screen fixed left-0 flex justify-between
+                  className={`bg-[#f8fafc] z-10 transition-all shadow-sm border-r border-gray-200 duration-300 max-h-screen fixed left-0 flex justify-between
           rounded-tr-md rounded-br-md ${
             sidebar.hover ? "translate-x-0" : "-translate-x-full"
           } ${
@@ -133,7 +136,7 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
 
                 {/* Main Content Area */}
                 <div
-                  className={`relative z-0 transition-all min-h-screen overflow-y-auto duration-300 w-full  
+                  className={`relative z-0 transition-all min-h-screen overflow-y-auto duration-300 w-full bg-[#f1f5f9]
             ${sidebar.open ? "md:ml-0" : ""}
             ${isResizing ? "pointer-events-none" : "pointer-events-auto"}
           `}
@@ -141,14 +144,26 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
                     marginLeft: sidebar.open ? `${sidebar.width}px` : "0px",
                     marginRight: sidepane.open ? "280px" : "0px",
                   }}
-                  // onClick={() => setSidepaneOpen(!sidepaneOpen)}
                 >
                   <div className="w-full h-full flex flex-col">
-                    <div className="h-14 transition-all duration-300">
+                    <div className="h-14 transition-all duration-300 bg-white border-b border-gray-200 shadow-sm sticky top-0 z-10">
                       <DashboardTopbar />
                     </div>
 
-                    <div className="h-full">{children}</div>
+                    <div className="flex-1 min-h-0 relative">
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={pathname}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.2, ease: "easeOut" }}
+                          className="h-full"
+                        >
+                          {children}
+                        </motion.div>
+                      </AnimatePresence>
+                    </div>
                   </div>
                 </div>
 

@@ -197,8 +197,8 @@ body {
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 8px;
+  width: 5px;
+  height: 5px;
   background-color: transparent;
 }
 
@@ -207,18 +207,22 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #a0aec0;
-  border-radius: 10px;
-  transition: width 0.3s ease; 
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.25);
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent; /* removes gray background */
+  background: transparent; 
 }
 
-/* Optional for Firefox */
+/* Firefox */
 * {
-  scrollbar-color: lightgray transparent;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
 }
 
 

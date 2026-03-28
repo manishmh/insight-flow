@@ -157,23 +157,30 @@ const Table = ({ data }: { data: BoardDataType }) => {
   )
 
   return (
-    <div className="h-full w-full flex flex-col pt-2">
-      <div className="w-full h-full overflow-hidden">
-        <div className="overflow-scroll w-full h-full">
-          <div className="w-full">
-            <div className="flex text-sm w-full">
-              {tableHeader.map((column, index) => (
-                <div
-                  key={index}
-                  className="w-[200px] px-4 py-2 flex-shrink-0 border-r border-gray-400 truncate text-gray-600"
-                >
-                  {column}
-                </div>
-              ))}
-            </div>
-            <div>
+    <div className="h-full w-full flex flex-col bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="flex-1 overflow-hidden flex flex-col">
+        <div className="overflow-auto scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300 scrollbar-track-transparent">
+          <table className="w-full border-collapse text-left">
+            <thead className="sticky top-0 z-10 bg-gray-50/80 backdrop-blur-md border-b border-gray-200">
+              <tr className="flex">
+                {tableHeader.map((column, index) => (
+                  <th
+                    key={index}
+                    className="w-[200px] px-6 py-3.5 flex-shrink-0 text-[10px] font-bold uppercase tracking-wider text-gray-500 border-r border-gray-100 last:border-r-0"
+                  >
+                    {column}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
               {filteredData.map((row, rowIndex) => (
-                <div key={rowIndex} className="flex w-full text-sm">
+                <tr 
+                  key={rowIndex} 
+                  className={`flex group transition-colors duration-150 ${
+                    rowIndex % 2 === 0 ? "bg-white" : "bg-gray-50/30"
+                  } hover:bg-blue-50/50`}
+                >
                   {row.map(([originalColIndex, value], colIndex) => {
                     const columnKey = data.data.columns[
                       originalColIndex
@@ -183,14 +190,14 @@ const Table = ({ data }: { data: BoardDataType }) => {
 
                     let displayValue: string | JSX.Element = value;
                     if (value === null) {
-                      displayValue = <div className="text-gray-500">NULL</div>;
+                      displayValue = <span className="text-gray-300 italic text-[10px]">null</span>;
                     } else if (columnInfo?.dataType == "Boolean") {
                       displayValue = (
-                        <div className="w-full">
-                          <div className="text-gray-500 border rounded-md border-gray-300 py-1 w-16 flex justify-center">
-                            {value ? "True" : "False"}
-                          </div>
-                        </div>
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                          value ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                        }`}>
+                          {value ? "TRUE" : "FALSE"}
+                        </span>
                       );
                     } else if (columnInfo?.dataType === "Url") {
                       displayValue = (
@@ -198,69 +205,78 @@ const Table = ({ data }: { data: BoardDataType }) => {
                           href={value}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-cyan-600 underline"
+                          className="text-blue-600 hover:text-blue-800 underline decoration-blue-200 underline-offset-2 transition-colors"
                         >
                           {value}
                         </a>
                       );
                     } else if (columnInfo?.dataType === "Date") {
-                      displayValue = new Date(value).toLocaleString();
+                      displayValue = (
+                        <span className="text-gray-600">
+                          {new Date(value).toLocaleDateString(undefined, {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          })}
+                        </span>
+                      );
                     } else if (columnInfo?.dataType === "Object") {
                       displayValue = (
-                        <div>
-                          <pre>
-                            {expandedCells.has(cellKey)
-                              ? `${JSON.stringify(value, null, 2)}`
-                              : `${JSON.stringify(value)}`}{" "}
-                          </pre>
+                        <div className="font-mono text-[11px] text-purple-600">
+                          {expandedCells.has(cellKey)
+                            ? <pre className="whitespace-pre-wrap">{JSON.stringify(value, null, 2)}</pre>
+                            : <span className="opacity-70">{JSON.stringify(value).substring(0, 30)}...</span>}
                         </div>
                       );
                     }
 
                     return (
-                      <div
+                      <td
                         key={colIndex}
-                        className={`w-[200px] flex-shrink-0 px-4 py-2 truncate overflow-hidden ${
+                        className={`w-[200px] flex-shrink-0 px-6 py-3 border-r border-gray-50 last:border-r-0 transition-all ${
                           expandedCells.has(cellKey)
-                            ? "whitespace-normal bg-gray-200 border-cyan-400 border "
-                            : "whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]"
-                        }`}
+                            ? "border-blue-200 bg-blue-50/50 shadow-inner"
+                            : "truncate"
+                        } cursor-pointer`}
                         onClick={() => toggleExpand(rowIndex, colIndex)}
                       >
-                        {displayValue}
-                      </div>
+                        <div className={`${expandedCells.has(cellKey) ? "" : "truncate text-gray-700"}`}>
+                          {displayValue}
+                        </div>
+                      </td>
                     );
                   })}
-                </div>
+                </tr>
               ))}
-            </div>
-          </div>
+            </tbody>
+          </table>
         </div>
       </div>
-      <div className="bg-primary-bg border border-t-gray-400 flex items-center px-4 py-2">
-        <div className="flex items-center justify-center gap-4 w-full text-gray-500 font-mono">
+      
+      {/* Pagination Footer */}
+      <div className="bg-gray-50/50 border-t border-gray-200 flex items-center justify-between px-6 py-3">
+        <div className="text-[11px] text-gray-500 font-medium italic">
+          Showing {filteredData.length} records
+        </div>
+        <div className="flex items-center gap-4 text-gray-600 font-medium">
           <button
-            className="text-xs p-2 hover:bg-gray-300 rounded-md hover:cursor-pointer"
-            onClick={() => {
-              setPagination(pagination - 1);
-            }}
+            className="p-1.5 hover:bg-gray-200 rounded-lg disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+            onClick={() => setPagination(pagination - 1)}
             disabled={pagination === 1}
           >
-            <FaChevronLeft />
+            <FaChevronLeft className="text-[10px]" />
           </button>
-          <div className="flex gap-2">
-            <span className="text-black">{pagination}</span>
-            <span>of</span>
-            <span>{totalPages}</span>
+          <div className="flex items-center gap-1.5 text-[11px] font-bold">
+            <span className="bg-white border border-gray-200 text-blue-600 px-2 py-0.5 rounded shadow-sm">{pagination}</span>
+            <span className="text-gray-400">/</span>
+            <span className="text-gray-500">{totalPages}</span>
           </div>
           <button
-            className="text-xs p-2 hover:bg-gray-300 rounded-md hover:cursor-pointer"
-            onClick={() => {
-              setPagination(pagination + 1);
-            }}
+            className="p-1.5 hover:bg-gray-200 rounded-lg disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+            onClick={() => setPagination(pagination + 1)}
             disabled={pagination === totalPages}
           >
-            <FaChevronRight />
+            <FaChevronRight className="text-[10px]" />
           </button>
         </div>
       </div>

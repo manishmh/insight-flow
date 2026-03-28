@@ -75,20 +75,28 @@ const SidebarItem = ({
       return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [contextMenuOpen]);
 
+    const isActive = link === pathname || (link !== "/dashboard" && pathname.startsWith(link || ""));
+
     return (
       <div
-        className={`relative flex justify-between items-center group hover:bg-[#d1d5dbac] transition-all duration-300 pr-1 ml-1 rounded-md cursor-pointer ${
-          link?.includes(activeId) ? "bg-[#d1d5dbac]" : ""
+        className={`relative flex justify-between items-center group transition-all duration-200 pr-1 ml-1 rounded-md cursor-pointer ${
+          isActive 
+            ? "bg-blue-50 text-blue-600 border-l-2 border-blue-500 rounded-l-none" 
+            : "hover:bg-gray-100 text-gray-600"
         }`}
         onClick={handleSidebarPush}
         onContextMenu={handleContextMenu}
       >
-        <div className="flex gap-2 items-center text-gray-600 text px-2 py-1 rounded-md min-w-0 flex-1">
-          {logo}
+        <div className={`flex gap-2 items-center px-2 py-1.5 rounded-md min-w-0 flex-1 ${isActive ? "font-medium text-blue-700" : ""}`}>
+          <div className={`${isActive ? "text-blue-600" : "text-gray-500"}`}>
+            {logo}
+          </div>
           <span className="truncate">{title}</span>
         </div>
         {num && (
-          <div className="w-5 h-5 aspect-square border border-gray-300 group-hover:border-gray-400 grid place-items-center rounded-md text-gray-500 flex-shrink-0">
+          <div className={`w-5 h-5 aspect-square border grid place-items-center rounded-md text-[10px] flex-shrink-0 ${
+            isActive ? "border-blue-200 bg-blue-100 text-blue-600" : "border-gray-200 text-gray-400"
+          }`}>
             {num}
           </div>
         )}

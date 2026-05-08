@@ -10,7 +10,7 @@ import { useEffect, useState, useTransition } from "react";
 import { AiOutlineAppstoreAdd } from "react-icons/ai";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { GoSidebarExpand } from "react-icons/go";
-import { LuLayoutDashboard, LuSettings, LuUser } from "react-icons/lu";
+import { LuDatabase, LuLayoutDashboard, LuSettings, LuUser } from "react-icons/lu";
 import { RotatingLines } from "react-loader-spinner";
 import { toast } from "sonner";
 import { usePathname } from "next/navigation";
@@ -27,6 +27,7 @@ const DashboardTopbar = () => {
   
   const isSettings = pathname === "/dashboard/settings";
   const isProfile = pathname === "/dashboard/profile";
+  const isDataSources = pathname.startsWith("/dashboard/data-sources");
   
   const [isPendingBlock, startTransitionBlock] = useTransition();
   const [editBlockname, setEditBlockname] = useState(false);
@@ -78,8 +79,17 @@ const DashboardTopbar = () => {
     setEditBlockname(false);
   };
 
-  // If we are on settings/profile, show a simplified topbar
-  if (isSettings || isProfile) {
+  // If we are on utility pages, show a simplified topbar without block actions.
+  if (isSettings || isProfile || isDataSources) {
+    const pageTitle = isSettings ? "Settings" : isProfile ? "Profile" : "Data Sources";
+    const pageIcon = isSettings ? (
+      <LuSettings className="text-blue-600" />
+    ) : isProfile ? (
+      <LuUser className="text-blue-600" />
+    ) : (
+      <LuDatabase className="text-blue-600" />
+    );
+
     return (
       <div className="flex justify-between items-center h-full px-4">
         <div className="flex items-center gap-3">
@@ -91,9 +101,9 @@ const DashboardTopbar = () => {
               <GoSidebarExpand />
             </div>
           )}
-          <div className="flex items-center gap-2 text-gray-800 font-semibold text-lg">
-            {isSettings ? <LuSettings className="text-blue-600" /> : <LuUser className="text-blue-600" />}
-            {isSettings ? "Settings" : "Profile"}
+          <div className="flex items-center gap-2 text-gray-800 font-semibold text-base">
+            {pageIcon}
+            {pageTitle}
           </div>
         </div>
       </div>

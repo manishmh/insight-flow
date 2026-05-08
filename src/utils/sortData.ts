@@ -118,11 +118,11 @@ export function sortTableData(
  * @returns Sorted copy of the data array
  */
 export function sortTableDataByColumn(
-  data: any[][],
+  data: any[],
   columns: string[],
   columnName: string | null,
   order: SortOrder
-): any[][] {
+): any[] {
   if (!columnName || order === "none") {
     return [...data];
   }
@@ -132,5 +132,9 @@ export function sortTableDataByColumn(
     return [...data];
   }
 
-  return sortTableData(data, columnIndex, order);
+  return [...data].sort((rowA, rowB) => {
+    const valueA = Array.isArray(rowA) ? rowA[columnIndex] : rowA?.[columnName];
+    const valueB = Array.isArray(rowB) ? rowB[columnIndex] : rowB?.[columnName];
+    return compareValues(valueA, valueB, order);
+  });
 }

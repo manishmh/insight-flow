@@ -2,10 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isLoginLoading, setIsLoginLoading] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,6 +25,15 @@ const Navbar = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  useEffect(() => {
+    router.prefetch("/auth/login");
+  }, [router]);
+
+  const handleLoginClick = () => {
+    setIsLoginLoading(true);
+    router.push("/auth/login");
+  };
 
   return (
     <nav className="flex justify-center w-full">
@@ -52,11 +64,18 @@ const Navbar = () => {
           <NavbarItems item="Support" link="" />
         </div>
         <div className={`duration-700 transition-all flex gap-4`}>
-          <Link href="/auth/login">
-            <button className="inline-flex py-1 animate-shimmer items-center justify-center rounded-md border dark:border-slate-800 dark:bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-4 fontmedium dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 text-blue-700 border-slate-300 hover:bg-slate-300 transition-all duration-300 dark:duration-1000">
-              Log in
-            </button>
-          </Link>
+          <button
+            type="button"
+            onClick={handleLoginClick}
+            onMouseEnter={() => router.prefetch("/auth/login")}
+            disabled={isLoginLoading}
+            className="inline-flex min-w-[74px] py-1 animate-shimmer items-center justify-center gap-2 rounded-md border dark:border-slate-800 dark:bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-4 fontmedium dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 text-blue-700 border-slate-300 hover:bg-slate-300 transition-all duration-300 dark:duration-1000 disabled:cursor-wait disabled:opacity-75"
+          >
+            {isLoginLoading && (
+              <span className="h-3 w-3 rounded-full border-2 border-blue-300 border-t-blue-700 animate-spin" />
+            )}
+            {isLoginLoading ? "Loading" : "Log in"}
+          </button>
           <Link href="/auth/register">
             {isScrolled && (
               <button className="inline-flex py-1 animate-shimmer items-center justify-center rounded-md border dark:border-slate-800 dark:bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-4 fontmedium dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 text-blue-700 border-slate-300 hover:bg-slate-300 transition-all duration-300 dark:duration-1000">

@@ -31,11 +31,64 @@ export const GetDashboards = async () => {
     const session = await auth();
     const userId = session?.user.id;
     const dashboards = await db.dashboard.findMany({
-        where: { userId }
+        where: { userId },
+        orderBy: { id: "asc" },
     })
 
     return dashboards 
 }
+
+const createDefaultDashboard = async (userId: string) => {
+    const dashboard = await db.dashboard.create({
+        data: {
+            name: "Sample Board",
+            userId,
+            isDefault: true,
+            boards: {
+                create: {
+                    name: "Main Board",
+                    width: 500,
+                    height: 360,
+                },
+            },
+        },
+        include: { boards: true },
+    });
+
+    await db.user.update({
+        where: { id: userId },
+        data: { defaultDashboardId: dashboard.id },
+    });
+
+    return dashboard.id;
+};
+
+const ensureDefaultDashboardId = async (userId: string, defaultDashboardId?: string | null) => {
+    if (defaultDashboardId) {
+        const defaultDashboard = await db.dashboard.findFirst({
+            where: { id: defaultDashboardId, userId },
+            select: { id: true },
+        });
+
+        if (defaultDashboard) return defaultDashboard.id;
+    }
+
+    const firstDashboard = await db.dashboard.findFirst({
+        where: { userId },
+        orderBy: { id: "asc" },
+        select: { id: true },
+    });
+
+    if (firstDashboard) {
+        await db.user.update({
+            where: { id: userId },
+            data: { defaultDashboardId: firstDashboard.id },
+        });
+        return firstDashboard.id;
+    }
+
+    return createDefaultDashboard(userId);
+};
 
 
 /**
@@ -56,6 +109,25 @@ export const DeleteDashboard = async (dashboardId: string) => {
   await db.dashboard.delete({
     where: { id: dashboardId },
   });
+
+  const user = await db.user.findUnique({
+    where: { id: userId },
+    select: { defaultDashboardId: true },
+  });
+
+  if (user?.defaultDashboardId === dashboardId) {
+    const nextDashboard = await db.dashboard.findFirst({
+      where: { userId },
+      orderBy: { id: "asc" },
+      select: { id: true },
+    });
+
+    await db.user.update({
+      where: { id: userId },
+      data: { defaultDashboardId: nextDashboard?.id ?? null },
+    });
+  }
+
   return dashboard;
 };
 
@@ -103,6 +175,47 @@ export const CreateNewDashboard = async (name?: string) => {
     }
 }
 
+export const CreateDashboardFromImportedData = async ({
+    dashboardName,
+    dataId,
+    sourceName,
+}: {
+    dashboardName: string;
+    dataId: string;
+    sourceName: string;
+}) => {
+    try {
+        const session = await auth();
+        const userId = session?.user.id;
+
+        if (!userId) {
+            console.error("CreateDashboardFromImportedData: No userId found in session");
+            return null;
+        }
+
+        const dashboard = await db.dashboard.create({
+            data: {
+                name: dashboardName || sourceName || "Imported Data",
+                userId,
+                boards: {
+                    create: {
+                        name: sourceName || dashboardName || "Imported Data",
+                        currentDataId: dataId,
+                        width: 720,
+                        height: 460,
+                    },
+                },
+            },
+            include: { boards: true },
+        });
+
+        return dashboard;
+    } catch (e: any) {
+        console.error("CreateDashboardFromImportedData Error:", e);
+        return null;
+    }
+}
+
 /**
  * 
  * @returns to get the default dashboard id for the current user
@@ -110,7 +223,19 @@ export const CreateNewDashboard = async (name?: string) => {
 
 export const GetDefaultDashboardId = async () => {
     const session = await auth();
-    const defaultDashboardId = session?.user.defaultDashboardId;
+    const userId = session?.user.id;
+
+    if (!userId) return null;
+
+    const user = await db.user.findUnique({
+        where: { id: userId },
+        select: { defaultDashboardId: true },
+    });
+
+    const defaultDashboardId = await ensureDefaultDashboardId(
+        userId,
+        user?.defaultDashboardId ?? session?.user.defaultDashboardId
+    );
 
     return defaultDashboardId;
 }

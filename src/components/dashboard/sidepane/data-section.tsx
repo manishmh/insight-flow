@@ -223,7 +223,6 @@ const DataSection = () => {
       </div>
 
       {activeBoard && <DataColumns TableColumns={activeBoard.data.columns} />}
-      
       {activeBoard && <SortBy />}
       {activeBoard && <Aggregate />}
       {activeBoard && <FilterBy />}

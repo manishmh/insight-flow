@@ -4,13 +4,15 @@ import DashboardBoards from "@/components/dashboard/boards/dashboard-boards";
 import AddFirstBlock from "@/components/dashboard/main-content/add-first-block";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setCurrentDashboard, setLoading, setError } from "@/store/slices/dashboardSlice";
-import { GetDashboardData } from "@/server/components/dashboard-commands";
+import { GetDashboardData, GetDefaultDashboardId } from "@/server/components/dashboard-commands";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useTransition } from "react";
 import { toast } from "sonner";
 
 const DynamicDashboard = ({ params }: { params: any }) => {
   const dashboardId = params.dashboardId;
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const { currentDashboard, isLoading } = useAppSelector((state) => state.dashboard);
   const [isPendingDashboard, startTransitionDashboard] = useTransition();
 
@@ -26,7 +28,13 @@ const DynamicDashboard = ({ params }: { params: any }) => {
           dispatch(setCurrentDashboard(dashboardData));
         } else {
           dispatch(setError("Dashboard not found"));
-          toast.error("Dashboard not found. Please check the URL.");
+          const fallbackDashboardId = await GetDefaultDashboardId();
+
+          if (fallbackDashboardId && fallbackDashboardId !== dashboardId) {
+            router.replace(`/dashboard/${fallbackDashboardId}`);
+          } else {
+            toast.error("Dashboard not found. Please check the URL.");
+          }
         }
       } catch (error) {
         dispatch(setError("Failed to fetch dashboard"));
@@ -35,7 +43,7 @@ const DynamicDashboard = ({ params }: { params: any }) => {
         dispatch(setLoading(false));
       }
     });
-  }, [dashboardId, dispatch]);
+  }, [dashboardId, dispatch, router]);
 
   if (isLoading || isPendingDashboard || !currentDashboard) {
     return (

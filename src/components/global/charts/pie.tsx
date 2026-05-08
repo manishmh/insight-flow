@@ -21,7 +21,7 @@ const PieChartComp = ({ pieData }: { pieData: pieChartDataType }) => {
       if (!el) return;
       const w = el.clientWidth;
       const h = el.clientHeight;
-      setSize(Math.min(w - 40, h - 40, 400));
+      setSize(Math.max(240, Math.min(w - 40, h - 40, 400)));
     };
     const ro = new ResizeObserver(updateSize);
     ro.observe(el);

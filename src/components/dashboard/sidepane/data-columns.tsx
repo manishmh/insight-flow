@@ -1,6 +1,6 @@
 import { useAppSelector } from "@/store/hooks";
 import { useTableContext } from "@/contexts/sidepane-localhost-storage-context";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaCheck, FaMinus } from "react-icons/fa6";
 import Modal from "./modal";
 import { getTableState } from "@/utils/localStorage";
@@ -16,6 +16,10 @@ const DataColumns: React.FC<DataColumnsProps> = ({ TableColumns }) => {
   const { updateState } = useTableContext();
 
   const localCheckedColumns = getTableState(activeBoard?.id ?? "")?.activeColumns ?? [];
+
+  useEffect(() => {
+    setSelectAll(TableColumns.length > 0 && localCheckedColumns.length === TableColumns.length);
+  }, [TableColumns.length, localCheckedColumns.length]);
 
   const handleOpencolumns = () => {
     setOpenColumns(!openColumns);

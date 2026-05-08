@@ -178,7 +178,7 @@ const Sidebar = () => {
             >
               <FaChevronDown />
             </span>
-            <span>Dashboards</span>
+            <span className="text-xs">Dashboards</span>
           </div>
 
           {dashboardState && (

@@ -29,21 +29,47 @@ export const login = async (
         return { success: false, message: "Email is not registered"}
     }
 
-    if (existingUser.defaultDashboardId === null) {
-        const dashboard = await db.dashboard.create({
-            data: {
-                name: "Sample Board", 
-                userId: existingUser.id,
-                isDefault: true
-            }
+    let defaultDashboardId = existingUser.defaultDashboardId;
+    const defaultDashboard = defaultDashboardId
+        ? await db.dashboard.findFirst({
+            where: { id: defaultDashboardId, userId: existingUser.id },
+            select: { id: true },
         })
+        : null;
+
+    if (!defaultDashboard) {
+        const firstDashboard = await db.dashboard.findFirst({
+            where: { userId: existingUser.id },
+            orderBy: { id: "asc" },
+            select: { id: true },
+        });
+
+        if (firstDashboard) {
+            defaultDashboardId = firstDashboard.id;
+        } else {
+            const dashboard = await db.dashboard.create({
+                data: {
+                    name: "Sample Board",
+                    userId: existingUser.id,
+                    isDefault: true,
+                    boards: {
+                        create: {
+                            name: "Main Board",
+                            width: 500,
+                            height: 360,
+                        },
+                    },
+                },
+            });
+            defaultDashboardId = dashboard.id;
+        }
 
         await db.user.update({
             where: { id: existingUser.id },
             data: {
-                defaultDashboardId: dashboard.id
-            }
-        })
+                defaultDashboardId,
+            },
+        });
     }
 
     // if (!existingUser.emailVerified) {

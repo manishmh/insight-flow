@@ -40,15 +40,22 @@ export const saveData = async (id: string, name: string, jsonData: any): Promise
     return; // Prevent overwriting existing data
   }
 
-  store.add({ id, name, jsonData });
+  await new Promise<void>((resolve, reject) => {
+    store.add({ id, name, jsonData });
 
-  transaction.oncomplete = () => {
-    console.log('Data saved successfully');
-  };
+    transaction.oncomplete = () => {
+      console.log('Data saved successfully');
+      resolve();
+    };
 
-  transaction.onerror = (event) => {
-    console.error('Error saving data:', (event.target as IDBRequest).error);
-  };
+    transaction.onerror = () => {
+      reject(transaction.error);
+    };
+
+    transaction.onabort = () => {
+      reject(transaction.error);
+    };
+  });
 };
 
 export const fetchDataById = async (id: string): Promise<{ id: string; name: string; data: any } | null> => {

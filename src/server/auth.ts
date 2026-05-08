@@ -51,19 +51,41 @@ export const {
         where: { id: user.id },
       });
 
-      if (!existingUser?.defaultDashboardId) {
-        const dashboard = await db.dashboard.create({
-          data: {
-            name: "Sample Board",
-            userId: user.id!, // <-- non-null assertion
-            isDefault: true,
-          },
+      const defaultDashboard = existingUser?.defaultDashboardId
+        ? await db.dashboard.findFirst({
+            where: { id: existingUser.defaultDashboardId, userId: user.id! },
+            select: { id: true },
+          })
+        : null;
+
+      if (!defaultDashboard) {
+        const firstDashboard = await db.dashboard.findFirst({
+          where: { userId: user.id! },
+          orderBy: { id: "asc" },
+          select: { id: true },
         });
+
+        const defaultDashboardId = firstDashboard?.id ?? (
+          await db.dashboard.create({
+            data: {
+              name: "Sample Board",
+              userId: user.id!,
+              isDefault: true,
+              boards: {
+                create: {
+                  name: "Main Board",
+                  width: 500,
+                  height: 360,
+                },
+              },
+            },
+          })
+        ).id;
 
         await db.user.update({
           where: { id: user.id },
           data: {
-            defaultDashboardId: dashboard.id,
+            defaultDashboardId,
           },
         });
       }

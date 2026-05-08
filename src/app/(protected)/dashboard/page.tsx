@@ -17,7 +17,7 @@ const Dashboard = () => {
           return;
         }
 
-        router.push(`/dashboard/${id}`);
+        router.replace(`/dashboard/${id}`);
       } catch (error) {
         console.error("Failed to fetch default dashboard ID:", error);
       }

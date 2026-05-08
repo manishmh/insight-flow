@@ -2,16 +2,53 @@
 
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { motion, AnimatePresence } from "framer-motion";
-import { LuMail, LuUser, LuCalendar, LuPieChart, LuLayout, LuCheck, LuLoader2, LuPencil, LuX } from "react-icons/lu";
-import { useState, useTransition } from "react";
+import { LuMail, LuUser, LuCalendar, LuPieChart, LuLayout, LuCheck, LuLoader2, LuPencil } from "react-icons/lu";
+import { useEffect, useState, useTransition } from "react";
 import { updateUserProfile } from "@/server/components/user-actions";
 import { toast } from "sonner";
+import { GetDashboards } from "@/server/components/dashboard-commands";
+import { fetchAllData } from "@/server/components/indexedDB";
 
 const ProfilePage = () => {
   const user = useCurrentUser();
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(user?.name || "");
   const [isPending, startTransition] = useTransition();
+  const [statsLoading, setStatsLoading] = useState(true);
+  const [profileStats, setProfileStats] = useState({
+    dashboards: 0,
+    dataSources: 0,
+  });
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadStats = async () => {
+      try {
+        const [dashboards, dataSources] = await Promise.all([
+          GetDashboards(),
+          fetchAllData(),
+        ]);
+
+        if (!mounted) return;
+
+        setProfileStats({
+          dashboards: dashboards.length,
+          dataSources: dataSources.length,
+        });
+      } catch (error) {
+        console.error("Failed to load profile stats:", error);
+      } finally {
+        if (mounted) setStatsLoading(false);
+      }
+    };
+
+    loadStats();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleSave = () => {
     if (!name.trim() || name === user?.name) {
@@ -31,8 +68,8 @@ const ProfilePage = () => {
   };
 
   const stats = [
-    { label: "Dashboards", value: "4", icon: <LuLayout />, color: "bg-blue-100 text-blue-600" },
-    { label: "Data Sources", value: "2", icon: <LuPieChart />, color: "bg-purple-100 text-purple-600" },
+    { label: "Dashboards", value: profileStats.dashboards, icon: <LuLayout />, color: "bg-blue-100 text-blue-600" },
+    { label: "Data Sources", value: profileStats.dataSources, icon: <LuPieChart />, color: "bg-purple-100 text-purple-600" },
   ];
 
   return (
@@ -125,7 +162,9 @@ const ProfilePage = () => {
                     {stat.icon}
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-gray-900 tracking-tight">{stat.value}</div>
+                    <div className="text-2xl font-bold text-gray-900 tracking-tight">
+                      {statsLoading ? <LuLoader2 className="animate-spin text-lg text-gray-400" /> : stat.value}
+                    </div>
                     <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{stat.label}</div>
                   </div>
                 </div>

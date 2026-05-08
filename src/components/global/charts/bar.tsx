@@ -13,6 +13,11 @@ const BarChart = ({ barData }: { barData: barDataType }) => {
   const [yaxis, setYaxis] = useState<number[]>([]);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const { sidebar } = useAppSelector((state) => state.ui);
+  const formatNumber = (value: number) =>
+    value.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 1,
+    });
 
   useEffect(() => {
     const data = barData.datasets[0]?.data;
@@ -45,7 +50,7 @@ const BarChart = ({ barData }: { barData: barDataType }) => {
       <div className="flex flex-col justify-between mb-[16px]">
         {yaxis.map((y, index) => (
           <div key={`yaxis-${index}`} className="text-gray-500 flex gap-1">
-            {y} <div>-</div>
+            {formatNumber(y)} <div>-</div>
           </div>
         ))}
       </div>
@@ -81,7 +86,7 @@ const BarChart = ({ barData }: { barData: barDataType }) => {
                           <div className="text-white">
                             {barData.labels[barIndex] ?? barIndex + 1}
                           </div>
-                          <div className="text-white">{dataset.label}: {data}</div>
+                          <div className="text-white">{dataset.label}: {formatNumber(data)}</div>
                         </div>
                       </div>
                     </div>

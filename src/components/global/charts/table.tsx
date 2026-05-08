@@ -5,7 +5,7 @@ import {
 } from "@/contexts/sidepane-localhost-storage-context";
 import { getTableState } from "@/utils/localStorage";
 import { sortTableDataByColumn } from "@/utils/sortData";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import { LuLayoutDashboard } from "react-icons/lu";
 
@@ -14,14 +14,24 @@ const Table = ({ data }: { data: BoardDataType }) => {
   const [pagination, setPagination] = useState(1);
   const [tableHeader, setTableHeader] = useState<string[]>([]);
   const [filteredData, setFilteredData] = useState<any[][]>([]);
-  const [prevSortKey, setPrevSortKey] = useState<string>("");
+  const prevSortKeyRef = useRef("");
   const RECORDS_PER_PAGE = 50;
+  const PAGE_BATCH_SIZE = 5;
   const { dataStates } = useTableContext();
   const [totalPages, setTotalPages] = useState(1);
+  const [loadedPages, setLoadedPages] = useState(PAGE_BATCH_SIZE);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [isPageLoading, setIsPageLoading] = useState(false);
 
   useEffect(() => {
+    setIsPageLoading(true);
+    const timeoutId = window.setTimeout(() => {
     const allRows = data.data.data;
     const allColumns = data.data.columns;
+    const getCell = (row: any, column: string) => {
+      const index = allColumns.indexOf(column);
+      return Array.isArray(row) ? row[index] : row?.[column];
+    };
 
     console.log("Table component - data structure:", {
       allRowsLength: allRows.length,
@@ -32,16 +42,17 @@ const Table = ({ data }: { data: BoardDataType }) => {
     });
 
     const TableActionsState: DataStateInterface = getTableState(data.id);
-    let activeColumn = TableActionsState?.activeColumns ?? [];
+    let activeColumn = Array.isArray(TableActionsState?.activeColumns)
+      ? TableActionsState.activeColumns
+      : allColumns;
     
-    // If no active columns, use all columns as fallback
-    if (activeColumn.length === 0 && allColumns.length > 0) {
+    // First-time tables default to all columns; an existing empty array means
+    // the user intentionally clicked Deselect all.
+    if (!TableActionsState && allColumns.length > 0) {
       activeColumn = allColumns;
-      // Save to localStorage
       const { setTableState } = require("@/utils/localStorage");
-      const currentState = TableActionsState || {};
       setTableState(data.id, {
-        ...currentState,
+        ...{},
         activeColumns: allColumns
       });
     }
@@ -54,10 +65,11 @@ const Table = ({ data }: { data: BoardDataType }) => {
     const currentSortKey = `${sortColumn}-${sortOrder}`;
 
     // Reset pagination to page 1 if sort changed
-    if (prevSortKey !== currentSortKey && prevSortKey !== "") {
+    if (prevSortKeyRef.current !== currentSortKey && prevSortKeyRef.current !== "") {
       setPagination(1);
+      setLoadedPages(PAGE_BATCH_SIZE);
     }
-    setPrevSortKey(currentSortKey);
+    prevSortKeyRef.current = currentSortKey;
 
     // Apply filtering
     const filters = TableActionsState?.filters || [];
@@ -67,7 +79,8 @@ const Table = ({ data }: { data: BoardDataType }) => {
       processedRows = allRows.filter((row) => {
         return filters.every((filter) => {
           if (!filter.column || !filter.value) return true;
-          const cellValue = String(row[filter.column] ?? "").toLowerCase();
+          const rawValue = getCell(row, filter.column);
+          const cellValue = String(rawValue ?? "").toLowerCase();
           const filterValue = filter.value.toLowerCase();
           
           switch (filter.condition) {
@@ -78,9 +91,9 @@ const Table = ({ data }: { data: BoardDataType }) => {
             case "starts_with":
               return cellValue.startsWith(filterValue);
             case "greater_than":
-              return Number(row[filter.column]) > Number(filter.value);
+              return Number(rawValue) > Number(filter.value);
             case "less_than":
-              return Number(row[filter.column]) < Number(filter.value);
+              return Number(rawValue) < Number(filter.value);
             default:
               return true;
           }
@@ -118,7 +131,7 @@ const Table = ({ data }: { data: BoardDataType }) => {
       startIndex + RECORDS_PER_PAGE
     );
     const filtered = paginatedRows.map((row) =>
-      activeIndexes.map((i) => [i, row[i]])
+      activeIndexes.map((i) => [i, Array.isArray(row) ? row[i] : row?.[allColumns[i]]])
     );
 
     console.log("Table component - filtered data:", {
@@ -130,8 +143,43 @@ const Table = ({ data }: { data: BoardDataType }) => {
     setFilteredData(filtered);
     
     // Update total pages based on sorted data length
-    setTotalPages(Math.ceil(sortedRows.length / RECORDS_PER_PAGE));
+    const nextTotalPages = Math.max(1, Math.ceil(sortedRows.length / RECORDS_PER_PAGE));
+    setTotalRecords(sortedRows.length);
+    setTotalPages(nextTotalPages);
+    setLoadedPages((current) => Math.min(Math.max(current, PAGE_BATCH_SIZE), nextTotalPages));
+    if (pagination > nextTotalPages) {
+      setPagination(nextTotalPages);
+    }
+    setIsPageLoading(false);
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
   }, [pagination, data.id, data.data, dataStates]);
+
+  useEffect(() => {
+    setPagination(1);
+    setLoadedPages(PAGE_BATCH_SIZE);
+  }, [data.id, dataStates]);
+
+  const handlePageChange = (nextPage: number) => {
+    const targetPage = Math.min(Math.max(1, nextPage), totalPages);
+    if (targetPage === pagination) return;
+
+    if (targetPage > loadedPages) {
+      setIsPageLoading(true);
+      window.setTimeout(() => {
+        setLoadedPages((current) =>
+          Math.min(totalPages, Math.max(targetPage, current + PAGE_BATCH_SIZE))
+        );
+        setPagination(targetPage);
+      }, 120);
+      return;
+    }
+
+    setPagination(targetPage);
+  };
 
   const toggleExpand = (rowIndex: number, colIndex: number) => {
     setExpandedCells((prev) => {
@@ -156,9 +204,17 @@ const Table = ({ data }: { data: BoardDataType }) => {
     </div>
   )
 
+  const visibleStart = totalRecords ? (pagination - 1) * RECORDS_PER_PAGE + 1 : 0;
+  const visibleEnd = Math.min(pagination * RECORDS_PER_PAGE, totalRecords);
+
   return (
-    <div className="h-full w-full flex flex-col bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div className="relative h-full w-full flex flex-col bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       <div className="flex-1 overflow-hidden flex flex-col">
+        {isPageLoading && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/70 backdrop-blur-[1px]">
+            <div className="h-7 w-7 rounded-full border-2 border-cyan-200 border-t-cyan-600 animate-spin" />
+          </div>
+        )}
         <div className="overflow-auto scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300 scrollbar-track-transparent">
           <table className="w-full border-collapse text-left">
             <thead className="sticky top-0 z-10 bg-gray-50/80 backdrop-blur-md border-b border-gray-200">
@@ -256,13 +312,13 @@ const Table = ({ data }: { data: BoardDataType }) => {
       {/* Pagination Footer */}
       <div className="bg-gray-50/50 border-t border-gray-200 flex items-center justify-between px-6 py-3">
         <div className="text-[11px] text-gray-500 font-medium italic">
-          Showing {filteredData.length} records
+          Showing {visibleStart.toLocaleString()}-{visibleEnd.toLocaleString()} of {totalRecords.toLocaleString()} records
         </div>
         <div className="flex items-center gap-4 text-gray-600 font-medium">
           <button
             className="p-1.5 hover:bg-gray-200 rounded-lg disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
-            onClick={() => setPagination(pagination - 1)}
-            disabled={pagination === 1}
+            onClick={() => handlePageChange(pagination - 1)}
+            disabled={pagination === 1 || isPageLoading}
           >
             <FaChevronLeft className="text-[10px]" />
           </button>
@@ -273,8 +329,8 @@ const Table = ({ data }: { data: BoardDataType }) => {
           </div>
           <button
             className="p-1.5 hover:bg-gray-200 rounded-lg disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
-            onClick={() => setPagination(pagination + 1)}
-            disabled={pagination === totalPages}
+            onClick={() => handlePageChange(pagination + 1)}
+            disabled={pagination === totalPages || isPageLoading}
           >
             <FaChevronRight className="text-[10px]" />
           </button>

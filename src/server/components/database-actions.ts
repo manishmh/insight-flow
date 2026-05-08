@@ -2,12 +2,25 @@
 
 import { Client } from 'pg';
 
+const isReadOnlyQuery = (query: string) => {
+  const normalized = query.trim().replace(/;+\s*$/, "").toLowerCase();
+  const statementCount = normalized.split(";").filter(Boolean).length;
+
+  if (statementCount > 1) return false;
+
+  return normalized.startsWith("select ") || normalized.startsWith("with ");
+};
+
 export async function fetchExternalPostgresData(
   connectionString: string,
   query: string
 ) {
   if (!connectionString || !query) {
     return { success: false, error: 'Connection string and query are required' };
+  }
+
+  if (!isReadOnlyQuery(query)) {
+    return { success: false, error: "Only read-only SELECT queries are allowed." };
   }
 
   const client = new Client({
@@ -38,7 +51,7 @@ export async function fetchExternalPostgresData(
       }
     };
   } catch (error: any) {
-    console.error("Postgres connect/query Error:", error);
+    console.error("Postgres connect/query Error:", error?.message || error);
     try {
       await client.end();
     } catch(e) { /* ignore cleanup errors */ }

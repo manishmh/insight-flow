@@ -17,6 +17,7 @@ const DashboardBoards = () => {
   const { sidebar, sidepane } = useAppSelector((state) => state.ui);
   const containerRef = useRef<HTMLDivElement>(null);
   const [parentWidth, setParentWidth] = useState<number | null>(null);
+  const [resizingBoardId, setResizingBoardId] = useState<string | null>(null);
 
   useEffect(() => {
     const updateWidth = () => {
@@ -33,6 +34,7 @@ const DashboardBoards = () => {
     width: number,
     height: number
   ) => {
+    setResizingBoardId(null);
     try {
       const updatedBoard = await UpdateBoardSize(id, width, height);
       if (updatedBoard) {
@@ -58,9 +60,11 @@ const DashboardBoards = () => {
           minConstraints={[384, 320]}
           maxConstraints={[parentWidth || 0, Infinity]}
           resizeHandles={["se"]}
+          onResizeStart={() => setResizingBoardId(board.id)}
           onResizeStop={(_, { size }) =>
             handleResizeStop(board.id, size.width, size.height)
           }
+          style={{ contain: "layout paint" }}
           className={`rounded-lg relative flex flex-col overflow-hidden pb-11
             ${
               sidepane.open && activeBoard?.boardId === board.id
@@ -72,7 +76,14 @@ const DashboardBoards = () => {
           <>
             <div className="h-full w-full">
               {board.currentDataId != null ? (
-                <DynamicBoard iboard={board} />
+                <DynamicBoard
+                  iboard={board}
+                  isResizing={resizingBoardId === board.id}
+                />
+              ) : resizingBoardId === board.id ? (
+                <div className="h-full w-full bg-slate-100 flex items-center justify-center text-xs font-medium text-slate-500">
+                  Resizing...
+                </div>
               ) : (
                 <EmptyBoard board={board} />
               )}

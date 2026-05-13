@@ -98,7 +98,7 @@ const SortBy = () => {
                   sortingOrder === "asc" && "-translate-y-8"
                 }`}
               >
-                <div className="space-y-1 py-2 px-3">
+                <div className="space-y-1 py-2 px-3 overflow-y-auto max-h-[300px]">
                   {columns.map((column, index) => (
                     <div
                       key={`column-${index}`}

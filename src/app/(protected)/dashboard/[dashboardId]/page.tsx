@@ -14,22 +14,26 @@ const DynamicDashboard = ({ params }: { params: any }) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { currentDashboard, isLoading } = useAppSelector((state) => state.dashboard);
-  const [isPendingDashboard, startTransitionDashboard] = useTransition();
 
   useEffect(() => {
     if (!dashboardId || dashboardId === "undefined") return;
 
-    startTransitionDashboard(async () => {
+    let isMounted = true;
+
+    const loadDashboard = async () => {
       try {
         dispatch(setLoading(true));
         dispatch(setError(null));
         const dashboardData = await GetDashboardData(dashboardId);
+        if (!isMounted) return;
+
         if (dashboardData) {
           dispatch(setCurrentDashboard(dashboardData));
         } else {
           dispatch(setError("Dashboard not found"));
           const fallbackDashboardId = await GetDefaultDashboardId();
 
+          if (!isMounted) return;
           if (fallbackDashboardId && fallbackDashboardId !== dashboardId) {
             router.replace(`/dashboard/${fallbackDashboardId}`);
           } else {
@@ -37,15 +41,24 @@ const DynamicDashboard = ({ params }: { params: any }) => {
           }
         }
       } catch (error) {
+        if (!isMounted) return;
         dispatch(setError("Failed to fetch dashboard"));
         toast.error("Failed to load dashboard. Please try again.");
       } finally {
-        dispatch(setLoading(false));
+        if (isMounted) {
+          dispatch(setLoading(false));
+        }
       }
-    });
+    };
+
+    loadDashboard();
+
+    return () => {
+      isMounted = false;
+    };
   }, [dashboardId, dispatch, router]);
 
-  if (isLoading || isPendingDashboard || !currentDashboard) {
+  if (isLoading || !currentDashboard) {
     return (
       <div className="h-full p-6 w-full flex flex-col gap-6">
         <div className="flex gap-4">

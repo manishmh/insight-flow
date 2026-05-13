@@ -35,7 +35,8 @@ const Aggregate = () => {
     if (!rows.length) return 0;
     
     let result = 0;
-    const values = rows.map(r => r[column]);
+    const colIndex = columns.indexOf(column);
+    const values = rows.map(r => Array.isArray(r) ? r[colIndex] : r[column]);
 
     switch (operation) {
       case "countValues":

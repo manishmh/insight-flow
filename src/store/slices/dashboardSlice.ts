@@ -53,7 +53,18 @@ const dashboardSlice = createSlice({
           name: action.payload.name,
           userId: action.payload.userId,
           isDefault: action.payload.isDefault,
+          shareId: action.payload.shareId ?? null,
         });
+      }
+    },
+    setDashboardShareId: (state, action: PayloadAction<{ id: string; shareId: string | null }>) => {
+      const { id, shareId } = action.payload;
+      const dashboardIndex = state.dashboards.findIndex((d) => d.id === id);
+      if (dashboardIndex !== -1) {
+        state.dashboards[dashboardIndex].shareId = shareId;
+      }
+      if (state.currentDashboard?.id === id) {
+        state.currentDashboard.shareId = shareId;
       }
     },
     updateDashboardName: (state, action: PayloadAction<{ id: string; name: string }>) => {
@@ -82,6 +93,17 @@ const dashboardSlice = createSlice({
       if (state.currentDashboard?.id === board.dashboardId) {
         state.currentDashboard.boards.push(board);
       }
+    },
+    updateBoardsLayout: (
+      state,
+      action: PayloadAction<{ id: string; x: number; y: number; w: number; h: number }[]>
+    ) => {
+      if (!state.currentDashboard) return;
+      const byId = new Map(action.payload.map((item) => [item.id, item]));
+      state.currentDashboard.boards = state.currentDashboard.boards.map((board) => {
+        const next = byId.get(board.id);
+        return next ? { ...board, x: next.x, y: next.y, w: next.w, h: next.h } : board;
+      });
     },
     updateBoardInDashboard: (state, action: PayloadAction<Board>) => {
       const updatedBoard = action.payload;
@@ -119,9 +141,11 @@ export const {
   addDashboard,
   removeDashboard,
   setCurrentDashboard,
+  setDashboardShareId,
   updateDashboardName,
   updateDashboardBoards,
   addBoardToDashboard,
+  updateBoardsLayout,
   updateBoardInDashboard,
   removeBoardFromDashboard,
   setLoading,

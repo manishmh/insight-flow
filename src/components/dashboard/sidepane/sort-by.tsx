@@ -19,7 +19,6 @@ const SortBy = () => {
   const handlesortByModal = () => {
     setSortByModal(!sortByModal);
     if (!sortByModal) {
-      // Reset when opening
       setSortingOrder(null);
       setShowColumnDialog(false);
     }

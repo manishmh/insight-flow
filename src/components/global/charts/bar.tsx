@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { useAppSelector } from "@/store/hooks";
 
 export type barDataType = {
@@ -105,4 +105,4 @@ const BarChart = ({ barData }: { barData: barDataType }) => {
   );
 };
 
-export default BarChart;
+export default memo(BarChart);

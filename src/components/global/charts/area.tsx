@@ -1,7 +1,7 @@
 "use client";
 
 import { LineChart } from "@mui/x-charts/LineChart";
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 
 export type areaChartDataType = {
   labels: string[];
@@ -11,6 +11,7 @@ export type areaChartDataType = {
 const AreaChartComp = ({ areaData }: { areaData: areaChartDataType }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
+  const [reflowKey, setReflowKey] = useState(0);
   const dataLength = areaData.datasets[0]?.data?.length ?? 0;
 
   useEffect(() => {
@@ -24,6 +25,18 @@ const AreaChartComp = ({ areaData }: { areaData: areaChartDataType }) => {
 
     return () => ro.disconnect();
   }, []);
+
+  // Force one remount after layout settles: MUI x-charts otherwise renders an
+  // empty plot when it mounts before the flex container has its final size
+  // (the chart only appeared after a manual resize).
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setReflowKey((v) => v + 1));
+    const t = setTimeout(() => setReflowKey((v) => v + 1), 120);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(t);
+    };
+  }, [dataLength]);
 
   if (!dataLength) return null;
 
@@ -51,6 +64,7 @@ const AreaChartComp = ({ areaData }: { areaData: areaChartDataType }) => {
     <div ref={containerRef} className="h-full w-full flex flex-col overflow-hidden p-3">
       {width > 0 && (
         <LineChart
+          key={`${width}-${reflowKey}`}
           xAxis={[{ data: xAxisData, scaleType: "point" }]}
           series={series}
           height={280}
@@ -67,4 +81,4 @@ const AreaChartComp = ({ areaData }: { areaData: areaChartDataType }) => {
   );
 };
 
-export default AreaChartComp;
+export default memo(AreaChartComp);

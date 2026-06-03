@@ -4,6 +4,7 @@ import Sidebar from "@/components/dashboard/sidebar";
 import Sidepane from "@/components/dashboard/sidepane/sidepane";
 import DashboardTopbar from "@/components/dashboard/topbar";
 import GuestToast from "@/components/dashboard/guest-toast";
+import SearchModal from "@/components/dashboard/search-modal";
 import TourGuide from "@/components/dashboard/tour-guide";
 import { BoardDataProvider } from "@/contexts/board-context";
 import { TableProvider } from "@/contexts/sidepane-localhost-storage-context";
@@ -35,6 +36,17 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
+  }, [dispatch]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        dispatch(toggleSearch());
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, [dispatch]);
 
   const handleSidebar = () => {
@@ -90,19 +102,7 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
         <GuestToast />
         <TourGuide />
         <div className="flex text-sm md:text-xs 3xl:text-sm overflow-hidden bg-white">
-          {search.open && (
-                  <>
-                    <div
-                      className="absolute z-[49] w-full h-screen"
-                      onClick={() => dispatch(toggleSearch())}
-                    ></div>
-                    <div className="absolute z-50 bg-white w-full max-w-[600px] h-[400px] rounded-lg top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2">
-                      <div className="text-lg text-gray-600 w-full h-full grid place-items-center">
-                        coming soon...
-                      </div>
-                    </div>
-                  </>
-                )}
+          {search.open && <SearchModal />}
 
                 {/* Sidebar */}
                 <div

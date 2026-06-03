@@ -10,7 +10,7 @@ import { useEffect, useState, useTransition } from "react";
 import { AiOutlineAppstoreAdd } from "react-icons/ai";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { GoSidebarExpand } from "react-icons/go";
-import { LuDatabase, LuLayoutDashboard, LuSettings, LuUser } from "react-icons/lu";
+import { LuDatabase, LuLayers, LuLayoutDashboard, LuSettings, LuUser } from "react-icons/lu";
 import { RotatingLines } from "react-loader-spinner";
 import { toast } from "sonner";
 import { usePathname } from "next/navigation";
@@ -18,6 +18,7 @@ import {
   setSidebarHover,
   toggleSidebar,
 } from "@/store/slices/uiSlice";
+import ShareDashboardButton from "@/components/dashboard/share-dashboard";
 
 const DashboardTopbar = () => {
   const dispatch = useAppDispatch();
@@ -28,6 +29,7 @@ const DashboardTopbar = () => {
   const isSettings = pathname === "/dashboard/settings";
   const isProfile = pathname === "/dashboard/profile";
   const isDataSources = pathname.startsWith("/dashboard/data-sources");
+  const isData = pathname === "/dashboard/data";
   
   const [isPendingBlock, startTransitionBlock] = useTransition();
   const [editBlockname, setEditBlockname] = useState(false);
@@ -80,12 +82,20 @@ const DashboardTopbar = () => {
   };
 
   // If we are on utility pages, show a simplified topbar without block actions.
-  if (isSettings || isProfile || isDataSources) {
-    const pageTitle = isSettings ? "Settings" : isProfile ? "Profile" : "Data Sources";
+  if (isSettings || isProfile || isDataSources || isData) {
+    const pageTitle = isSettings
+      ? "Settings"
+      : isProfile
+        ? "Profile"
+        : isData
+          ? "My Data"
+          : "Data Sources";
     const pageIcon = isSettings ? (
       <LuSettings className="text-blue-600" />
     ) : isProfile ? (
       <LuUser className="text-blue-600" />
+    ) : isData ? (
+      <LuLayers className="text-blue-600" />
     ) : (
       <LuDatabase className="text-blue-600" />
     );
@@ -169,7 +179,8 @@ const DashboardTopbar = () => {
           )}
         </div>
       </div>
-      <div className="text-gray-600 flex gap-4 items-center pr-2">
+      <div className="text-gray-600 flex gap-3 items-center pr-2">
+        <ShareDashboardButton />
         <button
           className="tour-add-block flex items-center bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg px-3 py-1.5 gap-2 shadow-sm shadow-blue-200 transition-all duration-200 text-sm"
           onClick={handleEmptyBlock}

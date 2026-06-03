@@ -33,14 +33,6 @@ const Table = ({ data }: { data: BoardDataType }) => {
       return Array.isArray(row) ? row[index] : row?.[column];
     };
 
-    console.log("Table component - data structure:", {
-      allRowsLength: allRows.length,
-      allColumnsLength: allColumns.length,
-      allColumns: allColumns,
-      firstRow: allRows[0],
-      dataId: data.id
-    });
-
     const TableActionsState: DataStateInterface = getTableState(data.id);
     let activeColumn = Array.isArray(TableActionsState?.activeColumns)
       ? TableActionsState.activeColumns
@@ -105,24 +97,11 @@ const Table = ({ data }: { data: BoardDataType }) => {
     let sortedRows = processedRows;
     if (sortOrder !== "none" && sortColumn) {
       sortedRows = sortTableDataByColumn(processedRows, allColumns, sortColumn, sortOrder);
-      console.log("Table component - sorting applied:", {
-        sortColumn,
-        sortOrder,
-        originalLength: allRows.length,
-        sortedLength: sortedRows.length
-      });
     }
 
     const activeIndexes = activeColumn
       .map((col) => allColumns.indexOf(col))
       .filter((i) => i !== -1);
-
-    console.log("Table component - filtering:", {
-      activeColumn,
-      activeIndexes,
-      allColumns,
-      allRowsLength: sortedRows.length
-    });
 
     // Apply pagination AFTER sorting
     const startIndex = (pagination - 1) * RECORDS_PER_PAGE;
@@ -133,12 +112,6 @@ const Table = ({ data }: { data: BoardDataType }) => {
     const filtered = paginatedRows.map((row) =>
       activeIndexes.map((i) => [i, Array.isArray(row) ? row[i] : row?.[allColumns[i]]])
     );
-
-    console.log("Table component - filtered data:", {
-      paginatedRowsLength: paginatedRows.length,
-      filteredLength: filtered.length,
-      firstFilteredRow: filtered[0]
-    });
 
     setFilteredData(filtered);
     

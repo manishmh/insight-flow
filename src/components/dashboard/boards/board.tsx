@@ -10,11 +10,8 @@ import type { scatterChartDataType } from "@/components/global/charts/scatter";
 import type { pieChartDataType } from "@/components/global/charts/pie";
 import type { singleValueDataType } from "@/components/global/charts/single-value";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { setActiveBoard, setBoardData, setBoardDataLoadingId, setBoardVisualization, type BoardVisualizationType } from "@/store/slices/boardSlice";
-import { toggleSidepane } from "@/store/slices/uiSlice";
-import {
-  fetchSampleDataWithId,
-} from "@/server/components/block-functions";
+import { setBoardData, setBoardDataLoadingId, setBoardVisualization, type BoardVisualizationType } from "@/store/slices/boardSlice";
+import { fetchSampleDataBatched } from "@/utils/batchSampleData";
 import { fetchDataById } from "@/server/components/indexedDB";
 import { Board } from "@prisma/client";
 import { useEffect, useMemo, useState, useTransition } from "react";
@@ -261,13 +258,7 @@ const ChartPagination = ({
   );
 };
 
-const DynamicBoard = ({
-  iboard,
-  isResizing = false,
-}: {
-  iboard: Board;
-  isResizing?: boolean;
-}) => {
+const DynamicBoard = ({ iboard }: { iboard: Board }) => {
   const dispatch = useAppDispatch();
   const { boardDataLoadingId, boardVisualization } = useAppSelector((state) => state.board);
   const [, startTransition] = useTransition();
@@ -277,8 +268,6 @@ const DynamicBoard = ({
   const isBlockLoading = boardDataLoadingId === board.id;
   const storedBoardVisualization = boardVisualization[board.id];
   const visualizationType = storedBoardVisualization ?? getStoredViz(board.id);
-  const [lineAreaChartReady, setLineAreaChartReady] = useState(false);
-  const isLineOrArea = visualizationType === "lineChart" || visualizationType === "areaChart";
   const chartTotalRows = boardData?.data.data.length ?? 0;
   const chartTotalPages = Math.max(1, Math.ceil(chartTotalRows / CHART_RECORDS_PER_PAGE));
 
@@ -305,14 +294,6 @@ const DynamicBoard = ({
         return null;
     }
   }, [boardData, chartPage, visualizationType]);
-
-  // Show loader briefly for line/area charts while MUI chart mounts
-  useEffect(() => {
-    if (!isLineOrArea) return;
-    setLineAreaChartReady(false);
-    const t = setTimeout(() => setLineAreaChartReady(true), 280);
-    return () => clearTimeout(t);
-  }, [isLineOrArea, boardData?.id]);
 
   // Hydrate chart type from localStorage on mount so selection is remembered
   useEffect(() => {
@@ -352,30 +333,6 @@ const DynamicBoard = ({
     </div>
   );
 
-  const handleSidepaneActivation = () => {
-    if (boardData) {
-      // Set active board in Redux
-      dispatch(setActiveBoard(boardData));
-      // Store board data in Redux
-      dispatch(setBoardData(boardData));
-      // Open sidepane
-      dispatch(toggleSidepane());
-    } else {
-      console.warn("Cannot open sidepane: boardData is null");
-    }
-  };
-
-  // useEffect(() => {
-  //   const handleActiveDataChange = async () => {
-  //     if (activeBoardData) {
-  //       const newBoard =  await setCurrentDataId(activeBoardData?.boardId, activeBoardData?.id);
-  //       setBoard(newBoard)
-  //     }
-  //   };
-
-  //   handleActiveDataChange();
-  // }, [activeBoardData]);
-
   useEffect(() => {
     if (!board?.currentDataId) return;
 
@@ -383,7 +340,7 @@ const DynamicBoard = ({
       try {
         let data = await fetchDataById(board.currentDataId ?? "");
         if (!data || Object.keys(data).length === 0) {
-          data = await fetchSampleDataWithId(board.currentDataId ?? "");
+          data = await fetchSampleDataBatched(board.currentDataId ?? "");
         }
 
         if (!data || !data.data) {
@@ -465,17 +422,6 @@ const DynamicBoard = ({
           },
         };
 
-        console.log("Formatted board data:", {
-          id: formattedData.id,
-          name: formattedData.name,
-          dataLength: formattedData.data.data.length,
-          columnsLength: formattedData.data.columns.length,
-          columns: formattedData.data.columns,
-          activeColumns: activeColumns,
-          firstRow: dataArray[0],
-          sampleData: dataArray.slice(0, 3)
-        });
-
         setLocalBoardData(formattedData);
         // Update Redux store
         dispatch(setBoardData(formattedData));
@@ -491,13 +437,7 @@ const DynamicBoard = ({
   }, [board?.currentDataId, board.id, board.name, dispatch]);
 
   return (
-    <div className="h-full flex flex-col w-full relative">
-      <div
-        className="px-4 py-3 border-b border-gray-400 cursor-pointer"
-        onClick={() => handleSidepaneActivation()}
-      >
-        <h1 className=" font-medium capitalize">{boardData?.name}</h1>
-      </div>
+    <div className="h-full w-full relative">
       <div className="h-full relative">
         {isBlockLoading && (
           <div className="absolute inset-0 z-10 flex items-center justify-center rounded-b-lg bg-gray-200 border-2 border-gray-300 shadow-md">
@@ -507,11 +447,7 @@ const DynamicBoard = ({
             </div>
           </div>
         )}
-        {isResizing ? (
-          <div className="h-full w-full bg-slate-100 flex items-center justify-center text-xs font-medium text-slate-500">
-            Resizing...
-          </div>
-        ) : boardData ? (
+        {boardData ? (
           visualizationType === "barChart" ? (
             (() => {
               const chartData = transformedChartData as barDataType | null;
@@ -534,16 +470,6 @@ const DynamicBoard = ({
                   </div>
                 );
               }
-              if (!lineAreaChartReady) {
-                return (
-                  <div className="absolute inset-0 z-10 flex items-center justify-center rounded-b-lg bg-gray-200 border-2 border-gray-300 shadow-md">
-                    <div className="flex flex-col items-center gap-2">
-                      <RotatingLines width="36" strokeColor="#0ea5e9" strokeWidth="3" />
-                      <span className="text-sm text-gray-700 font-medium">Loading chart...</span>
-                    </div>
-                  </div>
-                );
-              }
               return renderChartFrame(<LineChartComp lineData={chartData} />);
             })()
           ) : visualizationType === "areaChart" ? (
@@ -553,16 +479,6 @@ const DynamicBoard = ({
                 return (
                   <div className="flex items-center justify-center h-full text-gray-500 p-4 text-center">
                     Not enough numeric data for area chart. Use Table or add a numeric column.
-                  </div>
-                );
-              }
-              if (!lineAreaChartReady) {
-                return (
-                  <div className="absolute inset-0 z-10 flex items-center justify-center rounded-b-lg bg-gray-200 border-2 border-gray-300 shadow-md">
-                    <div className="flex flex-col items-center gap-2">
-                      <RotatingLines width="36" strokeColor="#0ea5e9" strokeWidth="3" />
-                      <span className="text-sm text-gray-700 font-medium">Loading chart...</span>
-                    </div>
                   </div>
                 );
               }

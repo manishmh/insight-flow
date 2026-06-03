@@ -1,13 +1,5 @@
-/**
- * Utility function to sort table data by a specific column
- * Handles different data types: numbers, strings, dates, etc.
- */
-
 export type SortOrder = "asc" | "desc" | "none";
 
-/**
- * Determines the type of a value and converts it for comparison
- */
 function getComparableValue(value: any): { value: any; type: "number" | "string" | "date" | "null" } {
   if (value === null || value === undefined || value === "") {
     return { value: null, type: "null" };
@@ -30,7 +22,6 @@ function getComparableValue(value: any): { value: any; type: "number" | "string"
     return { value: dateValue.getTime(), type: "date" };
   }
 
-  // Default to string comparison
   return { value: String(value).toLowerCase(), type: "string" };
 }
 
@@ -69,7 +60,6 @@ function compareValues(a: any, b: any, order: "asc" | "desc"): number {
     if (aPriority !== bPriority) {
       comparison = aPriority - bPriority;
     } else {
-      // Fallback to string comparison
       comparison = String(aComp.value).localeCompare(String(bComp.value));
     }
   }
@@ -77,13 +67,6 @@ function compareValues(a: any, b: any, order: "asc" | "desc"): number {
   return order === "asc" ? comparison : -comparison;
 }
 
-/**
- * Sorts table data (array of arrays) by a specific column index
- * @param data - Array of rows, where each row is an array of values
- * @param columnIndex - Index of the column to sort by
- * @param order - Sort order: "asc", "desc", or "none"
- * @returns Sorted copy of the data array
- */
 export function sortTableData(
   data: any[][],
   columnIndex: number,
@@ -93,13 +76,11 @@ export function sortTableData(
     return [...data];
   }
 
-  // Check if columnIndex is valid
   const maxIndex = Math.max(...data.map(row => row.length - 1));
   if (columnIndex > maxIndex) {
     return [...data];
   }
 
-  // Create a copy and sort
   const sorted = [...data].sort((rowA, rowB) => {
     const valueA = rowA[columnIndex];
     const valueB = rowB[columnIndex];
@@ -109,14 +90,6 @@ export function sortTableData(
   return sorted;
 }
 
-/**
- * Sorts table data by column name (finds index from columns array)
- * @param data - Array of rows, where each row is an array of values
- * @param columns - Array of column names
- * @param columnName - Name of the column to sort by
- * @param order - Sort order: "asc", "desc", or "none"
- * @returns Sorted copy of the data array
- */
 export function sortTableDataByColumn(
   data: any[],
   columns: string[],

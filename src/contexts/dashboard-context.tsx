@@ -21,6 +21,7 @@ export const DashboardDataProvider = ({ children }: { children: ReactNode }) => 
     boards: [],
     userId: '',
     isDefault: false,
+    shareId: null,
   });
 
   const handleDashboardData = useCallback(async (dashboardId: string) => {

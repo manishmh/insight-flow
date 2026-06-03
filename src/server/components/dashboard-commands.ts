@@ -1,14 +1,21 @@
 'use server'
 import { db } from "@/lib/db";
 import { auth } from "@/server/auth";
+import { assertBoardOwner, assertDashboardOwner, requireUserId } from "@/server/components/ownership";
+import { DASHBOARD_TEMPLATES } from "@/constants/templates";
+import { randomUUID } from "crypto";
 
-/** 
+/**
  * @returns All the data for the dashboard
  */
 
 export const GetDashboardData = async (dashboardId: string) => {
-    const dashboard = await db.dashboard.findUnique({
-        where: { id: dashboardId },
+    const session = await auth();
+    const userId = session?.user.id;
+    if (!userId) return null;
+
+    const dashboard = await db.dashboard.findFirst({
+        where: { id: dashboardId, userId },
         include: { boards: true },
     });
 
@@ -37,6 +44,28 @@ export const GetDashboards = async () => {
 
     return dashboards 
 }
+
+/**
+ * @returns the current user's dashboards each with a lightweight list of their
+ * blocks (id + name) — used to power global search.
+ */
+export const GetDashboardsWithBoards = async () => {
+    const session = await auth();
+    const userId = session?.user.id;
+    if (!userId) return [];
+
+    const dashboards = await db.dashboard.findMany({
+        where: { userId },
+        orderBy: { id: "asc" },
+        select: {
+            id: true,
+            name: true,
+            boards: { select: { id: true, name: true, currentDataId: true } },
+        },
+    });
+
+    return dashboards;
+};
 
 const createDefaultDashboard = async (userId: string) => {
     const dashboard = await db.dashboard.create({
@@ -227,17 +256,18 @@ export const GetDefaultDashboardId = async () => {
 
     if (!userId) return null;
 
-    const user = await db.user.findUnique({
-        where: { id: userId },
-        select: { defaultDashboardId: true },
-    });
+    // Trust the session's defaultDashboardId first (ensureDefaultDashboardId
+    // validates it anyway). Only hit the DB for it when the session lacks it.
+    let defaultDashboardId: string | null = session?.user.defaultDashboardId ?? null;
+    if (!defaultDashboardId) {
+        const user = await db.user.findUnique({
+            where: { id: userId },
+            select: { defaultDashboardId: true },
+        });
+        defaultDashboardId = user?.defaultDashboardId ?? null;
+    }
 
-    const defaultDashboardId = await ensureDefaultDashboardId(
-        userId,
-        user?.defaultDashboardId ?? session?.user.defaultDashboardId
-    );
-
-    return defaultDashboardId;
+    return ensureDefaultDashboardId(userId, defaultDashboardId);
 }
 
 /** 
@@ -245,6 +275,7 @@ export const GetDefaultDashboardId = async () => {
 */
 
 export const SetDashboardName = async (dashboardId: string, name: string) => {
+    await assertDashboardOwner(dashboardId);
     const dashboard = await db.dashboard.update({
         where: { id: dashboardId },
         data: { name }
@@ -259,13 +290,132 @@ export const SetDashboardName = async (dashboardId: string, name: string) => {
 
 export const UpdateBoardSize = async (id: string, width: number, height: number) => {
     try {
+        await assertBoardOwner(id);
         const board = await db.board.update({
             where: { id },
             data: { width, height }
         })
-    
+
         return board;
     } catch (error) {
-        throw new Error("Failed to update board size");    
+        throw new Error("Failed to update board size");
     }
 }
+
+/** Layout entry persisted from react-grid-layout. */
+export type BoardLayoutItem = {
+    id: string;
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+};
+
+/**
+ * Bulk-persist the grid positions/sizes of every board in a dashboard.
+ * Ownership is verified once; all rows are written in a single transaction.
+ */
+export const UpdateDashboardLayout = async (
+    dashboardId: string,
+    layout: BoardLayoutItem[]
+) => {
+    await assertDashboardOwner(dashboardId);
+
+    const ownedBoards = await db.board.findMany({
+        where: { dashboardId },
+        select: { id: true },
+    });
+    const ownedIds = new Set(ownedBoards.map((b) => b.id));
+    const updates = layout
+        .filter((item) => ownedIds.has(item.id))
+        .map((item) =>
+            db.board.update({
+                where: { id: item.id },
+                data: {
+                    x: Math.round(item.x),
+                    y: Math.round(item.y),
+                    w: Math.round(item.w),
+                    h: Math.round(item.h),
+                },
+            })
+        );
+
+    await db.$transaction(updates);
+    return { success: true };
+};
+
+/**
+ * Toggle a read-only public share link for a dashboard.
+ * @returns the shareId (token) when enabled, or null when disabled.
+ */
+export const SetDashboardSharing = async (dashboardId: string, enabled: boolean) => {
+    await assertDashboardOwner(dashboardId);
+    const dashboard = await db.dashboard.update({
+        where: { id: dashboardId },
+        data: { shareId: enabled ? randomUUID() : null },
+        select: { shareId: true },
+    });
+    return dashboard.shareId;
+};
+
+/**
+ * Create a dashboard preloaded with blocks from a named template. Falls back to
+ * a blank dashboard when the template key is unknown.
+ */
+export const CreateDashboardFromTemplate = async (name: string, templateKey: string) => {
+    const userId = await requireUserId();
+    const template = DASHBOARD_TEMPLATES[templateKey];
+    if (!template) return CreateNewDashboard(name);
+
+    const dashboard = await db.dashboard.create({
+        data: { name: name || template.label, userId },
+    });
+
+    const perRow = 2;
+    const w = 6;
+    const h = 8;
+    for (let i = 0; i < template.blocks.length; i++) {
+        const block = template.blocks[i];
+        const sample = await db.sampleData.findFirst({
+            where: { name: block.source },
+            select: { id: true },
+        });
+        await db.board.create({
+            data: {
+                dashboardId: dashboard.id,
+                name: block.board,
+                currentDataId: sample?.id ?? null,
+                width: 550,
+                height: 400,
+                x: (i % perRow) * w,
+                y: Math.floor(i / perRow) * h,
+                w,
+                h,
+            },
+        });
+    }
+
+    return db.dashboard.findUnique({
+        where: { id: dashboard.id },
+        include: { boards: true },
+    });
+};
+
+/**
+ * Public, unauthenticated read of a dashboard via its share token.
+ * Returns null if no dashboard has that token.
+ */
+export const GetSharedDashboard = async (shareId: string) => {
+    if (!shareId) return null;
+    const dashboard = await db.dashboard.findUnique({
+        where: { shareId },
+        include: { boards: true },
+    });
+
+    if (!dashboard) return null;
+
+    const boardsOrdered = [...dashboard.boards].sort((a, b) =>
+        a.id.localeCompare(b.id)
+    );
+    return { ...dashboard, boards: boardsOrdered };
+};

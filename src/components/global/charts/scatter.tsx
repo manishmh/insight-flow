@@ -1,7 +1,7 @@
 "use client";
 
 import { ScatterChart } from "@mui/x-charts/ScatterChart";
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 
 export type scatterChartDataType = {
   series: { data: { x: number; y: number; id: string | number }[]; label?: string }[];
@@ -47,4 +47,4 @@ const ScatterChartComp = ({ scatterData }: { scatterData: scatterChartDataType }
   );
 };
 
-export default ScatterChartComp;
+export default memo(ScatterChartComp);

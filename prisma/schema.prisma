@@ -26,8 +26,6 @@ model User {
   twoFactorConfirmation TwoFactorConfirmation?
   dashboards            Dashboard[]
   defaultDashboardId    String?
-
-  // todo: add cascade on delete
 }
 
 model Dashboard {
@@ -36,7 +34,11 @@ model Dashboard {
   boards    Board[]
   userId    String
   isDefault Boolean @default(false)
+  // null = private; a non-null token enables a read-only public share link
+  shareId   String? @unique
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Board {
@@ -46,8 +48,15 @@ model Board {
   currentDataId String?
   width         Int
   height        Int
+  // grid layout in column units (react-grid-layout)
+  x             Int     @default(0)
+  y             Int     @default(0)
+  w             Int     @default(4)
+  h             Int     @default(8)
 
   dashboard Dashboard @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
+
+  @@index([dashboardId])
 }
 
 model sampleData {
@@ -73,6 +82,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model VerificationToken {

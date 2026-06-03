@@ -42,9 +42,8 @@ const EmptyBoard = ({ board }: { board: Board }) => {
         let data = null;
         try {
           data = await fetchDataByName(value);
-          console.log("Data fetched by name from IndexedDB:", data);
         } catch (indexedDBError) {
-          console.log("IndexedDB fetch failed (expected if first time):", indexedDBError);
+          // first-time queries won't exist in IndexedDB yet
         }
 
         let sampleData = null;
@@ -53,7 +52,6 @@ const EmptyBoard = ({ board }: { board: Board }) => {
           // Fetch from database
           try {
             sampleData = await fetchSampleData(value);
-            console.log("Fetched sample data from DB:", sampleData);
 
             if (!sampleData) {
               console.error(`No sample data found for query: ${value}`);
@@ -72,9 +70,8 @@ const EmptyBoard = ({ board }: { board: Board }) => {
             // Save to IndexedDB for future use (save the entire sampleData object)
             try {
               await saveData(sampleData.id, sampleData.name, sampleData);
-              console.log("Block query saved to IndexedDB", sampleData);
             } catch (saveError) {
-              console.warn("Failed to save to IndexedDB (may already exist):", saveError);
+              // already cached or storage unavailable; safe to ignore
             }
           } catch (dbError) {
             console.error("Failed to fetch from database:", dbError);
@@ -84,16 +81,7 @@ const EmptyBoard = ({ board }: { board: Board }) => {
         }
 
         const selected = data || sampleData;
-        console.log("Selected data (final):", selected);
-        console.log("Selected data structure:", {
-          hasSelected: !!selected,
-          hasId: !!selected?.id,
-          hasName: !!selected?.name,
-          hasData: !!selected?.data,
-          dataType: typeof selected?.data,
-          isArray: Array.isArray(selected?.data)
-        });
-        
+
         if (!selected) {
           console.error("No data found for query:", value);
           toast.error(`No data found for query "${value}". Please try another query.`);
@@ -126,14 +114,6 @@ const EmptyBoard = ({ board }: { board: Board }) => {
           return;
         }
         
-        console.log("Data object structure:", {
-          hasData: !!dataObj.data,
-          dataIsArray: Array.isArray(dataObj.data),
-          hasColumns: !!dataObj.columns,
-          columnsIsArray: Array.isArray(dataObj.columns),
-          dataObjKeys: Object.keys(dataObj)
-        });
-
         // Extract data array and columns
         let dataArray: any[] = [];
         let columns: string[] = [];
@@ -159,14 +139,12 @@ const EmptyBoard = ({ board }: { board: Board }) => {
         if (dataArray.length === 0 && dataObj && typeof dataObj === 'object') {
           // Check if dataObj has nested structure
           const keys = Object.keys(dataObj);
-          console.log("DataObj keys when no data array found:", keys);
-          
+
           // Maybe the data is at the root level with a different key
           for (const key of keys) {
             const value = (dataObj as any)[key];
             if (Array.isArray(value) && value.length > 0 && key !== 'columns') {
               dataArray = value;
-              console.log(`Found data array under key: ${key}`);
               break;
             }
           }
@@ -197,24 +175,15 @@ const EmptyBoard = ({ board }: { board: Board }) => {
           return;
         }
         
-        console.log("Successfully extracted data:", {
-          dataArrayLength: dataArray.length,
-          columnsLength: columns.length,
-          firstRow: dataArray[0],
-          columns
-        });
-
         const id = selected.id;
         const name = selected.name;
 
         // Update board with currentDataId first
-        const updatedBoardWithDataId = await setCurrentDataId(board.id, id);
-        console.log("Board updated with currentDataId:", updatedBoardWithDataId);
-        
+        await setCurrentDataId(board.id, id);
+
         // Update board name
         const updatedBoard = await setBoardName(name, board.id);
-        console.log("Board updated with name:", updatedBoard);
-        
+
         // Ensure we have a board with currentDataId
         const finalBoard = updatedBoard?.currentDataId 
           ? updatedBoard 

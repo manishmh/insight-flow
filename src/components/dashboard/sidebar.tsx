@@ -1,5 +1,6 @@
 import {
   CreateNewDashboard,
+  CreateDashboardFromTemplate,
   DeleteDashboard,
   GetDashboards,
 } from "@/server/components/dashboard-commands";
@@ -16,7 +17,7 @@ import { FaChevronDown, FaPlus } from "react-icons/fa6";
 import { GoSidebarExpand } from "react-icons/go";
 import { HiOutlineSwitchVertical } from "react-icons/hi";
 import { IoSearch} from "react-icons/io5";
-import { LuCommand, LuLayoutDashboard, LuDatabase, LuSettings, LuUser } from "react-icons/lu";
+import { LuCommand, LuLayoutDashboard, LuDatabase, LuLayers, LuSettings, LuUser } from "react-icons/lu";
 import { RotatingLines } from "react-loader-spinner";
 import { toast } from "sonner";
 import SidebarItem from "./sidebar-item";
@@ -58,11 +59,14 @@ const Sidebar = () => {
     setNewDashboardModal(true);
   };
 
-  const handleCreateDashboard = async (name: string) => {
+  const handleCreateDashboard = async (name: string, templateKey: string = "blank") => {
     return new Promise<void>((resolve, reject) => {
       startTransition(async () => {
         try {
-          const newDashboard = await CreateNewDashboard(name);
+          const newDashboard =
+            templateKey && templateKey !== "blank"
+              ? await CreateDashboardFromTemplate(name, templateKey)
+              : await CreateNewDashboard(name);
 
           if (newDashboard) {
             dispatch(addDashboard(newDashboard));
@@ -158,11 +162,16 @@ const Sidebar = () => {
           </div>
         </div>
 
-        <div className="px-1 py-1 mb-2">
+        <div className="px-1 py-1 mb-2 space-y-0.5">
           <SidebarItem
             logo={<LuDatabase />}
             title="Data Sources"
             link="/dashboard/data-sources"
+          />
+          <SidebarItem
+            logo={<LuLayers />}
+            title="My Data"
+            link="/dashboard/data"
           />
         </div>
 

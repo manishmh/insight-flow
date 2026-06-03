@@ -1,5 +1,7 @@
 "use client";
 
+import { memo } from "react";
+
 export type singleValueItemType = { label: string; value: number | string };
 export type singleValueDataType = { values: singleValueItemType[] };
 
@@ -41,4 +43,4 @@ const SingleValueComp = ({ data }: { data: singleValueDataType }) => {
   );
 };
 
-export default SingleValueComp;
+export default memo(SingleValueComp);

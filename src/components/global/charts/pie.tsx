@@ -1,7 +1,7 @@
 "use client";
 
 import { PieChart } from "@mui/x-charts/PieChart";
-import { useRef, useState, useEffect } from "react";
+import { memo, useRef, useState, useEffect } from "react";
 
 export type pieChartDataType = {
   items: { id: string | number; value: number; label: string }[];
@@ -83,4 +83,4 @@ const PieChartComp = ({ pieData }: { pieData: pieChartDataType }) => {
   );
 };
 
-export default PieChartComp;
+export default memo(PieChartComp);

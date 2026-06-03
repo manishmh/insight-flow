@@ -36,7 +36,6 @@ export const saveData = async (id: string, name: string, jsonData: any): Promise
   });
 
   if (existingData) {
-    console.error('Error: ID already exists');
     return; // Prevent overwriting existing data
   }
 
@@ -44,7 +43,6 @@ export const saveData = async (id: string, name: string, jsonData: any): Promise
     store.add({ id, name, jsonData });
 
     transaction.oncomplete = () => {
-      console.log('Data saved successfully');
       resolve();
     };
 
@@ -110,6 +108,19 @@ export const fetchDataByName = async (name: string): Promise<{ id: string; name:
 };
 
 
+
+export const deleteData = async (id: string): Promise<void> => {
+  const db = await openDB();
+  const transaction = db.transaction(STORE_NAME, 'readwrite');
+  const store = transaction.objectStore(STORE_NAME);
+
+  return new Promise<void>((resolve, reject) => {
+    store.delete(id);
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () => reject(transaction.error);
+    transaction.onabort = () => reject(transaction.error);
+  });
+};
 
 export const fetchAllData = async (): Promise<any[]> => {
   const db = await openDB();

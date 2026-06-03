@@ -57,11 +57,11 @@ const Navbar = () => {
           />
         </div>
         <div className="items-center gap-6 hidden md:flex relative">
-          <NavbarItems item="Features" link="" />
-          <NavbarItems item="Docs" link="" />
-          <NavbarItems item="Pricings" link="" />
-          <NavbarItems item="Careers" link="" />
-          <NavbarItems item="Support" link="" />
+          <NavbarItems item="Features" link="/" />
+          <NavbarItems item="Docs" link="/" />
+          <NavbarItems item="Pricings" link="/" />
+          <NavbarItems item="Careers" link="/" />
+          <NavbarItems item="Support" link="/" />
         </div>
         <div className={`duration-700 transition-all flex gap-4`}>
           <button

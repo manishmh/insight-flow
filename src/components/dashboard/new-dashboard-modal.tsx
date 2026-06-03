@@ -1,11 +1,12 @@
 import { RefObject, useEffect, useRef, useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { RotatingLines } from "react-loader-spinner";
+import { DASHBOARD_TEMPLATES } from "@/constants/templates";
 
 interface NewDashboardModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreate: (name: string) => Promise<void>;
+  onCreate: (name: string, templateKey: string) => Promise<void>;
   buttonRef: RefObject<HTMLButtonElement>;
   isPending: boolean;
 }
@@ -18,6 +19,7 @@ const NewDashboardModal = ({
   isPending,
 }: NewDashboardModalProps) => {
   const [dashboardName, setDashboardName] = useState("");
+  const [templateKey, setTemplateKey] = useState("blank");
   const [position, setPosition] = useState({ top: "0px", left: "0px" });
   const modalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -84,8 +86,9 @@ const NewDashboardModal = ({
     e.preventDefault();
     if (dashboardName.trim()) {
       try {
-        await onCreate(dashboardName.trim());
+        await onCreate(dashboardName.trim(), templateKey);
         setDashboardName("");
+        setTemplateKey("blank");
         onClose();
       } catch (error) {
         // Error is already handled by the parent component (toast shown)
@@ -131,6 +134,24 @@ const NewDashboardModal = ({
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
             disabled={isPending}
           />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Start from
+          </label>
+          <select
+            value={templateKey}
+            onChange={(e) => setTemplateKey(e.target.value)}
+            disabled={isPending}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent bg-white text-sm"
+          >
+            <option value="blank">Blank dashboard</option>
+            {Object.entries(DASHBOARD_TEMPLATES).map(([key, t]) => (
+              <option key={key} value={key}>
+                {t.label} ({t.blocks.length} blocks)
+              </option>
+            ))}
+          </select>
         </div>
         <div className="flex gap-2 justify-end">
           <button

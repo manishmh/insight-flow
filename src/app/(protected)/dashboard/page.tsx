@@ -1,40 +1,21 @@
-'use client';
-
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { redirect } from "next/navigation";
 import { GetDefaultDashboardId } from "@/server/components/dashboard-commands";
 
-const Dashboard = () => {
-  const router = useRouter();
+// Resolve the default dashboard server-side and redirect during SSR. This avoids
+// the client waterfall (render skeleton → hydrate → fetch id → navigate → fetch
+// data) and lands the browser straight on /dashboard/{id}.
+const Dashboard = async () => {
+  const id = await GetDefaultDashboardId();
 
-  useEffect(() => {
-    const fetchDefaultDashboardId = async () => {
-      try {
-        const id = await GetDefaultDashboardId();
-
-        if (!id) {
-          console.error("No default dashboard found for user.");
-          return;
-        }
-
-        router.replace(`/dashboard/${id}`);
-      } catch (error) {
-        console.error("Failed to fetch default dashboard ID:", error);
-      }
-    };
-
-    fetchDefaultDashboardId();
-  }, [router]);
+  if (id) {
+    redirect(`/dashboard/${id}`);
+  }
 
   return (
-    <div className="p-4 h-full flex flex-col gap-4">
-      <div className="h-1/2 w-full flex gap-4">
-        <div className="w-full h-full bg-[#cdd4deac] animate-pulse"></div>
-        <div className="w-full h-full bg-[#cdd4deac] animate-pulse"></div>
-      </div>
-      <div className="w-full h-1/2 bg-[#cdd4deac] animate-pulse"></div>
+    <div className="p-4 h-full flex items-center justify-center text-gray-500">
+      No dashboard found.
     </div>
-  )
+  );
 };
 
 export default Dashboard;

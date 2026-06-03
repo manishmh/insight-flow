@@ -45,9 +45,8 @@ const LoginForm = () => {
       try {
         const data = await login(values, callbackUrl);
         // const { success, message, twoFactor } = data 
-        const { success, message } = data 
-        console.log('dataaa', data);
-        
+        const { success, message } = data
+
         if (!success) {
           toast.error(message)
         } else (

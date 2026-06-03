@@ -3,8 +3,8 @@
 import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 
-const GUEST_EMAIL = "guest@insightflow.com";
-const GUEST_PASSWORD_PLAIN = "Guest1234!";
+const GUEST_EMAIL = process.env.GUEST_EMAIL ?? "guest@insightflow.com";
+const GUEST_PASSWORD_PLAIN = process.env.GUEST_PASSWORD ?? "Guest1234!";
 
 export const InitializeGuestAccount = async () => {
     try {
@@ -44,7 +44,8 @@ export const InitializeGuestAccount = async () => {
                     name: "Sample Analytics",
                     dashboardId: dashboard.id,
                     width: 400,
-                    height: 300
+                    height: 300,
+                    x: 0, y: 0, w: 6, h: 8
                 }
             });
 
@@ -53,7 +54,8 @@ export const InitializeGuestAccount = async () => {
                     name: "Visitor Growth",
                     dashboardId: dashboard.id,
                     width: 500,
-                    height: 300
+                    height: 300,
+                    x: 6, y: 0, w: 6, h: 8
                 }
             });
         }

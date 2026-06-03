@@ -38,7 +38,6 @@ const QueryDataSql = () => {
   };
 
   const handleRunCode = () => {
-    console.log("run code is running");
     if (activeShowData >= 0 && activeShowData < 3) {
       setActiveShowData(activeShowData + 1);
     } else {

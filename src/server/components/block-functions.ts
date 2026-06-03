@@ -3,6 +3,7 @@ import { BoardDataType } from "@/components/dashboard/boards/board";
 import { db } from "@/lib/db";
 import { Board } from "@prisma/client";
 import { fetchDataById } from "./indexedDB";
+import { assertBoardOwner, assertDashboardOwner } from "./ownership";
 
 /** 
  * @returns Creating new empty block
@@ -25,12 +26,23 @@ export const fetchBoardData = async (boardId: string) => {
 
 export const createNewEmptyBlock = async (dashboardId: string) => {
   try {
+    await assertDashboardOwner(dashboardId);
+    // Stack new blocks below existing ones so they don't overlap on the grid.
+    const agg = await db.board.aggregate({
+      where: { dashboardId },
+      _max: { y: true, h: true },
+    });
+    const nextY = (agg._max.y ?? 0) + (agg._max.h ?? 0);
     const newBlock = await db.board.create({
       data: {
         dashboardId: dashboardId,
         name: "New Block",
         width: 550,
         height: 400,
+        x: 0,
+        y: nextY,
+        w: 5,
+        h: 8,
       },
     });
     return newBlock;
@@ -59,13 +71,27 @@ export const fetchSampleData = async (name: string) => {
   }
 }
 
+/** @returns lightweight list of available sample datasets (id, name, row count). */
+export const listSampleDatasets = async () => {
+  try {
+    const datasets = await db.sampleData.findMany({
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
+    });
+    return datasets;
+  } catch (error) {
+    console.error("failed to list sample datasets", error);
+    return [];
+  }
+};
+
 export const fetchSampleDataWithId = async (id: string) => {
   try {
     const sampleData = await db.sampleData.findUnique({
       where: {
         id
       }
-    }) 
+    })
 
     return sampleData;
   } catch (error: any) {
@@ -74,8 +100,25 @@ export const fetchSampleDataWithId = async (id: string) => {
   }
 }
 
+// Batched fetch for many blocks at once. The dashboard mounts every block in the
+// same tick, so coalescing their cache-miss reads into one query avoids N
+// sequential server-action round-trips (Next runs server actions serially).
+export const fetchSampleDataByIds = async (ids: string[]) => {
+  try {
+    if (!ids || ids.length === 0) return [];
+    const rows = await db.sampleData.findMany({
+      where: { id: { in: ids } },
+    });
+    return rows;
+  } catch (error: any) {
+    console.error("failed to fetch sample data batch", error);
+    throw new Error("failed to fetch sample data batch");
+  }
+}
+
 export const setCurrentDataId = async (boardId: string, currentDataId: string ) => {
   try {
+    await assertBoardOwner(boardId);
     const board = await db.board.update({
       where: { id: boardId },
       data: { currentDataId }
@@ -89,6 +132,7 @@ export const setCurrentDataId = async (boardId: string, currentDataId: string ) 
 
 export const setBoardName = async (name: string, id: string) => {
   try {
+    await assertBoardOwner(id);
     const board = await db.board.update({
       where: { id },
       data: { name }

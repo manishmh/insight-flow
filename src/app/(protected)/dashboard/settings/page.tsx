@@ -1,6 +1,7 @@
 "use client";
 
-import { LuShield, LuPalette, LuBell, LuLogOut } from "react-icons/lu";
+import { LuShield, LuPalette, LuBell, LuLogOut, LuBot } from "react-icons/lu";
+import AISettingsPage from "./ai/page";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { signOut } from "next-auth/react";
@@ -9,6 +10,7 @@ const SettingsPage = () => {
   const [activeTab, setActiveTab] = useState("appearance");
 
   const tabs = [
+    { id: "ai", label: "AI & Analytics", icon: <LuBot /> },
     { id: "appearance", label: "Appearance", icon: <LuPalette /> },
     { id: "security", label: "Security", icon: <LuShield /> },
     { id: "notifications", label: "Notifications", icon: <LuBell /> },
@@ -56,7 +58,12 @@ const SettingsPage = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.2 }}
           >
-            {activeTab === "appearance" && (
+            {activeTab === "ai" && (
+    <div className="space-y-6">
+      <AISettingsPage />
+    </div>
+  )}
+  {activeTab === "appearance" && (
               <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">Appearance</h3>

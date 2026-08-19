@@ -39,7 +39,11 @@ export async function generateAiText(userId: string, prompt: string, systemConte
   const config = await getProviderConfig(userId);
 
   if (config.provider === 'mock') {
-    return { text: "This is a deterministic mock response.", usage: { totalTokens: 10 } };
+    const isDashboard = prompt.toLowerCase().includes("dashboard");
+    if (isDashboard) {
+      return { text: JSON.stringify({ dashboardConfig: { metric: "Mock Revenue", type: "Bar" } }), usage: { totalTokens: 20 } };
+    }
+    return { text: "Mock response analyzing: " + prompt.substring(0, 50), usage: { totalTokens: 10 } };
   }
 
   const client = await createAiClient(userId);
@@ -61,7 +65,7 @@ export async function executeAiAgent(userId: string, prompt: string, systemConte
   const config = await getProviderConfig(userId);
 
   if (config.provider === 'mock') {
-    return { text: "Mock Agent concluded the investigation.", steps: [] };
+    return { text: "Mock Analysis completed. Tools used deterministically. Analysis for: " + prompt.substring(0, 50), steps: [{ step: "Executed Mock SQL" }] };
   }
 
   const client = await createAiClient(userId);

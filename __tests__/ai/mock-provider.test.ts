@@ -16,7 +16,7 @@ jest.mock("../../src/lib/db", () => ({
 describe("Mock Provider Adapter", () => {
   it("should return a deterministic mock response", async () => {
     const result = await generateAiText("user-1", "Hello");
-    expect(result.text).toBe("This is a deterministic mock response.");
+    expect(result.text).toContain("Mock response analyzing: Hello");
     expect(result.usage?.totalTokens).toBe(10);
   });
 });

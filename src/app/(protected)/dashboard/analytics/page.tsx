@@ -1,9 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { runInvestigationStep } from "@/server/ai/actions";
 import { toast } from "sonner";
-import { LuBot, LuSend, LuDatabase, LuLineChart, LuLightbulb, LuSearch } from "react-icons/lu";
+import { LuBot, LuSend, LuDatabase, LuLineChart, LuLightbulb, LuSearch, LuChevronDown } from "react-icons/lu";
+import { fetchAllData } from "@/server/components/indexedDB";
+import { listSampleDatasets } from "@/server/components/block-functions";
+import Link from "next/link";
 
 export default function AIAnalystPage() {
   const [question, setQuestion] = useState("");
@@ -11,10 +14,41 @@ export default function AIAnalystPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
 
+  const [userDatasets, setUserDatasets] = useState<{id: string, name: string}[]>([]);
+  const [sampleDatasets, setSampleDatasets] = useState<{id: string, name: string}[]>([]);
+
+  useEffect(() => {
+    const loadDatasets = async () => {
+      try {
+        const [records, sampleList] = await Promise.all([
+          fetchAllData().catch(() => []),
+          listSampleDatasets().catch(() => []),
+        ]);
+
+        const mappedRecords = (records || []).map((r: any) => ({
+            id: r.id,
+            name: r.name ?? r.jsonData?.name ?? "Untitled",
+        }));
+
+        setUserDatasets(mappedRecords);
+        setSampleDatasets(sampleList || []);
+
+        if (mappedRecords.length > 0) {
+           setConnectionId(mappedRecords[0].id);
+        } else if (sampleList && sampleList.length > 0) {
+           setConnectionId(sampleList[0].id);
+        }
+      } catch (error) {
+        console.error("Failed to load datasets:", error);
+      }
+    };
+    loadDatasets();
+  }, []);
+
   const handleAsk = async () => {
     if (!question.trim()) return;
     if (!connectionId) {
-      toast.error("Please provide a connection ID for now (mocked in UI)");
+      toast.error("Please select a dataset first.");
       return;
     }
 
@@ -45,7 +79,18 @@ export default function AIAnalystPage() {
       </div>
 
       <div className="flex-1 overflow-y-auto p-8">
-        {!result ? (
+        {(!result && userDatasets.length === 0 && sampleDatasets.length === 0) ? (
+             <div className="h-full flex flex-col items-center justify-center text-center p-8 max-w-md mx-auto">
+               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                 <LuDatabase className="text-2xl text-gray-400" />
+               </div>
+               <h2 className="text-xl font-bold text-gray-800 mb-2">No Data Available</h2>
+               <p className="text-gray-500 mb-6">You need to import or connect a dataset before running an AI analysis.</p>
+               <Link href="/dashboard/data-sources" className="bg-blue-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                 Connect Data Source
+               </Link>
+             </div>
+        ) : !result ? (
            <div className="max-w-4xl mx-auto space-y-8">
              <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
                 <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-widest mb-4">Suggested Analyses</h2>
@@ -86,15 +131,51 @@ export default function AIAnalystPage() {
 
       <div className="p-6 bg-white border-t border-gray-200">
         <div className="max-w-4xl mx-auto flex flex-col gap-3">
-           <div className="flex items-center gap-3">
+           <div className="flex flex-col gap-2">
              <span className="text-sm font-semibold text-gray-700 uppercase tracking-widest">Data Source</span>
-             <input
-                type="text"
-                placeholder="Database Connection ID..."
-                value={connectionId}
-                onChange={(e) => setConnectionId(e.target.value)}
-                className="w-full sm:w-64 bg-gray-50 border border-gray-300 rounded-md p-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
+             <div className="flex flex-wrap items-center gap-2">
+                {userDatasets.slice(0, 5).map(d => (
+                  <button
+                    key={d.id}
+                    onClick={() => setConnectionId(d.id)}
+                    className={`px-3 py-1.5 text-sm font-medium rounded-full transition-colors ${connectionId === d.id ? 'bg-blue-600 text-white shadow-sm' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'}`}
+                  >
+                    {d.name}
+                  </button>
+                ))}
+
+                {userDatasets.length > 5 && (
+                  <div className="relative group">
+                    <select
+                      value={userDatasets.some(d => d.id === connectionId) && !userDatasets.slice(0, 5).some(d => d.id === connectionId) ? connectionId : ""}
+                      onChange={(e) => setConnectionId(e.target.value)}
+                      className="appearance-none bg-white border border-gray-200 text-gray-700 px-3 py-1.5 text-sm font-medium rounded-full outline-none focus:ring-2 focus:ring-blue-500 pr-8 cursor-pointer hover:bg-gray-50 transition-colors"
+                    >
+                      <option value="" disabled>More Datasets</option>
+                      {userDatasets.slice(5).map(d => (
+                         <option key={d.id} value={d.id}>{d.name}</option>
+                      ))}
+                    </select>
+                    <LuChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                  </div>
+                )}
+
+                {sampleDatasets.length > 0 && (
+                  <div className="relative group ml-auto">
+                    <select
+                      value={sampleDatasets.some(d => d.id === connectionId) ? connectionId : ""}
+                      onChange={(e) => setConnectionId(e.target.value)}
+                      className="appearance-none bg-indigo-50 border border-indigo-100 text-indigo-700 px-3 py-1.5 text-sm font-medium rounded-full outline-none focus:ring-2 focus:ring-indigo-500 pr-8 cursor-pointer hover:bg-indigo-100 transition-colors"
+                    >
+                      <option value="" disabled>Sample Data</option>
+                      {sampleDatasets.map(d => (
+                         <option key={d.id} value={d.id}>{d.name}</option>
+                      ))}
+                    </select>
+                    <LuChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 text-indigo-400 pointer-events-none" />
+                  </div>
+                )}
+             </div>
            </div>
           <div className="relative">
             <input

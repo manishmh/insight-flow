@@ -17,7 +17,7 @@ import { FaChevronDown, FaPlus } from "react-icons/fa6";
 import { GoSidebarExpand } from "react-icons/go";
 import { HiOutlineSwitchVertical } from "react-icons/hi";
 import { IoSearch} from "react-icons/io5";
-import { LuCommand, LuLayoutDashboard, LuDatabase, LuLayers, LuSettings, LuUser } from "react-icons/lu";
+import { LuCommand, LuLayoutDashboard, LuDatabase, LuLayers, LuSettings, LuUser, LuBot } from "react-icons/lu";
 import { RotatingLines } from "react-loader-spinner";
 import { toast } from "sonner";
 import SidebarItem from "./sidebar-item";
@@ -172,6 +172,11 @@ const Sidebar = () => {
             logo={<LuLayers />}
             title="My Data"
             link="/dashboard/data"
+          />
+          <SidebarItem
+            logo={<LuBot />}
+            title="✨ AI Analytics"
+            link="/dashboard/analytics"
           />
         </div>
 

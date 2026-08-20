@@ -14,6 +14,13 @@ enum UserRole {
 }
 
 model User {
+  aiProviderConfig      AIProviderConfig?
+  semanticMetrics       SemanticMetric[]
+  aiExecutions          AIExecution[]
+  investigations        Investigation[]
+  databaseConnections   DatabaseConnection[]
+  alerts                Alert[]
+  scheduledReports      ScheduledReport[]
   id                    String                 @id @default(cuid())
   name                  String?
   email                 String?                @unique
@@ -118,4 +125,142 @@ model TwoFactorConfirmation {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId])
+}
+
+// AI Native Analytics Feature Models
+
+enum PrivacyMode {
+  FULL
+  MINIMIZED
+  METADATA_ONLY
+}
+
+model AIProviderConfig {
+  id           String      @id @default(cuid())
+  userId       String      @unique
+  provider     String      @default("mock") // e.g., "openai", "anthropic", "mock"
+  model        String?
+  encryptedKey String? // Server-side encrypted key for BYOK
+  privacyMode  PrivacyMode @default(MINIMIZED)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SemanticMetric {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+  formula     String // e.g., SUM(orders.amount)
+  sourceTable String?
+  dimensions  String? // JSON string or comma-separated
+  timeColumn  String?
+  dataType    String? // e.g., "currency", "percentage", "number"
+  synonyms    String? // comma-separated
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model AIExecution {
+  id         String    @id @default(cuid())
+  userId     String
+  provider   String
+  model      String
+  startTime  DateTime  @default(now())
+  endTime    DateTime?
+  durationMs Int?
+  tokensUsed Int?
+  status     String // "SUCCESS", "ERROR", "RUNNING"
+  error      String?
+  toolCalls  Int       @default(0)
+  prompt     String? // Stored if privacy allows
+  result     String? // Stored if privacy allows
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Investigation {
+  id        String   @id @default(cuid())
+  userId    String
+  question  String
+  status    String // "IN_PROGRESS", "COMPLETED", "FAILED"
+  result    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  steps InvestigationStep[]
+  user  User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model InvestigationStep {
+  id              String   @id @default(cuid())
+  investigationId String
+  stepNumber      Int
+  action          String // e.g., "Query execution", "Analyze", "Format"
+  description     String?
+  query           String?
+  resultSummary   String?
+  durationMs      Int?
+  createdAt       DateTime @default(now())
+
+  investigation Investigation @relation(fields: [investigationId], references: [id], onDelete: Cascade)
+
+  @@index([investigationId])
+}
+
+model DatabaseConnection {
+  id           String   @id @default(cuid())
+  userId       String
+  name         String
+  encryptedUrl String // Server-side encrypted connection string
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Alert {
+  id          String    @id @default(cuid())
+  userId      String
+  name        String
+  metricId    String?
+  condition   String // e.g., "> 10%"
+  threshold   Float
+  status      String    @default("ACTIVE") // "ACTIVE", "PAUSED"
+  lastChecked DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model ScheduledReport {
+  id          String    @id @default(cuid())
+  userId      String
+  name        String
+  frequency   String // e.g., "DAILY", "WEEKLY", "MONTHLY"
+  dashboardId String?
+  lastRun     DateTime?
+  nextRun     DateTime?
+  status      String    @default("ACTIVE") // "ACTIVE", "PAUSED"
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

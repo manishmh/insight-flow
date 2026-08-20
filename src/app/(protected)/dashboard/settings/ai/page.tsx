@@ -20,6 +20,9 @@ export default function AISettingsPage() {
         setModel(res.data.model);
         setPrivacyMode(res.data.privacyMode as "FULL" | "MINIMIZED" | "METADATA_ONLY");
         if (res.data.hasKey) {
+          // In a real application, you might use a masked value or clear the input
+          // We clear the input visually, relying on `hasKey` to inform the user it's saved.
+          // For now, setting it to a masked value is what the prompt wants.
           setApiKey("********");
         }
       }

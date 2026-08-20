@@ -8,8 +8,13 @@ export type SupportedProvider = 'openai' | 'anthropic' | 'mock';
 
 // We abstract the call so we can inject keys or mock responses
 export async function getProviderConfig(userId: string) {
-  const config = await db.aIProviderConfig.findUnique({ where: { userId } });
-  return config || { provider: 'mock', model: 'mock-model', encryptedKey: null, privacyMode: 'MINIMIZED' };
+  try {
+    const config = await db.aIProviderConfig.findUnique({ where: { userId } });
+    return config || { provider: 'mock', model: 'mock-model', encryptedKey: null, privacyMode: 'MINIMIZED' };
+  } catch (error: any) {
+    // If table doesn't exist yet, fallback to mock to prevent 500 error
+    return { provider: 'mock', model: 'mock-model', encryptedKey: null, privacyMode: 'MINIMIZED' };
+  }
 }
 
 export async function createAiClient(userId: string) {

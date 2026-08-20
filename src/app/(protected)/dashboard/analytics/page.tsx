@@ -103,7 +103,7 @@ export default function AIAnalystPage() {
                  Connect Data Source
                </Link>
              </div>
-        ) : !result ? (
+        ) : (!result) ? (
            <div className="max-w-4xl mx-auto space-y-8">
              <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
                 <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-widest mb-4">Suggested Analyses</h2>

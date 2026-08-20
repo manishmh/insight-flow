@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { runInvestigationStep } from "@/server/ai/actions";
 import { toast } from "sonner";
 import { LuBot, LuSend, LuDatabase, LuLineChart, LuLightbulb, LuSearch, LuChevronDown } from "react-icons/lu";
-import { fetchAllData } from "@/server/components/indexedDB";
+import { fetchAllData, fetchDataById } from "@/server/components/indexedDB";
+import { fetchSampleDataWithId } from "@/server/components/block-functions";
 import { listSampleDatasets } from "@/server/components/block-functions";
 import Link from "next/link";
 
@@ -56,7 +57,19 @@ export default function AIAnalystPage() {
     setResult(null);
 
     try {
-      const res = await runInvestigationStep(question, connectionId);
+      // Load context payload for the selected connectionId
+      let data = await fetchDataById(connectionId);
+      if (!data || Object.keys(data).length === 0) {
+        data = await fetchSampleDataWithId(connectionId) as any;
+      }
+
+      let contextPayload = {
+         boardName: data?.name || "Selected Dataset",
+         columns: data?.data?.columns || [],
+         sampleData: (data?.data?.data || []).slice(0, 50)
+      };
+
+      const res = await runInvestigationStep(question, contextPayload);
       if (res.success && res.text) {
         setResult(res.text);
       } else {

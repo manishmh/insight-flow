@@ -1,31 +1,45 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { LuKey, LuShield, LuSave } from "react-icons/lu";
+import { getAISettings, saveAISettings } from "@/server/ai/actions";
 
 export default function AISettingsPage() {
   const [provider, setProvider] = useState("mock");
-  const [model, setModel] = useState("mock-model");
+  const [model, setModel] = useState("");
   const [apiKey, setApiKey] = useState("");
-  const [privacyMode, setPrivacyMode] = useState("MINIMIZED");
-  const [saving, setSaving] = useState(false);
+  const [privacyMode, setPrivacyMode] = useState<"FULL" | "MINIMIZED" | "METADATA_ONLY">("MINIMIZED");
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    // In a real implementation, we would fetch the current config from the server here.
+    const fetchConfig = async () => {
+      const res = await getAISettings();
+      if (res.success && res.data) {
+        setProvider(res.data.provider);
+        setModel(res.data.model);
+        setPrivacyMode(res.data.privacyMode as "FULL" | "MINIMIZED" | "METADATA_ONLY");
+        if (res.data.hasKey) {
+          setApiKey("********");
+        }
+      }
+    };
+    fetchConfig();
   }, []);
 
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      // Simulate saving to server action
-      await new Promise(r => setTimeout(r, 500));
-      toast.success("AI configuration saved securely");
-    } catch (e) {
-      toast.error("Failed to save config");
-    } finally {
-      setSaving(false);
-    }
+  const handleSave = () => {
+    startTransition(async () => {
+      try {
+        const res = await saveAISettings({ provider, model, apiKey, privacyMode });
+        if (res.success) {
+          toast.success("AI configuration saved securely");
+        } else {
+          toast.error(res.error || "Failed to save config");
+        }
+      } catch (e) {
+        toast.error("An error occurred while saving.");
+      }
+    });
   };
 
   return (
@@ -144,10 +158,10 @@ export default function AISettingsPage() {
         <div className="flex justify-end">
           <button
             onClick={handleSave}
-            disabled={saving}
+            disabled={isPending}
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium transition-colors disabled:bg-blue-400"
           >
-            {saving ? "Saving..." : <><LuSave /> Save Configuration</>}
+            {isPending ? "Saving..." : <><LuSave /> Save Configuration</>}
           </button>
         </div>
       </div>

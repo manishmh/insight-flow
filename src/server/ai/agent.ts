@@ -1,7 +1,7 @@
 import { tool } from 'ai';
 import { z } from 'zod';
 import { executeAiAgent, getProviderConfig } from './providers';
-import { fetchSchemaMetadata, executeAiQuery } from './data-layer';
+// import { fetchSchemaMetadata, executeAiQuery } from './data-layer';
 import { db } from '@/lib/db';
 
 export async function createInvestigation(userId: string, question: string) {
@@ -14,7 +14,7 @@ export async function createInvestigation(userId: string, question: string) {
   });
 }
 
-export async function runInvestigationAgent(userId: string, investigationId: string, question: string, connectionId: string) {
+export async function runInvestigationAgent(userId: string, investigationId: string, question: string, contextPayload: any) {
   const config = await getProviderConfig(userId);
 
   const tools = {
@@ -23,8 +23,7 @@ export async function runInvestigationAgent(userId: string, investigationId: str
       parameters: z.object({}),
       execute: async () => {
         try {
-          const schema = await fetchSchemaMetadata(connectionId, userId);
-          return { success: true, schema };
+          return { success: true, schema: contextPayload.schema || contextPayload.columns || [] };
         } catch (e: any) {
           return { success: false, error: e.message };
         }
@@ -38,9 +37,9 @@ export async function runInvestigationAgent(userId: string, investigationId: str
       }),
       execute: async ({ query, reason }) => {
         try {
-          const result = await executeAiQuery(connectionId, userId, query);
-
-          if (!result.success) return result;
+          // In the mock/indexedDB environment, we don't execute real SQL against a DB connection string.
+          // We pretend the query ran and return the sample data provided from the client.
+          const result = { success: true, data: contextPayload.sampleData || [], columns: contextPayload.columns || [] };
 
           // Data minimization based on privacy mode
           let dataToReturn: any = result.data;
@@ -79,6 +78,8 @@ export async function runInvestigationAgent(userId: string, investigationId: str
   };
 
   const systemPrompt = `You are Insight Flow, an AI data analyst.
+Context Data: ${JSON.stringify(contextPayload).substring(0, 1000)}
+
 Your goal is to answer the user's business question by querying their database.
 Always inspect the schema first if you don't know the table structures.
 Use the executeSql tool to run read-only Postgres queries.
